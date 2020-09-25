@@ -1,0 +1,13 @@
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\DIDA-GSTORE.exe
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\obj\Debug\netcoreapp3.1\DIDA-GSTORE.csprojAssemblyReference.cache
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\obj\Debug\netcoreapp3.1\DIDA-GSTORE.AssemblyInfoInputs.cache
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\obj\Debug\netcoreapp3.1\DIDA-GSTORE.AssemblyInfo.cs
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\Grpc.Core.dll
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\Grpc.Core.Api.dll
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\linux\native\libgrpc_csharp_ext.x64.so
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\linux\native\libgrpc_csharp_ext.x86.so
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\osx\native\libgrpc_csharp_ext.x64.dylib
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\osx\native\libgrpc_csharp_ext.x86.dylib
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\win\native\grpc_csharp_ext.x64.dll
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\bin\Debug\netcoreapp3.1\runtimes\win\native\grpc_csharp_ext.x86.dll
+C:\Users\Rodrigo Silva\Desktop\DAD\DIDA-GSTORE\DIDA-GSTORE\DIDA-GSTORE\obj\Debug\netcoreapp3.1\DIDA-GSTORE.csproj.CopyComplete

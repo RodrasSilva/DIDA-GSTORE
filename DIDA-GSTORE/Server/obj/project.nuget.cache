@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "Wtw4yPJWLISmAfcRWLYsa+lVZn+N5jKsfs0Ob5AHOJCkR3ZfWV2G1nrPHIvYgtn8poIXcJl8x+9yckE/rF6YyQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\DIDA-GSTORE\\DIDA-GSTORE\\Server\\Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rodrigo Silva\\.nuget\\packages\\grpc\\2.32.0\\grpc.2.32.0.nupkg.sha512",
+    "C:\\Users\\Rodrigo Silva\\.nuget\\packages\\grpc.core\\2.32.0\\grpc.core.2.32.0.nupkg.sha512",
+    "C:\\Users\\Rodrigo Silva\\.nuget\\packages\\grpc.core.api\\2.32.0\\grpc.core.api.2.32.0.nupkg.sha512",
+    "C:\\Users\\Rodrigo Silva\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512"
+  ],
+  "logs": []
+}
