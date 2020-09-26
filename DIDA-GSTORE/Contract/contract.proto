@@ -1,61 +1,61 @@
-﻿//
+//
 // Protocol buffers definition for Silo server
 //
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 message ReadRequest{
-    string partitionId = 1;
-    string objectId = 2;
+  string partitionId = 1;
+  string objectId = 2;
 }
 
 message ReadResponse{
-    string objectValue = 1;
+  string objectValue = 1;
 }
 
 message WriteRequest{
-    string partitionId = 1;
-    string objectId = 2;
-    string objectValue = 3;
+  string partitionId = 1;
+  string objectId = 2;
+  string objectValue = 3;
 }
 
 message WriteResponse{
-     /*decide*/
+  /*decide*/
 }
 
 message ListServerRequest{
-    /*nothing*/
+  /*nothing*/
 }
 
 message ListServerResponseEntity{
-    string objectValue = 1;
-    bool isMaster = 2; 
+  string objectValue = 1;
+  bool isMaster = 2;
 }
 
 message ListServerResponse{
-    repeated ListGlobalResponseEntity objects = 1;
+  repeated ListServerResponseEntity objects = 1;
 }
 
 message ObjectIdentifier {
-    string partitionId = 1;
-    string objectId = 2;
+  string partitionId = 1;
+  string objectId = 2;
 }
 
 message ListGlobalResponseEntity{
-    repeated ObjectIdentifier identifiers = 1;
+  repeated ObjectIdentifier identifiers = 1;
 }
 
 message ListGlobalRequest{
-    /*nothing*/
+  /*nothing*/
 }
 
 message ListGlobalResponse{
-    repeated ListGlobalResponseEntity = 1;
+  repeated ListGlobalResponseEntity  objects = 1;
 }
 
-service DidaService{
-    rpc write(WriteRequest) returns (WriteResponse);
-    rpc read(ReadRequest) returns (ReadResponse);
-    rpc listServer(ListGlobalRequest) returns (ListGlobalResponse);
-    rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
+service DIDAService{
+  rpc write(WriteRequest) returns (WriteResponse);
+  rpc read(ReadRequest) returns (ReadResponse);
+  rpc listServer(ListGlobalRequest) returns (ListGlobalResponse);
+  rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
 }
