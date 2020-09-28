@@ -18,8 +18,11 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
+      working-directory: ~/DIDA-GSTORE
       run: dotnet restore
     - name: Build
+      working-directory: ~/DIDA-GSTORE
       run: dotnet build --configuration Release --no-restore
     - name: Test
+      working-directory: ~/DIDA-GSTORE
       run: dotnet test --no-restore --verbosity normal
