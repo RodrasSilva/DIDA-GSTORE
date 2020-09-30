@@ -14,7 +14,18 @@ namespace DIDA_GSTORE.commands {
         private const string WaitCommandName = "wait";
         private const string BeginRepeatCommandName = "begin-repeat";
 
-        public static ICommand GetCommand(string commandLine, StreamReader operationsFileReader) {
+        public static List<ICommand> GetCommands(string operationsFilePath) {
+            var results = new List<ICommand>();
+            string commandLine;
+            using var operationsFileReader = new StreamReader(operationsFilePath);
+            while ((commandLine = operationsFileReader.ReadLine()) != null) {
+                results.Add(GetCommand(commandLine, operationsFileReader));
+            }
+
+            return results;
+        }
+
+        public static ICommand GetCommand(string commandLine, StreamReader operationsFileReader = null) {
             var splitLine = commandLine.Split(ArgumentSeparator);
             var commandName = splitLine[0];
             var args = splitLine.Skip(1).ToArray();

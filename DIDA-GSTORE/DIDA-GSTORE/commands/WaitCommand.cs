@@ -1,12 +1,13 @@
 using System;
+using System.Threading;
 
 namespace DIDA_GSTORE.commands {
     public class WaitCommand : ICommand {
         private const int WaitTimePosition = 0;
 
-        private readonly long _waitTime;
+        private readonly int _waitTime;
 
-        private WaitCommand(long waitTime) {
+        private WaitCommand(int waitTime) {
             _waitTime = waitTime;
         }
 
@@ -15,12 +16,12 @@ namespace DIDA_GSTORE.commands {
                 throw new Exception("Invalid Wait Command ");
             }
 
-            var waitTime = long.Parse(arguments[WaitTimePosition]);
+            var waitTime = int.Parse(arguments[WaitTimePosition]);
             return new WaitCommand(waitTime);
         }
 
         public void Execute() {
-            throw new System.NotImplementedException();
+            Thread.Sleep(_waitTime);
         }
     }
 }

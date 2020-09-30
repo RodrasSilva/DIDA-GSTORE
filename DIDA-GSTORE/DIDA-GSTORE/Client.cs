@@ -22,12 +22,8 @@ namespace DIDA_GSTORE {
         }
 
         private static void ExecuteCommands(string operationsFilePath) {
-            using var operationsFileReader = new StreamReader(operationsFilePath);
-            string commandLine;
-            while ((commandLine = operationsFileReader.ReadLine()) != null) {
-                ICommand command = ClientCommands.GetCommand(commandLine, operationsFileReader);
-                command.Execute();
-            }
+            var commands = ClientCommands.GetCommands(operationsFilePath);
+            commands.ForEach(command => command.Execute() );
         }
     }
 }

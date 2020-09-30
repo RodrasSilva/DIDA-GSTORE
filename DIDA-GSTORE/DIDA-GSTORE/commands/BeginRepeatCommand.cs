@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DIDA_GSTORE.commands {
     public class BeginRepeatCommand : ICommand {
         private const int NumberOfRepeatsPosition = 0;
-
+        private const string EndRepeatCommand = "end-repeat";
+        private const string ReplaceSymbol = "$i";
         private readonly int _numberOfRepeats;
         private readonly StreamReader _operationsFileReader;
 
@@ -24,7 +26,20 @@ namespace DIDA_GSTORE.commands {
         }
 
         public void Execute() {
-            throw new System.NotImplementedException();
+            string line;
+            var commands = new List<string>();
+            while ((line = _operationsFileReader.ReadLine()) != null && !line.Equals(EndRepeatCommand)) {
+                commands.Add(line);
+            }
+
+            for (var i = 0; i < _numberOfRepeats; ++i) {
+                var counter = i.ToString();
+                commands.ForEach(cmd => {
+                    cmd = cmd.Replace(ReplaceSymbol, counter);
+                    var command = ClientCommands.GetCommand(cmd);
+                    command.Execute();
+                });
+            }
         }
     }
 }
