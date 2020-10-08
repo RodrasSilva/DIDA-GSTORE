@@ -1,0 +1,62 @@
+//
+// Protocol buffers definition for Silo server
+//
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "Client";
+
+message ReadRequest{
+  string partitionId = 1;
+  string objectId = 2;
+}
+
+message ReadResponse{
+  string objectValue = 1;
+}
+
+message WriteRequest{
+  string partitionId = 1;
+  string objectId = 2;
+  string objectValue = 3;
+}
+
+message WriteResponse{
+  /*decide*/
+}
+
+message ListServerRequest{
+  /*nothing*/
+}
+
+message ListServerResponseEntity{
+  string objectValue = 1;
+  bool isMaster = 2;
+}
+
+message ListServerResponse{
+  repeated ListServerResponseEntity objects = 1;
+}
+
+message ObjectIdentifier {
+  string partitionId = 1;
+  string objectId = 2;
+}
+
+message ListGlobalResponseEntity{
+  repeated ObjectIdentifier identifiers = 1;
+}
+
+message ListGlobalRequest{
+  /*nothing*/
+}
+
+message ListGlobalResponse{
+  repeated ListGlobalResponseEntity  objects = 1;
+}
+
+service DIDAService{
+  rpc write(WriteRequest) returns (WriteResponse);
+  rpc read(ReadRequest) returns (ReadResponse);
+  rpc listServer(ListServerRequest) returns (ListServerResponse);
+  rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
+}

@@ -30,7 +30,7 @@ namespace DIDA_GSTORE {
                 Console.WriteLine("Operations executed - App shutting down...");
             }
             else {
-                Console.WriteLine("Usage: Client <operations-file>");
+                Console.WriteLine("Usage: PuppetMaster <operations-file>");
                 return;
             }
         }
