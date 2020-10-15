@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using DIDA_GSTORE.grpcService;
 
 namespace DIDA_GSTORE.commands {
     public class WaitCommand : ICommand {
@@ -18,6 +19,10 @@ namespace DIDA_GSTORE.commands {
 
             var waitTime = int.Parse(arguments[WaitTimePosition]);
             return new WaitCommand(waitTime);
+        }
+
+        public bool IsAsync {
+            get { return false; }
         }
 
         public void Execute() {

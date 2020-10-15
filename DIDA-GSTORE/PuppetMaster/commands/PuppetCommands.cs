@@ -6,18 +6,18 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 
 namespace DIDA_GSTORE.commands {
-    public abstract class ClientCommands {
+    public abstract class PuppetCommands {
 
         private const string ArgumentSeparator = " ";
         private const string ReplicationFactorCommandName = "ReplicationFactor";
         private const string ServerCommandName = "Server";
         private const string PartitionCommandName = "Partition";
-        private const string ClientGlobalCommandName = "Client";
+        private const string ClientCommandName = "Client";
         private const string StatusCommandName = "Status";
         private const string CrashRepeatCommandName = "Crash";
         private const string FreezeRepeatCommandName = "Freeze";
         private const string UnfreezeRepeatCommandName = "Unfreeze";
-        private const string WaitRepeatCommandName = "Wait";
+        private const string WaitCommandName = "Wait";
 
         public static ICommand GetCommand(string commandLine) {
             var splitLine = commandLine.Split(ArgumentSeparator);
@@ -28,15 +28,15 @@ namespace DIDA_GSTORE.commands {
 
         private static ICommand ParseCommand(string commandName, string[] args) {
             return commandName switch {
-                ReplicationFactorCommandName => ReadCommand.ParseCommandLine(args),
-                ServerCommandName => WriteCommand.ParseCommandLine(args),
-                PartitionCommandName => ListServerCommand.ParseCommandLine(args),
-                ClientGlobalCommandName => ListGlobalCommand.ParseCommandLine(args),
-                StatusCommandName => WaitCommand.ParseCommandLine(args),
-                CrashRepeatCommandName => WaitCommand.ParseCommandLine(args),
-                FreezeRepeatCommandName => WaitCommand.ParseCommandLine(args),
-                UnfreezeRepeatCommandName => WaitCommand.ParseCommandLine(args),
-                WaitRepeatCommandName => WaitCommand.ParseCommandLine(args),
+                ReplicationFactorCommandName => ReplicationFactorCommand.ParseCommandLine(args),
+                ServerCommandName => ServerCommand.ParseCommandLine(args),
+                PartitionCommandName => PartitionCommand.ParseCommandLine(args),
+                ClientCommandName => ClientCommand.ParseCommandLine(args),
+                StatusCommandName => StatusCommand.ParseCommandLine(args),
+                CrashRepeatCommandName => CrashRepeatCommand.ParseCommandLine(args),
+                FreezeRepeatCommandName => FreezeRepeatCommand.ParseCommandLine(args),
+                UnfreezeRepeatCommandName => UnfreezeRepeatCommand.ParseCommandLine(args),
+                WaitCommandName => WaitCommand.ParseCommandLine(args),
                 _ => null
             };
         }

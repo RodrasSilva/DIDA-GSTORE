@@ -9,7 +9,7 @@ using System.Threading;
 namespace DIDA_GSTORE {
     public class Puppet {
         public static void Main(string[] args) {
-            /* FIXME according to usage pROBABLY THE SYSTEM CONFIGURATION FILE */
+            /* FIXME according to usage PROBABLY THE SYSTEM CONFIGURATION FILE */
             if(args.Length == 0) {
                 SetupOperation();
 
@@ -66,7 +66,7 @@ namespace DIDA_GSTORE {
 
         private static void CommandExecution(string commandLine, List<Thread> allThreads)
         {
-            ICommand command = ClientCommands.GetCommand(commandLine);
+            ICommand command = PuppetCommands.GetCommand(commandLine);
             if (command.IsAsync)
             {
                 Thread t = new Thread(new ThreadStart(command.Execute));
