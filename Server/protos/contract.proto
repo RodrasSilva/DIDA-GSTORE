@@ -1,8 +1,7 @@
-﻿//
-// Protocol buffers definition for DADI-GSTORE server
+//
+// Protocol buffers definition for Silo server
 //
 syntax = "proto3";
-option csharp_namespace = "Client";
 
 message ReadRequest{
   string partitionId = 1;
