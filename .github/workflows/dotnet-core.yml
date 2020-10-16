@@ -19,36 +19,11 @@ jobs:
         dotnet-version: 3.1.301
     - name: Install dependencies
       run: |
-          cd DIDA-GSTORE
-          cd DIDA-GSTORE
-          dotnet restore
-          cd ..
-          cd PuppetMaster
-          dotnet restore
-          cd ..
-          cd Server
           dotnet restore
     - name: Build
       run: |
-          cd DIDA-GSTORE
-          cd DIDA-GSTORE
            dotnet build --configuration Release --no-restore
-          cd ..
-          cd PuppetMaster
-           dotnet build --configuration Release --no-restore
-          cd ..
-          cd Server
-           dotnet build --configuration Release --no-restore
-         
     - name: Test
       run: |
-          cd DIDA-GSTORE
-          cd DIDA-GSTORE
-           dotnet test --no-restore --verbosity normal
-          cd ..
-          cd PuppetMaster
-           dotnet test --no-restore --verbosity normal
-          cd ..
-          cd Server
            dotnet test --no-restore --verbosity normal
           

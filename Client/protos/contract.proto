@@ -1,8 +1,7 @@
-//
-// Protocol buffers definition for Silo server
+﻿//
+// Protocol buffers definition for DADI-GSTORE server
 //
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Client";
 
 message ReadRequest{

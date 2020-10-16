@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
 
-namespace DIDA_GSTORE
+namespace Client
 {
     public class Client
     {

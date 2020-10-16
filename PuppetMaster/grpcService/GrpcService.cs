@@ -1,5 +1,4 @@
 using System;
-using Grpc.Core;
 
 namespace DIDA_GSTORE.grpcService {
     public class GrpcService {

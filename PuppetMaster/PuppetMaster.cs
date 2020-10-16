@@ -1,23 +1,26 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using DIDA_GSTORE.commands;
-using Grpc.Core;
 using System.Threading;
+using DIDA_GSTORE.commands;
 
-namespace DIDA_GSTORE {
-    public class Puppet {
-        public static void Main(string[] args) {
+namespace PuppetMaster
+{
+    class PuppetMaster
+    {
+        public static void Main(string[] args)
+        {
             /* FIXME according to usage PROBABLY THE SYSTEM CONFIGURATION FILE */
-            if(args.Length == 0) {
+            if (args.Length == 0)
+            {
                 SetupOperation();
 
 
             }
-            else if(args.Length == 1) {
+            else if (args.Length == 1)
+            {
                 SetupOperation();
-                
+
                 var operationsFilePath = args[0];
                 if (!File.Exists(operationsFilePath))
                 {
@@ -29,7 +32,8 @@ namespace DIDA_GSTORE {
                 ExecuteCommands(operationsFilePath);
                 Console.WriteLine("Operations executed - App shutting down...");
             }
-            else {
+            else
+            {
                 Console.WriteLine("Usage: PuppetMaster <operations-file>");
                 return;
             }
@@ -48,7 +52,8 @@ namespace DIDA_GSTORE {
             }
         }
 
-        private static void ExecuteCommands(string operationsFilePath) {
+        private static void ExecuteCommands(string operationsFilePath)
+        {
 
             var results = new List<ICommand>();
             string commandLine;
