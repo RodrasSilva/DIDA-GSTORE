@@ -1,0 +1,62 @@
+//
+// Protocol buffers definition for ---
+//
+syntax = "proto3";
+
+// CHECK IF REPLICATION FACTOR IS PART OF THE THINGY
+message ChangeReplicationFactorRequest {
+	int32 replicationFactor = 1;
+}
+
+message ChangeReplicationFactorResponse {
+	//ol
+}
+
+message StartServerRequest {
+	int32 serverId = 1;
+	string URL = 2;
+	int32 minDelay = 3;
+	int32 maxDelay = 4;
+}
+
+message StartServerResponde {
+	//empty
+}
+
+message 
+
+message StartClientRequest {
+	string username = 1;
+	string URL = 2;
+	string scriptFile = 3;
+}
+
+message StartClientResponse {
+	//empty
+}
+
+message StatusRequest {
+	//empty
+}
+
+message StatusResponse {
+	//string status = 1;
+}
+
+message CrashRequest {
+	int32 serverId = 1;
+}
+
+message CrashRespose {
+
+}
+
+message 
+
+
+service DIDAService{
+  rpc write(WriteRequest) returns (WriteResponse);
+  rpc read(ReadRequest) returns (ReadResponse);
+  rpc listServer(ListServerRequest) returns (ListServerResponse);
+  rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
+}

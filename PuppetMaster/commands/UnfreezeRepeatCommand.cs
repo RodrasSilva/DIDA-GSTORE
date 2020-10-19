@@ -4,7 +4,6 @@ namespace DIDA_GSTORE.commands {
     public class UnfreezeRepeatCommand : ICommand {
         public bool IsAsync => true;
         private const int ServerIdPosition = 0;
-
         private readonly string _serverId;
 
         private UnfreezeRepeatCommand(string serverId) {

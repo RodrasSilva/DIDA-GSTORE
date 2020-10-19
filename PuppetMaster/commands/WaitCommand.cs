@@ -4,8 +4,8 @@ using DIDA_GSTORE.grpcService;
 
 namespace DIDA_GSTORE.commands {
     public class WaitCommand : ICommand {
+        public bool IsAsync => true;
         private const int WaitTimePosition = 0;
-
         private readonly int _waitTime;
 
         private WaitCommand(int waitTime) {
@@ -19,10 +19,6 @@ namespace DIDA_GSTORE.commands {
 
             var waitTime = int.Parse(arguments[WaitTimePosition]);
             return new WaitCommand(waitTime);
-        }
-
-        public bool IsAsync {
-            get { return false; }
         }
 
         public void Execute() {

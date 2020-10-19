@@ -1,10 +1,9 @@
 using System;
 
 namespace DIDA_GSTORE.commands {
-    public class StatusCommand : ICommand {
-        public bool IsAsync {
-            get { return true; }
-        }
+    public class StatusCommand : ICommand
+    {
+        public bool IsAsync => true;
 
         private StatusCommand() {
             
