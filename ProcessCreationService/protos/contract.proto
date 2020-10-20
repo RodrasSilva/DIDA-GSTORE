@@ -1,0 +1,30 @@
+//
+// Protocol buffers definition for ---
+//
+syntax = "proto3";
+
+message StartServerRequest {
+	int32 serverId = 1;
+	string URL = 2;
+	int32 minDelay = 3;
+	int32 maxDelay = 4;
+}
+
+message StartServerResponse {
+	//empty
+}
+
+message StartClientRequest {
+	string username = 1;
+	string URL = 2;
+	string scriptFile = 3;
+}
+
+message StartClientResponse {
+	//empty
+}
+
+service ProcessCreationService {
+  rpc startServer(StartServerRequest) returns (StartServerResponse);
+  rpc startClient(StartClientRequest) returns (StartClientResponse);
+}

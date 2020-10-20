@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Threading;
 
 namespace DIDA_GSTORE.commands {
     public abstract class PuppetCommands {
@@ -37,7 +38,7 @@ namespace DIDA_GSTORE.commands {
                 FreezeRepeatCommandName => FreezeRepeatCommand.ParseCommandLine(args),
                 UnfreezeRepeatCommandName => UnfreezeRepeatCommand.ParseCommandLine(args),
                 WaitCommandName => WaitCommand.ParseCommandLine(args),
-                _ => null
+                _ => throw new Exception("Command not found"),
             };
         }
     }

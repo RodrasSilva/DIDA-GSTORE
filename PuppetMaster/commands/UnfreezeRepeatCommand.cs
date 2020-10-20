@@ -1,3 +1,4 @@
+using PuppetMasterMain;
 using System;
 
 namespace DIDA_GSTORE.commands {
@@ -11,7 +12,7 @@ namespace DIDA_GSTORE.commands {
         }
 
 
-        public void Execute() {
+        public void Execute(PuppetMasterDomain puppetMaster) {
             throw new System.NotImplementedException();
         }
 

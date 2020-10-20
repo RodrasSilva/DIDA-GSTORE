@@ -1,3 +1,5 @@
+using PuppetMasterClient;
+using PuppetMasterMain;
 using System;
 
 namespace DIDA_GSTORE.commands {
@@ -8,12 +10,12 @@ namespace DIDA_GSTORE.commands {
         private const int MinDelayPosition = 2;
         private const int MaxDelayPosition = 3;
 
-        private readonly string _serverId;
+        private readonly int _serverId;
         private readonly string _url;
         private readonly int _minDelay;
         private readonly int _maxDelay;
 
-        private ServerCommand(string serverId, string url, int minDelay, int maxDelay) {
+        private ServerCommand(int serverId, string url, int minDelay, int maxDelay) {
             _serverId = serverId;
             _url = url;
             _minDelay = minDelay;
@@ -21,8 +23,13 @@ namespace DIDA_GSTORE.commands {
         }
 
 
-        public void Execute() {
-            throw new System.NotImplementedException();
+        public void Execute(PuppetMasterDomain puppetMaster) {
+            StartServerResponse response = puppetMaster.GrpcService.StartServer(_serverId,
+                _url, _minDelay, _maxDelay);
+
+            //if response is cool
+            puppetMaster.ServerUrls.Add(_serverId, _url);
+            //throw new System.NotImplementedException();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
@@ -30,7 +37,7 @@ namespace DIDA_GSTORE.commands {
                 throw new Exception("Invalid Server Command ");
             }
 
-            var serverId = arguments[ServerIdPosition];
+            var serverId = int.Parse(arguments[ServerIdPosition]);
             var url = arguments[UrlPosition];
             var minDelay = int.Parse(arguments[MinDelayPosition]);
             var maxDelay = int.Parse(arguments[MaxDelayPosition]);

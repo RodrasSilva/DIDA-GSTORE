@@ -52,7 +52,7 @@ message ListGlobalResponse{
   repeated ListGlobalResponseEntity  objects = 1;
 }
 
-service DIDAService{
+service DIDAService {
   rpc write(WriteRequest) returns (WriteResponse);
   rpc read(ReadRequest) returns (ReadResponse);
   rpc listServer(ListServerRequest) returns (ListServerResponse);

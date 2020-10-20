@@ -1,3 +1,5 @@
+using PuppetMasterClient;
+using PuppetMasterMain;
 using System;
 using System.Linq;
 
@@ -19,8 +21,14 @@ namespace DIDA_GSTORE.commands {
         }
 
 
-        public void Execute() {
-            throw new System.NotImplementedException();
+        public void Execute(PuppetMasterDomain puppetMaster) {
+            //throw new System.NotImplementedException();
+
+            StartClientResponse response = puppetMaster.GrpcService.StartClient(_username,
+                _clientUrl, _scriptFile);
+
+            //if response is cool
+            puppetMaster.ClientUrls.Add(_clientUrl);
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {

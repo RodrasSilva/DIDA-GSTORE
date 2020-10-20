@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppetMaster", "PuppetMaste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{FA7B7338-0BB4-4671-B1C1-E0880A63D1B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessCreationService", "ProcessCreationService\ProcessCreationService.csproj", "{053E8A65-04CD-4EF0-98AB-46EAA161A12D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessCreationService", "ProcessCreationService\ProcessCreationService.csproj", "{053E8A65-04CD-4EF0-98AB-46EAA161A12D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,7 +18,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D7929CEE-E509-4CAD-8741-C5394FF47AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7929CEE-E509-4CAD-8741-C5394FF47AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7929CEE-E509-4CAD-8741-C5394FF47AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7929CEE-E509-4CAD-8741-C5394FF47AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B48771F4-974F-4313-B8B7-3A64A34D5E95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -26,7 +25,6 @@ Global
 		{B48771F4-974F-4313-B8B7-3A64A34D5E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B48771F4-974F-4313-B8B7-3A64A34D5E95}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA7B7338-0BB4-4671-B1C1-E0880A63D1B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA7B7338-0BB4-4671-B1C1-E0880A63D1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA7B7338-0BB4-4671-B1C1-E0880A63D1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA7B7338-0BB4-4671-B1C1-E0880A63D1B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{053E8A65-04CD-4EF0-98AB-46EAA161A12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

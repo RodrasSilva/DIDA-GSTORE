@@ -1,7 +1,10 @@
-namespace DIDA_GSTORE.commands {
+using PuppetMasterMain;
+
+namespace DIDA_GSTORE.commands
+{
     public interface ICommand {
         public bool IsAsync { get; }
 
-        void Execute();
+        void Execute(PuppetMasterDomain puppetMaster);
     }
 }

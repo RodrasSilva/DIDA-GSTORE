@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using DIDA_GSTORE.grpcService;
+using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
     public class WaitCommand : ICommand {
@@ -21,7 +22,7 @@ namespace DIDA_GSTORE.commands {
             return new WaitCommand(waitTime);
         }
 
-        public void Execute() {
+        public void Execute(PuppetMasterDomain puppetMaster) {
             Thread.Sleep(_waitTime);
         }
     }

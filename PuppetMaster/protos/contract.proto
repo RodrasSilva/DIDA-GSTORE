@@ -2,8 +2,10 @@
 // Protocol buffers definition for ---
 //
 syntax = "proto3";
+option csharp_namespace = "PuppetMasterClient";
 
 // CHECK IF REPLICATION FACTOR IS PART OF THE THINGY
+/*
 message ChangeReplicationFactorRequest {
 	int32 replicationFactor = 1;
 }
@@ -11,19 +13,22 @@ message ChangeReplicationFactorRequest {
 message ChangeReplicationFactorResponse {
 	//ol
 }
+*/
 
 message StartServerRequest {
 	int32 serverId = 1;
 	string URL = 2;
 	int32 minDelay = 3;
 	int32 maxDelay = 4;
+	/* probably 
+	int32 replicationFactor = 5;
+	repeated string partitionName = 6; 
+	*/
 }
 
-message StartServerResponde {
+message StartServerResponse {
 	//empty
 }
-
-message 
 
 message StartClientRequest {
 	string username = 1;
@@ -33,6 +38,11 @@ message StartClientRequest {
 
 message StartClientResponse {
 	//empty
+}
+
+service ProcessCreationService {
+  rpc startServer(StartServerRequest) returns (StartServerResponse);
+  rpc startClient(StartClientRequest) returns (StartClientResponse);
 }
 
 message StatusRequest {
@@ -48,15 +58,27 @@ message CrashRequest {
 }
 
 message CrashRespose {
-
+	//nothing
 }
 
-message 
-
-
-service DIDAService{
-  rpc write(WriteRequest) returns (WriteResponse);
-  rpc read(ReadRequest) returns (ReadResponse);
-  rpc listServer(ListServerRequest) returns (ListServerResponse);
-  rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
+message FreezeRequest {
+	//nothing
 }
+message FreezeResponse {
+	//nothing
+}
+message UnfreezeRequest {
+	//nothing
+}
+message UnfreezeResponse {
+	//nothing
+}
+
+service NodeControlService {
+  rpc status(StatusRequest) returns (StatusResponse);
+  rpc crash(CrashRequest) returns (CrashRespose);
+  rpc freeze(FreezeRequest) returns (FreezeResponse);
+  rpc unfreeze(UnfreezeRequest) returns (UnfreezeResponse);
+}
+
+//we could have a service only for status (client).

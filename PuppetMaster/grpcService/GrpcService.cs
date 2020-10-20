@@ -1,21 +1,40 @@
 using System;
+//using Client;
+using PuppetMasterClient;
+using Grpc.Net.Client;
 
 namespace DIDA_GSTORE.grpcService {
-    public class GrpcService {
-        private const string ServerIp = "127.0.0.1";
-        private const string ServerPort = "50051";
+    public class GrpcService
+    {
+        private string ServerIp;
+        private int ServerPort;
+        private GrpcChannel channel;
+        private ProcessCreationService.ProcessCreationServiceClient client;
 
-        private static readonly string ServerAddress = String.Format("{0}:{1}", ServerIp, ServerPort);
-        /*
-        private static readonly Channel Channel = new Channel(ServerAddress, ChannelCredentials.Insecure);
-        private static DidaServiceClient _client = null;
-
-        public DidaServiceClient Service {
-            get {
-                if (_client != null) return _client;
-                return _client = new DidaService.DidaServiceClient(Channel);
-            }
+        public GrpcService(string serverIp, int serverPort)
+        {
+            ServerIp = serverIp;
+            ServerPort = serverPort;
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            channel = GrpcChannel.ForAddress(buildServerAdress(serverIp, serverPort));
+            client = new ProcessCreationService.ProcessCreationServiceClient(channel);
         }
-        */
+
+        private string buildServerAdress(string serverIp, int serverPort)
+        {
+            return string.Format("http://{0}:{1}", serverIp, serverPort);
+        }
+        public StartServerResponse StartServer(int serverId, string url,
+            int minDelay, int maxDelay)
+        {
+            StartServerRequest request = new StartServerRequest() { ServerId = serverId, URL = url, MinDelay = minDelay, MaxDelay = maxDelay };
+            return client.startServer(request); // TODO :  Add Logic
+            //start server async <= probably not
+        }
+        public StartClientResponse StartClient(string username, string url, string scriptFile)
+        {
+            StartClientRequest request = new StartClientRequest() { Username = username, URL = url, ScriptFile = scriptFile };
+            return client.startClient(request); // TODO :  Add Logic
+        }
     }
 }

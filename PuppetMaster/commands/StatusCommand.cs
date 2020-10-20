@@ -1,4 +1,5 @@
 using System;
+using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
     public class StatusCommand : ICommand
@@ -8,8 +9,8 @@ namespace DIDA_GSTORE.commands {
         private StatusCommand() {
             
         }
-        public void Execute() {
-            throw new System.NotImplementedException();
+        public void Execute(PuppetMasterDomain puppetMaster) {
+            throw new NotImplementedException();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
