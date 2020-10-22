@@ -25,7 +25,7 @@ namespace Client
             }
 
             grpcService = new GrpcService("localhost", 5001);
-
+            // TODO : Stay alive, listen to the status command
             ExecuteCommands(operationsFilePath);
             Console.WriteLine("Operations executed - App shutting down...");
         }

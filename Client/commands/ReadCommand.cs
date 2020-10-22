@@ -12,9 +12,9 @@ namespace DIDA_GSTORE.commands
 
         private readonly string _partitionId;
         private readonly string _objectId;
-        private readonly string _serverId;
+        private readonly int _serverId;
 
-        private ReadCommand(string partitionId, string objectId, string serverId)
+        private ReadCommand(string partitionId, string objectId, int serverId)
         {
             _partitionId = partitionId;
             _objectId = objectId;
@@ -30,14 +30,14 @@ namespace DIDA_GSTORE.commands
 
             var partitionId = arguments[PartitionIdPosition];
             var objectId = arguments[ObjectIdPosition];
-            var serverId = arguments[ServerIdPosition];
+            var serverId = int.Parse(arguments[ServerIdPosition]);
             return new ReadCommand(partitionId, objectId, serverId);
         }
 
         public void Execute(GrpcService grpcService)
         {
-            ReadResponse response = grpcService.Read(_partitionId, _objectId, _serverId);
-            //TODO :  Logic with response
+            var response = grpcService.Read(_partitionId, _objectId, _serverId);
+            Console.WriteLine($"Read from partition {_partitionId} object {_objectId} returned {response}");
         }
     }
 }
