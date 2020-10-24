@@ -9,12 +9,23 @@ namespace Server
 {
     public class Server {
 
-        private static ServerService serverService = new ServerService();
+        private static ServerService _serverService = new ServerService();
+        private static NodeService _nodeService = new NodeService();
         const int Port = 5001;
+
         static void Main(string[] args) {
+            /*Grpc.Core.Server server = new Grpc.Core.Server
+            {
+                Services = { DIDAService.BindService(_serverService),
+                    //NodeControlService.BindService(_nodeService), 
+                },
+                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+            };*/
             Grpc.Core.Server server = new Grpc.Core.Server
             {
-                Services = { DIDAService.BindService(serverService)},
+                Services = { //DIDAService.BindService(_serverService),
+                    NodeControlService.BindService(_nodeService), 
+                },
                 Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
             };
             server.Start();

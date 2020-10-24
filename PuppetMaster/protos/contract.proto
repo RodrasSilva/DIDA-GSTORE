@@ -15,6 +15,8 @@ message ChangeReplicationFactorResponse {
 }
 */
 
+//PROCESS CREATION SERVICE 
+
 message StartServerRequest {
 	int32 serverId = 1;
 	string URL = 2;
@@ -45,6 +47,8 @@ service ProcessCreationService {
   rpc startClient(StartClientRequest) returns (StartClientResponse);
 }
 
+//NODE CONTROL SERVICE
+
 message StatusRequest {
 	//empty
 }
@@ -54,10 +58,10 @@ message StatusResponse {
 }
 
 message CrashRequest {
-	int32 serverId = 1;
+	//nothing
 }
 
-message CrashRespose {
+message CrashResponse {
 	//nothing
 }
 
@@ -76,7 +80,7 @@ message UnfreezeResponse {
 
 service NodeControlService {
   rpc status(StatusRequest) returns (StatusResponse);
-  rpc crash(CrashRequest) returns (CrashRespose);
+  rpc crash(CrashRequest) returns (CrashResponse);
   rpc freeze(FreezeRequest) returns (FreezeResponse);
   rpc unfreeze(UnfreezeRequest) returns (UnfreezeResponse);
 }

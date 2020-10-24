@@ -22,13 +22,11 @@ namespace DIDA_GSTORE.commands {
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            //throw new System.NotImplementedException();
-
-            StartClientResponse response = puppetMaster.GrpcService.StartClient(_username,
+            StartClientResponse response = puppetMaster.GetProcessService().StartClient(_username,
                 _clientUrl, _scriptFile);
 
             //if response is cool
-            puppetMaster.ClientUrls.Add(_clientUrl);
+            puppetMaster.AddClient(_clientUrl);
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {

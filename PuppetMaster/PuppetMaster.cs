@@ -10,14 +10,23 @@ namespace PuppetMasterMain
 {
     public class PuppetMaster
     {
-        private static GrpcService grpcService;
+        private static GrpcProcessService grpcProcessService;
 
         public static void Main(string[] args)
         {
-            grpcService = new GrpcService("localhost", 5001);
-
+            //grpcProcessService = new GrpcProcessService("localhost", 5001);
+            grpcProcessService = null;
             PuppetMasterDomain puppetMasterDomain = new PuppetMasterDomain();
-            puppetMasterDomain.Start(args, grpcService);
+            puppetMasterDomain.Start(args, grpcProcessService);
+        }
+
+        public static GrpcProcessService urlToProcessService(string url)
+        {
+            return new GrpcProcessService(url, 5001);
+        }
+        public static GrpcNodeService urlToNodeService(string url)
+        {
+            return new GrpcNodeService(url, 5001);
         }
     }
 }

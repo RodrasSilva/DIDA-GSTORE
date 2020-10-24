@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
@@ -10,14 +12,47 @@ namespace PuppetMasterMain
 {
     public class PuppetMasterDomain
     {
-        public Dictionary<int, string> ServerUrls { get; set; }
-        public List<string> ClientUrls { get; set; }
-        public List<string> PCSUrls { get; set; }
+        private Dictionary<int, GrpcNodeService> ServerServices { get; set; }
+        public List<GrpcNodeService> ClientServices { get; set; }
+        private List<GrpcProcessService> PCSs;
 
-        public GrpcService GrpcService;
-        public void Start(string[] args, GrpcService grpcService)
+        public PuppetMasterDomain()
         {
-            GrpcService = grpcService;
+            ServerServices = new Dictionary<int, GrpcNodeService>();
+            ClientServices = new List<GrpcNodeService>();
+            PCSs = new List<GrpcProcessService>();
+        }
+
+        public void AddServer(int serverId, string url)
+        {
+            ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
+        }
+        public void AddClient(string url)
+        {
+            ClientServices.Add(PuppetMaster.urlToNodeService(url));
+        }
+        public GrpcProcessService GetProcessService()
+        {
+            if (PCSs.Count == 0) throw new Exception("No PCS");
+            return PCSs[0];            
+        }
+
+        public GrpcNodeService GetServerNodeService(int serverId)
+        {
+            GrpcNodeService grpc = ServerServices[serverId];
+            if (grpc == null) throw new Exception("No such server");
+            return grpc;
+        }
+
+        public void Start(string[] args, 
+            GrpcProcessService grpcProcessService)
+        {
+            PCSs.Add(grpcProcessService);
+
+            GrpcNodeService grpcNodeService = new GrpcNodeService("localhost",5001);
+            ServerServices.Add(1, grpcNodeService);
+            //GrpcNodeService = grpcNodeService;
+
             /* FIXME according to usage PROBABLY THE SYSTEM CONFIGURATION FILE */
             if (args.Length == 0)
             {

@@ -1,3 +1,4 @@
+using PuppetMasterClient;
 using PuppetMasterMain;
 using System;
 using System.Linq;
@@ -7,15 +8,15 @@ namespace DIDA_GSTORE.commands {
         public bool IsAsync => true;
         private const int ServerIdPosition = 0;
 
-        private readonly string _serverId;
+        private readonly int _serverId;
 
-        private CrashRepeatCommand(string serverId) {
+        private CrashRepeatCommand(int serverId) {
             _serverId = serverId;
         }
 
 
-        public void Execute(PuppetMasterDomain puppetMaster) {
-            throw new System.NotImplementedException();
+        public void Execute(PuppetMasterDomain puppetMaster) {            
+            CrashResponse response = puppetMaster.GetServerNodeService(_serverId).Crash();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
@@ -24,7 +25,7 @@ namespace DIDA_GSTORE.commands {
             }
 
             var serverId = arguments[ServerIdPosition];
-            return new CrashRepeatCommand(serverId);
+            return new CrashRepeatCommand(int.Parse(serverId));
         }
     }
 }

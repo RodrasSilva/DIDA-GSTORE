@@ -24,11 +24,11 @@ namespace DIDA_GSTORE.commands {
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            StartServerResponse response = puppetMaster.GrpcService.StartServer(_serverId,
+            StartServerResponse response = puppetMaster.GetProcessService().StartServer(_serverId,
                 _url, _minDelay, _maxDelay);
 
             //if response is cool
-            puppetMaster.ServerUrls.Add(_serverId, _url);
+            puppetMaster.AddServer(_serverId, _url);
             //throw new System.NotImplementedException();
         }
 

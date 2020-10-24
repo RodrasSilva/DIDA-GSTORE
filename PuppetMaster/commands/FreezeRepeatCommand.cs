@@ -1,3 +1,4 @@
+using PuppetMasterClient;
 using PuppetMasterMain;
 using System;
 
@@ -6,15 +7,15 @@ namespace DIDA_GSTORE.commands {
         public bool IsAsync => true;
         private const int ServerIdPosition = 0;
 
-        private readonly string _serverId;
+        private readonly int _serverId;
 
-        private FreezeRepeatCommand(string serverId) {
+        private FreezeRepeatCommand(int serverId) {
             _serverId = serverId;
         }
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            throw new System.NotImplementedException();
+            FreezeResponse response = puppetMaster.GetServerNodeService(_serverId).Freeze();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
@@ -23,7 +24,7 @@ namespace DIDA_GSTORE.commands {
             }
 
             var serverId = arguments[ServerIdPosition];
-            return new FreezeRepeatCommand(serverId);
+            return new FreezeRepeatCommand(int.Parse(serverId));
         }
     }
 }

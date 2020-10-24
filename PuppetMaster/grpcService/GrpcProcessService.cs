@@ -4,23 +4,23 @@ using PuppetMasterClient;
 using Grpc.Net.Client;
 
 namespace DIDA_GSTORE.grpcService {
-    public class GrpcService
+    public class GrpcProcessService
     {
         private string ServerIp;
         private int ServerPort;
         private GrpcChannel channel;
         private ProcessCreationService.ProcessCreationServiceClient client;
 
-        public GrpcService(string serverIp, int serverPort)
+        public GrpcProcessService(string serverIp, int serverPort)
         {
             ServerIp = serverIp;
             ServerPort = serverPort;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            channel = GrpcChannel.ForAddress(buildServerAdress(serverIp, serverPort));
+            channel = GrpcChannel.ForAddress(BuildServerAdress(serverIp, serverPort));
             client = new ProcessCreationService.ProcessCreationServiceClient(channel);
         }
 
-        private string buildServerAdress(string serverIp, int serverPort)
+        private string BuildServerAdress(string serverIp, int serverPort)
         {
             return string.Format("http://{0}:{1}", serverIp, serverPort);
         }
