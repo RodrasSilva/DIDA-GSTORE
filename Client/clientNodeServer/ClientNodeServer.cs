@@ -7,17 +7,19 @@ namespace Client.clientNodeServer {
         private readonly string _host;
         private readonly int _port;
         private readonly ServerCredentials _credentials;
+        private readonly NodeService _nodeService;
 
-        public ClientNodeServer(string host, int port, ServerCredentials credentials) {
+        public ClientNodeServer(string host, int port, ServerCredentials credentials,NodeService nodeService) {
             _host = host;
             _port = port;
             _credentials = credentials;
+            _nodeService = nodeService;
         }
 
-        public void Start(NodeService nodeService) {
+        public void Start() {
             Server server = new Server {
                 Services = {
-                    NodeControlService.BindService(nodeService),
+                    NodeControlService.BindService(_nodeService),
                 },
                 Ports = {new ServerPort(_host, _port, _credentials)}
             };

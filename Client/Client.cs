@@ -28,8 +28,8 @@ namespace Client {
             ExecuteCommands(operationsFilePath);
             Console.WriteLine("Operations executed");
 
-            var nodeServer = new ClientNodeServer("localhost", Port, ServerCredentials.Insecure);
-            nodeServer.Start(_nodeService);
+            var nodeServer = new ClientNodeServer("localhost", Port, ServerCredentials.Insecure,_nodeService);
+            nodeServer.Start();
             Console.ReadKey();
             Console.WriteLine("App shutting down...");
         }
