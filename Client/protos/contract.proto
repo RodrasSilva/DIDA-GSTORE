@@ -1,5 +1,5 @@
 ﻿//
-// Protocol buffers definition for DADI-GSTORE server
+// Protocol buffers definition for DIDA-GSTORE server
 //
 syntax = "proto3";
 option csharp_namespace = "Client";
@@ -72,3 +72,19 @@ service DIDAService{
   rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
   rpc getServerUrl(ServerUrlRequest) returns (ServerUrlResponse);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
