@@ -1,0 +1,42 @@
+﻿//
+// Protocol buffers definition for DADI-GSTORE server
+//
+syntax = "proto3";
+
+message StatusRequest {
+	//empty
+}
+
+message StatusResponse {
+	//string status = 1;
+}
+
+message CrashRequest {
+	//nothing
+}
+
+message CrashResponse {
+	//nothing
+}
+
+message FreezeRequest {
+	//nothing
+}
+message FreezeResponse {
+	//nothing
+}
+message UnfreezeRequest {
+	//nothing
+}
+message UnfreezeResponse {
+	//nothing
+}
+
+service NodeControlService {
+  rpc status(StatusRequest) returns (StatusResponse);
+  rpc crash(CrashRequest) returns (CrashResponse);
+  rpc freeze(FreezeRequest) returns (FreezeResponse);
+  rpc unfreeze(UnfreezeRequest) returns (UnfreezeResponse);
+}
+
+//we could have a service only for status (client).

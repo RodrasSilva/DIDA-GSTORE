@@ -3,28 +3,26 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DIDA_GSTORE.ServerService;
-
+using DIDA_GSTORE.SlaveServerService;
+using Server.storage;
 
 namespace Server
 {
     public class Server {
 
-        private static ServerService _serverService = new ServerService();
-        private static NodeService _nodeService = new NodeService();
-        const int Port = 5001;
+        public static void Main(string[] args) {
 
-        static void Main(string[] args) {
-            /*Grpc.Core.Server server = new Grpc.Core.Server
-            {
-                Services = { DIDAService.BindService(_serverService),
-                    //NodeControlService.BindService(_nodeService), 
-                },
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
-            };*/
+            Storage storage = new Storage();
+        ServerService _serverService = new ServerService(storage);
+        SlaveServerService slaveService = new SlaveServerService(storage);
+        NodeService _nodeService = new NodeService();
+        int Port = 5001;
             Grpc.Core.Server server = new Grpc.Core.Server
             {
-                Services = { //DIDAService.BindService(_serverService),
-                    NodeControlService.BindService(_nodeService), 
+                Services = { DIDAService.BindService(_serverService),
+                    NodeControlService.BindService(_nodeService),
+                    SlaveService.BindService(slaveService)
+
                 },
                 Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
             };

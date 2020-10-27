@@ -4,25 +4,27 @@ using Grpc.Core;
 
 namespace Client.clientNodeServer {
     public class ClientNodeServer {
-        private readonly string _host;
-        private readonly int _port;
-        private readonly ServerCredentials _credentials;
+        private Server server;
+        private int _port;
 
-        public ClientNodeServer(string host, int port, ServerCredentials credentials) {
-            _host = host;
+        public ClientNodeServer(string host, int port, ServerCredentials credentials, NodeService nodeService) {
             _port = port;
-            _credentials = credentials;
-        }
-
-        public void Start(NodeService nodeService) {
-            Server server = new Server {
+            server = new Server
+            {
                 Services = {
                     NodeControlService.BindService(nodeService),
                 },
-                Ports = {new ServerPort(_host, _port, _credentials)}
+                Ports = { new ServerPort(host, port, credentials) }
             };
+        }
+
+        public void Start() {
             server.Start();
             Console.WriteLine("ChatClient listening to status commands on port " + _port);
+            server.ShutdownAsync().Wait();
+        }
+
+        public void ShutdownAsync() {
             server.ShutdownAsync().Wait();
         }
     }
