@@ -68,6 +68,7 @@ namespace DIDA_GSTORE.grpcService {
                 var readResponse = _client.read(request);
                 if (!readResponse.ObjectValue.Equals(ObjectNotPresent))
                     return readResponse.ObjectValue;
+                if (serverId == -1) return ObjectNotPresent;
                 var serverUrl = MapServerIdToUrl(serverId);
                 _client = BuildClientFromServerUrl(serverUrl);
                 var secondReadResponse = _client.read(request);

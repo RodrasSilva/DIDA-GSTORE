@@ -38,7 +38,7 @@ namespace DIDA_GSTORE.commands
             while ((line = _operationsFileReader.ReadLine()) != null && !line.Equals(EndRepeatCommand))
             {
                 commands.Add(line);
-            }
+            } // Assumes that there's always an EndRepeatCommand in the end of the file at most
 
             for (var i = 0; i < _numberOfRepeats; ++i)
             {
