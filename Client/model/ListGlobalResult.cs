@@ -10,10 +10,10 @@ namespace Client.model {
     }
 
     public class ListGlobalResultIdentifier {
-        public string PartitionId { get; private set; }
+        public int PartitionId { get; private set; }
         public string ObjectId { get; private set; }
 
-        public ListGlobalResultIdentifier(string partitionId, string objectId) {
+        public ListGlobalResultIdentifier(int partitionId, string objectId) {
             PartitionId = partitionId;
             ObjectId = objectId;
         }

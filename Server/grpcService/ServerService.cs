@@ -8,15 +8,11 @@ namespace DIDA_GSTORE.ServerService
 {
     public class ServerService : DIDAService.DIDAServiceBase
     {
+        private Storage _storage;
 
-        Dictionary<string, bool> isMaster = new Dictionary<string, bool>();
-        Dictionary<string, List<SlaveService.SlaveServiceClient>> partitionSlaveServers = new Dictionary<string, List<SlaveService.SlaveServiceClient>>();
-
-        private Storage storage;
-
-        public ServerService(Storage _storage)
+        public ServerService(Storage storage)
         {
-            storage = _storage;
+            _storage = storage;
         }
 
 
@@ -24,8 +20,29 @@ namespace DIDA_GSTORE.ServerService
         {
             return Task.FromResult(Write(request));
         }
+
         public WriteResponse Write(WriteRequest request)
         {
+            try{
+                int partitionId = request.PartitionId;
+                string objectId = request.ObjectId;
+                string objectValue = request.ObjectValue;
+
+                Partition partition = _storage.GetPartitionOrThrowException(partitionId);
+                if (partition.IsMaster) {
+                    _storage.Write(partitionId, objectId, objectValue);
+                }
+                else
+                {
+                    string url = _storage.GetMasterUrl(request.PartitionId);
+                }
+               
+            }
+            catch(Exception e) //later to be named NotFound or smth
+            {
+
+            }
+            
             return new WriteResponse();
         }
 

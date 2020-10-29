@@ -8,11 +8,11 @@ namespace DIDA_GSTORE.commands {
         private const int ObjectIdPosition = 1;
         private const int ServerIdPosition = 2;
 
-        private readonly string _partitionId;
+        private readonly int _partitionId;
         private readonly string _objectId;
         private readonly int _serverId;
 
-        private ReadCommand(string partitionId, string objectId, int serverId) {
+        private ReadCommand(int partitionId, string objectId, int serverId) {
             _partitionId = partitionId;
             _objectId = objectId;
             _serverId = serverId;
@@ -23,7 +23,7 @@ namespace DIDA_GSTORE.commands {
                 throw new Exception("Invalid Read Command ");
             }
 
-            var partitionId = arguments[PartitionIdPosition];
+            var partitionId = Int32.Parse(arguments[PartitionIdPosition]);
             var objectId = arguments[ObjectIdPosition];
             var serverId = arguments.Length == 2 ? -1 : int.Parse(arguments[ServerIdPosition]);
             return new ReadCommand(partitionId, objectId, serverId);

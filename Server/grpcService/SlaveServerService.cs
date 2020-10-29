@@ -6,23 +6,28 @@ using Server.storage;
 
 namespace DIDA_GSTORE.SlaveServerService
 {
-    public class SlaveServerService : SlaveService.SlaveServiceBase
+    public class SlaveServerServiceServer : SlaveService.SlaveServiceBase
     {
-        private Storage storage;
+        private Storage _storage;
 
-        public SlaveServerService(Storage _storage)
+        public SlaveServerServiceServer(Storage storage)
         {
-            storage = _storage;
+            _storage = storage;
         }
 
-        public override Task<LockResponse> lockServer(LockRequest request, ServerCallContext context)
-        {
-            return base.lockServer(request, context);
-        }
 
-        public override Task<UnlockResponse> unlockServer(UnlockRequest request, ServerCallContext context)
+
+        public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context)
         {
-            return base.unlockServer(request, context);
+            int partitionId = request.PartitionId;
+            string objectId = request.ObjectId;
+            string objectValue = request.ObjectValue;
+            int timestamp = request.Timestamp;
+            Partition partition = _storage.GetPartitionOrThrowException(partitionId);
+             partition.WriteSlave(objectId, objectValue, timestamp);
+            //if exception occurs its because:
+            //Partition doesn't exist O.o - Ignore ? Should never occur because master server called this...
+            return Task.FromResult(new WriteSlaveResponse());
         }
     }
 }

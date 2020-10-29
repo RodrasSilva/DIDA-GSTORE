@@ -5,7 +5,7 @@ syntax = "proto3";
 
 
 message ReadRequest{
-  string partitionId = 1;
+  int32 partitionId = 1;
   string objectId = 2;
 }
 
@@ -14,7 +14,7 @@ message ReadResponse{
 }
 
 message WriteRequest{
-  string partitionId = 1;
+  int32 partitionId = 1;
   string objectId = 2;
   string objectValue = 3;
 }
@@ -41,7 +41,7 @@ message ListServerResponse{
 }
 
 message ObjectIdentifier {
-  string partitionId = 1;
+  int32 partitionId = 1;
   string objectId = 2;
 }
 

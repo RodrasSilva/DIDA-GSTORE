@@ -8,11 +8,11 @@ namespace DIDA_GSTORE.commands {
         private const int ObjectIdPosition = 1;
         private const int ObjectValuePosition = 2;
 
-        private readonly string _partitionId;
+        private readonly int _partitionId;
         private readonly string _objectId;
         private readonly string _objectValue;
 
-        private WriteCommand(string partitionId, string objectId, string objectValue) {
+        private WriteCommand(int partitionId, string objectId, string objectValue) {
             _partitionId = partitionId;
             _objectId = objectId;
             _objectValue = objectValue;
@@ -23,7 +23,7 @@ namespace DIDA_GSTORE.commands {
                 throw new Exception("Invalid Write Command ");
             }
 
-            var partitionId = arguments[PartitionIdPosition];
+            var partitionId = Int32.Parse(arguments[PartitionIdPosition]);
             var objectId = arguments[ObjectIdPosition];
             var objectValue = arguments[ObjectValuePosition];
             return new WriteCommand(partitionId, objectId, objectValue);

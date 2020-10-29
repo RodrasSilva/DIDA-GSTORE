@@ -29,7 +29,8 @@ message StartServerRequest {
 }
 
 message StartServerResponse {
-	//empty
+	string url = 1;
+	string port = 2;
 }
 
 message StartClientRequest {
@@ -39,7 +40,8 @@ message StartClientRequest {
 }
 
 message StartClientResponse {
-	//empty
+	string url = 1;
+	string port = 2;
 }
 
 service ProcessCreationService {

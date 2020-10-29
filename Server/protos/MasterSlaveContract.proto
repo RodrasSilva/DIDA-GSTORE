@@ -4,29 +4,17 @@
 syntax = "proto3";
 
 
-message LockRequest
-{
-	//nothing
+message WriteSlaveRequest{
+  int32 partitionId = 1;
+  string objectId = 2;
+  string objectValue = 3;
+  int32 timestamp = 4;
 }
 
-message LockResponse
-{
-	string acknowledge = 1;
+message WriteSlaveResponse{
+	// empty
 }
 
-message UnlockRequest
-{
-	string objectId = 1;
-	string objectValue = 2;
-}
-
-message UnlockResponse
-{
-	string acknowledge = 1;
-}
-
-service SlaveService
-{
-	rpc lockServer(LockRequest) returns (LockResponse);
-	rpc unlockServer(UnlockRequest) returns (UnlockResponse);
+service SlaveService{
+	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
 }

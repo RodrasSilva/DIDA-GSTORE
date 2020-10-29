@@ -38,7 +38,7 @@ namespace DIDA_GSTORE.grpcService {
             return new ListGlobalResultIdentifier(it.PartitionId, it.ObjectId);
         }
 
-        public void Write(string partitionId, string objectId, string objectValue) {
+        public void Write(int partitionId, string objectId, string objectValue) {
             var request = new WriteRequest {PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
             try {
                 var response = _client.write(request);
@@ -62,7 +62,7 @@ namespace DIDA_GSTORE.grpcService {
         }
 
 
-        public string Read(string partitionId, string objectId, int serverId) {
+        public string Read(int partitionId, string objectId, int serverId) {
             var request = new ReadRequest {PartitionId = partitionId, ObjectId = objectId};
             try {
                 var readResponse = _client.read(request);
