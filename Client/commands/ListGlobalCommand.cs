@@ -17,8 +17,9 @@ namespace DIDA_GSTORE.commands {
             foreach (var result in response) {
                 result
                     .Identifiers
-                    .ForEach(identifier => 
-                        Console.WriteLine($"Partition ${identifier.PartitionId} contains object with id {identifier.ObjectId}"));
+                    .ForEach(identifier =>
+                        Console.WriteLine(
+                            $"Partition ${identifier.PartitionId} contains object with id {identifier.ObjectId}"));
             }
         }
     }

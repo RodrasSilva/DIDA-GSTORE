@@ -1,7 +1,6 @@
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands
-{
+namespace DIDA_GSTORE.commands {
     public interface ICommand {
         public bool IsAsync { get; }
 

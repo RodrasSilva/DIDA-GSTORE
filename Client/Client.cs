@@ -9,7 +9,7 @@ namespace Client {
             }
 
             var operationsFilePath = args[0];
-            var client = new ClientLogic(operationsFilePath); 
+            var client = new ClientLogic(operationsFilePath);
             client.Execute(); // throws exception if file does not exist
         }
     }

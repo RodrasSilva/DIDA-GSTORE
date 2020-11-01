@@ -12,7 +12,7 @@ namespace DIDA_GSTORE.commands {
         private readonly string _partitionName;
         private readonly string[] _servers;
 
-        private PartitionCommand(int numberOfReplicas,string partitionName, string[] servers) {
+        private PartitionCommand(int numberOfReplicas, string partitionName, string[] servers) {
             _numberOfReplicas = numberOfReplicas;
             _partitionName = partitionName;
             _servers = servers;

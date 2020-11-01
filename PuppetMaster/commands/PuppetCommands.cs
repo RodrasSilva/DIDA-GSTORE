@@ -8,7 +8,6 @@ using System.Threading;
 
 namespace DIDA_GSTORE.commands {
     public abstract class PuppetCommands {
-
         private const string ArgumentSeparator = " ";
         private const string ReplicationFactorCommandName = "ReplicationFactor";
         private const string ServerCommandName = "Server";

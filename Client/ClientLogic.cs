@@ -17,7 +17,7 @@ namespace Client {
             const int serverPort = 50002; // TODO : CHANGE TO DEFAULT SERVER PORT
             _grpcService = new GrpcService(serverHost, serverPort);
         }
-        
+
         public void Execute() {
             ExecuteCommands();
             Console.WriteLine("Operations executed");
@@ -34,6 +34,7 @@ namespace Client {
             if (!File.Exists(_operationsFilePath)) {
                 throw new Exception("The given path to the operations file is not valid");
             }
+
             var commands = ClientCommands.GetCommands(_operationsFilePath);
             commands.ForEach(command => command.Execute(_grpcService));
         }

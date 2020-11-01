@@ -2,13 +2,11 @@ using System;
 using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
-    public class StatusCommand : ICommand
-    {
+    public class StatusCommand : ICommand {
         public bool IsAsync => true;
 
-        private StatusCommand() {
-            
-        }
+        private StatusCommand() { }
+
         public void Execute(PuppetMasterDomain puppetMaster) {
             throw new NotImplementedException();
         }

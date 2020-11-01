@@ -15,7 +15,7 @@ namespace DIDA_GSTORE.commands {
         }
 
 
-        public void Execute(PuppetMasterDomain puppetMaster) {            
+        public void Execute(PuppetMasterDomain puppetMaster) {
             CrashResponse response = puppetMaster.GetServerNodeService(_serverId).Crash();
         }
 
