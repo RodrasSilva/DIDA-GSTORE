@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ProcessCreationDomain;
 
-namespace DIDA_GSTORE.ServerService
-{
-    public class ServerService : ProcessCreationService.ProcessCreationServiceBase
-    {
+namespace DIDA_GSTORE.ServerService {
+    public class ServerService : ProcessCreationService.ProcessCreationServiceBase {
         public override Task<StartServerResponse> startServer(StartServerRequest request,
             ServerCallContext context)
         {
@@ -23,6 +21,7 @@ namespace DIDA_GSTORE.ServerService
             //things
             //return base.startServer(request, context);
         }
+
         public override Task<StartClientResponse> startClient(StartClientRequest request,
             ServerCallContext context)
         {
@@ -32,6 +31,7 @@ namespace DIDA_GSTORE.ServerService
             //things
             //return base.startClient(request, context);
         }
+
         /*
         public override Task<WriteResponse> write(WriteRequest request, ServerCallContext context)
         {

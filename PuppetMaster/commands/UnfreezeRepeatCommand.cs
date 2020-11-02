@@ -14,7 +14,7 @@ namespace DIDA_GSTORE.commands {
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            UnfreezeResponse response= puppetMaster.GetServerNodeService(_serverId).Unfreeze();
+            UnfreezeResponse response = puppetMaster.GetServerNodeService(_serverId).Unfreeze();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
