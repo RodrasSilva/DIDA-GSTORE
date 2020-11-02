@@ -1,6 +1,8 @@
-﻿public interface Storage
+﻿using System.Threading.Tasks;
+
+public interface IStorage
 {
-    public Partition GetPartitionOrThrowException(int partitionId);
+    public IPartition GetPartitionOrThrowException(int partitionId);
 
     public string Read(int partitionId, string objKey);
 
@@ -9,4 +11,6 @@
     public string GetMasterUrl(int partitionId);
 
     public void Write(int partitionId, string objKey, string objValue, int timestamp);
+    public ListServerResponse ListServer();
+    public ListGlobalResponse ListGlobal();
 }

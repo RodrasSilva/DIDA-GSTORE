@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-public class AdvancedServerPartition : Partition
+public class AdvancedServerPartition : IPartition
 {
     public bool IsMaster { get; set; }
     private int _partitionId;
-    private List<AdvancedSlaveServerService> slaveServiceClients;
+    private List<AdvancedSlaveService.AdvancedSlaveServiceClient> slaveServiceClients;
     private string _masterUrl;
 
     public Dictionary<string, AdvancedServerObjectInfo> Objects { get; }
@@ -14,7 +14,7 @@ public class AdvancedServerPartition : Partition
         _partitionId = partitionId;
         _masterUrl = masterUrl;
         Objects = new Dictionary<string, AdvancedServerObjectInfo>();
-        slaveServiceClients = new List<AdvancedSlaveServiceClient>();
+        slaveServiceClients = new List<AdvancedSlaveService.AdvancedSlaveServiceClient>();
     }
 
     public string GetMasterUrl()
@@ -43,7 +43,7 @@ public class AdvancedServerPartition : Partition
             ObjectValue = objValue,
             Timestamp = timeStamp
         };
-        foreach (AdvancedSlaveServiceClient slave in slaveServiceClients)
+        foreach (AdvancedSlaveService.AdvancedSlaveServiceClient slave in slaveServiceClients)
         {
             slave.WriteSlaveAsync(request);
         }

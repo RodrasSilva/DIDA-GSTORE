@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 
@@ -7,9 +6,9 @@ namespace DIDA_GSTORE.ServerService
 {
     public class ServerService : DIDAService.DIDAServiceBase
     {
-        private Storage _storage;
+        private IStorage _storage;
 
-        public ServerService(Storage storage)
+        public ServerService(IStorage storage)
         {
             _storage = storage;
         }
@@ -30,38 +29,65 @@ namespace DIDA_GSTORE.ServerService
                 string objectId = request.ObjectId;
                 string objectValue = request.ObjectValue;
 
-                Partition partition = _storage.GetPartitionOrThrowException(partitionId);
+                IPartition partition = _storage.GetPartitionOrThrowException(partitionId);
                 if (partition.IsMaster)
                 {
-                    _storage.Write(partitionId, objectId, objectValue);
+                    _storage.Write(partitionId, objectId, objectValue, -1);
+                    return new WriteResponse {ResponseMessage = "OK"};
                 }
                 else
                 {
                     string url = _storage.GetMasterUrl(request.PartitionId);
+                    return new WriteResponse {MasterServerUrl = new ServerUrlResponse {ServerUrl = url}};
                 }
             }
             catch (Exception) //later to be named NotFound or smth
-            { }
-
-            return new WriteResponse();
+            {
+                return new WriteResponse { };
+            }
         }
 
         public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context)
         {
             ServerDomain.Server.DelayMessage();
-            return base.read(request, context);
+            return Task.FromResult(Read(request));
         }
 
-        public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context)
+
+        public ReadResponse Read(ReadRequest request)
         {
             ServerDomain.Server.DelayMessage();
-            return base.listGlobal(request, context);
+            try
+            {
+                int partitionId = request.PartitionId;
+                string objectId = request.ObjectId;
+                IPartition partition = _storage.GetPartitionOrThrowException(partitionId);
+                string objectValue = _storage.Read(partitionId, objectId);
+                ReadResponse response = new ReadResponse {ObjectValue = objectValue};
+                return response;
+            }
+            catch (Exception)
+            {
+                /*Partition not founded */
+                return new ReadResponse {ObjectValue = "-1"};
+            }
         }
-
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context)
         {
             ServerDomain.Server.DelayMessage();
-            return base.listServer(request, context);
+            return Task.FromResult(_storage.ListServer());
         }
+        public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context)
+        {
+            ServerDomain.Server.DelayMessage();
+            return Task.FromResult(_storage.ListGlobal());
+        }
+
+        public override Task<ServerUrlResponse> getServerUrl(ServerUrlRequest request, ServerCallContext context)
+        {
+            return base.getServerUrl(request, context); // TODO : Implement
+        }
+
+
     }
 }

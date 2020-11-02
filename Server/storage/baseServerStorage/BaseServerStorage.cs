@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 
-namespace Server.baseServerStorage
+namespace ServerDomain
 {
-
-    public class BaseServerStorage : Storage
+    public class BaseServerStorage : IStorage
     {
         public Dictionary<int, BaseServerPartition> Partitions { get; }
 
-        public Partition GetPartitionOrThrowException(int partitionId)
+        public IPartition GetPartitionOrThrowException(int partitionId)
         {
             BaseServerPartition partition = null;
             if (Partitions.TryGetValue(partitionId, out partition))
@@ -44,6 +42,16 @@ namespace Server.baseServerStorage
         public void Write(int partitionId, string objKey, string objValue, int timestamp = -1)
         {
             Partitions[partitionId].Write(objKey, objValue);
+        }
+
+        public ListServerResponse ListServer()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListGlobalResponse ListGlobal()
+        {
+            throw new NotImplementedException();
         }
     }
 }

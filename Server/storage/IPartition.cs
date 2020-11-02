@@ -1,4 +1,4 @@
-public interface Partition
+public interface IPartition
 {
     public bool IsMaster { get; set; }
 }

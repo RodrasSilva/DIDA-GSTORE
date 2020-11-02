@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-namespace Server
+namespace ServerDomain
 {
-    public class BaseSlaveServerServiceServer : BaseSlaveService.BaseSlaveServiceBase
+    public class BaseSlaveServerService : BaseSlaveService.BaseSlaveServiceBase
     {
-        private Storage _storage;
+        private BaseServerStorage _storage;
 
-        public BaseSlaveServerServiceServer(Storage storage)
+        public BaseSlaveServerService(BaseServerStorage storage)
         {
             _storage = storage;
         }

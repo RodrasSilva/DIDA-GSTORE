@@ -1,14 +1,13 @@
-﻿using Grpc.Core;
-using Server.advancedServerStorage;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Grpc.Core;
 
-namespace Server
+namespace ServerDomain
 {
-    public class AdvancedSlaveServerServiceServer : AdvancedSlaveService.AdvancedSlaveServiceBase
+    public class AdvancedSlaveServerService : AdvancedSlaveService.AdvancedSlaveServiceBase
     {
         private AdvancedServerStorage _storage;
 
-        public AdvancedSlaveServerServiceServer(AdvancedServerStorage storage)
+        public AdvancedSlaveServerService(AdvancedServerStorage storage)
         {
             _storage = storage;
         }

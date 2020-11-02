@@ -40,7 +40,7 @@
 	  </PackageReference>
 	  <Protobuf Include="protos\ClientContract.proto" GrpcServices="Server" />
 	  <Protobuf Include="protos\NodeContract.proto" GrpcServices="Server" />
-	  <Protobuf Include="protos\advancedVersion\AdvancedMasterSlaveContract.proto" GrpcServices="Server" />
-	  <Protobuf Include="protos\baseVersion\BaseMasterSlaveContract.proto" GrpcServices="Server" />
+	  <Protobuf Include="protos\advancedVersion\AdvancedMasterSlaveContract.proto" GrpcServices="Both" />
+	  <Protobuf Include="protos\baseVersion\BaseMasterSlaveContract.proto" GrpcServices="Both" />
   </ItemGroup>
 </Project>

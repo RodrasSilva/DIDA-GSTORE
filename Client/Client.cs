@@ -1,16 +1,15 @@
 ﻿using System;
+using Client.utils;
 
-namespace Client {
-    public static class Client {
-        public static void Main(string[] args) {
-            /*
-            if (args.Length != 1) {
-                Console.WriteLine("Usage: Client <operations-file>");
-                return;
-            }*/
+namespace Client
+{
+    public static class Client
+    {
+        public static void Main(string[] args)
+        {
             if (args.Length != 4)
             {
-                Console.WriteLine("Usage: Client <username> <clientUrl> <operations-file>");
+                Console.WriteLine("Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
                 return;
             }
 
@@ -19,24 +18,17 @@ namespace Client {
             string operationsFilePath = args[2];
             string defaultServerUrl = args[3];
 
-            string[] parsedUrl = defaultServerUrl.Split(':');
-            if (parsedUrl.Length != 2)
-            {
-                throw new Exception("Bad format on url: " + parsedUrl);
-            }
-            string serverHost = parsedUrl[0];
-            int serverPort = int.Parse(parsedUrl[1]);
+            UrlParameters serverParameters = UrlParameters.From(defaultServerUrl);
+            UrlParameters clientParameters = UrlParameters.From(clientUrl);
 
-            parsedUrl = clientUrl.Split(':');
-            if (parsedUrl.Length != 2)
-            {
-                throw new Exception("Bad format on url: " + parsedUrl);
-            }
-            string clientHost = parsedUrl[0];
-            int clientPort = int.Parse(parsedUrl[1]);
-
-            var client = new ClientLogic(operationsFilePath, serverHost, serverPort); 
-            client.Execute(clientHost, clientPort); // throws exception if file does not exist
+            var client = new ClientLogic(operationsFilePath,
+                username,
+                serverParameters.Hostname,
+                serverParameters.Port,
+                clientParameters.Hostname,
+                clientParameters.Port
+            );
+            client.Execute();
         }
     }
 }

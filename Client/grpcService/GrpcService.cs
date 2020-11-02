@@ -5,44 +5,55 @@ using Client;
 using Client.model;
 using Grpc.Net.Client;
 
-namespace DIDA_GSTORE.grpcService {
-    public class GrpcService {
+namespace DIDA_GSTORE.grpcService
+{
+    public class GrpcService
+    {
         private const string ObjectNotPresent = "N/A";
         private DIDAService.DIDAServiceClient _client;
 
-        public GrpcService(string serverIp, int serverPort) {
+        public GrpcService(string serverIp, int serverPort)
+        {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var serverUrl = $"http://{serverIp}:{serverPort}";
             _client = BuildClientFromServerUrl(serverUrl);
         }
 
-        private static DIDAService.DIDAServiceClient BuildClientFromServerUrl(string serverUrl) {
+        private static DIDAService.DIDAServiceClient BuildClientFromServerUrl(string serverUrl)
+        {
             var channel = GrpcChannel.ForAddress(serverUrl);
             return new DIDAService.DIDAServiceClient(channel);
         }
 
-        private string MapServerIdToUrl(int serverId) {
+        private string MapServerIdToUrl(int serverId)
+        {
             ServerUrlRequest request = new ServerUrlRequest {ServerId = serverId};
             return _client.getServerUrl(request).ServerUrl;
         }
 
-        private static ListServerResult MapToListServerResult(ListServerResponseEntity it) {
+        private static ListServerResult MapToListServerResult(ListServerResponseEntity it)
+        {
             return new ListServerResult(it.ObjectValue, it.IsMaster);
         }
 
-        private static ListGlobalResult mapToListGlobalResult(ListGlobalResponseEntity it) {
+        private static ListGlobalResult mapToListGlobalResult(ListGlobalResponseEntity it)
+        {
             return new ListGlobalResult(it.Identifiers.Select(mapToListGlobalResultIdentifier).ToList());
         }
 
-        private static ListGlobalResultIdentifier mapToListGlobalResultIdentifier(ObjectIdentifier it) {
+        private static ListGlobalResultIdentifier mapToListGlobalResultIdentifier(ObjectIdentifier it)
+        {
             return new ListGlobalResultIdentifier(it.PartitionId, it.ObjectId);
         }
 
-        public void Write(int partitionId, string objectId, string objectValue) {
+        public void Write(int partitionId, string objectId, string objectValue)
+        {
             var request = new WriteRequest {PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
-            try {
+            try
+            {
                 var response = _client.write(request);
-                switch (response.ResponseCase) {
+                switch (response.ResponseCase)
+                {
                     case WriteResponse.ResponseOneofCase.ResponseMessage:
                         break;
                     case WriteResponse.ResponseOneofCase.MasterServerUrl:
@@ -55,16 +66,19 @@ namespace DIDA_GSTORE.grpcService {
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
 
-        public string Read(int partitionId, string objectId, int serverId) {
+        public string Read(int partitionId, string objectId, int serverId)
+        {
             var request = new ReadRequest {PartitionId = partitionId, ObjectId = objectId};
-            try {
+            try
+            {
                 var readResponse = _client.read(request);
                 if (!readResponse.ObjectValue.Equals(ObjectNotPresent))
                     return readResponse.ObjectValue;
@@ -76,16 +90,19 @@ namespace DIDA_GSTORE.grpcService {
                     ? ObjectNotPresent
                     : secondReadResponse.ObjectValue;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
 
-        public List<ListServerResult> ListServer(int serverId) {
+        public List<ListServerResult> ListServer(int serverId)
+        {
             var request = new ListServerRequest();
-            try {
+            try
+            {
                 var serverUrl = MapServerIdToUrl(serverId);
                 _client = BuildClientFromServerUrl(serverUrl);
                 var listServerResponse = _client.listServer(request);
@@ -94,22 +111,26 @@ namespace DIDA_GSTORE.grpcService {
                     .Select(MapToListServerResult)
                     .ToList();
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
-        public List<ListGlobalResult> ListGlobal() {
+        public List<ListGlobalResult> ListGlobal()
+        {
             ListGlobalRequest request = new ListGlobalRequest();
-            try {
+            try
+            {
                 var listServerResponse = _client.listGlobal(request);
                 return listServerResponse
                     .Objects
                     .Select(mapToListGlobalResult)
                     .ToList();
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }

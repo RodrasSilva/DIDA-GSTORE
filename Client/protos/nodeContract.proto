@@ -5,7 +5,7 @@ message StatusRequest {
 }
 
 message StatusResponse {
-  //string status = 1;
+  string status = 1;
 }
 
 service NodeControlService {

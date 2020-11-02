@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
-namespace Server.advancedServerStorage
+
+namespace ServerDomain
 {
-  
-
-    public class AdvancedServerStorage : Storage {
+    public class AdvancedServerStorage : IStorage
+    {
         public Dictionary<int, AdvancedServerPartition> Partitions { get; }
 
         public AdvancedServerStorage()
@@ -15,23 +13,28 @@ namespace Server.advancedServerStorage
             Partitions = new Dictionary<int, AdvancedServerPartition>();
         }
 
-        public string Read(int partitionId, string objKey) {
+        public string Read(int partitionId, string objKey)
+        {
             return Partitions[partitionId].Read(objKey);
         }
 
-        public bool IsPartitionMaster(int partitionId) {
+        public bool IsPartitionMaster(int partitionId)
+        {
             return Partitions[partitionId].IsMaster;
         }
 
-        public string GetMasterUrl(int partitionId) {
+        public string GetMasterUrl(int partitionId)
+        {
             return Partitions[partitionId].GetMasterUrl();
         }
 
-        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1) {
+        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1)
+        {
             Partitions[partitionId].Write(objKey, objValue, timestamp);
         }
 
-        public Partition GetPartitionOrThrowException(int partitionId){
+        public IPartition GetPartitionOrThrowException(int partitionId)
+        {
             AdvancedServerPartition partition = null;
             if (Partitions.TryGetValue(partitionId, out partition))
             {
@@ -41,5 +44,14 @@ namespace Server.advancedServerStorage
             throw new Exception("No such partition");
         }
 
-    }   
+        public ListServerResponse ListServer()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListGlobalResponse ListGlobal()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

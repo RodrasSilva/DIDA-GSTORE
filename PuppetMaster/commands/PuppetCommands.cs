@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading;
 
-namespace DIDA_GSTORE.commands {
-    public abstract class PuppetCommands {
+namespace DIDA_GSTORE.commands
+{
+    public abstract class PuppetCommands
+    {
         private const string ArgumentSeparator = " ";
         private const string ReplicationFactorCommandName = "ReplicationFactor";
         private const string ServerCommandName = "Server";
@@ -19,15 +16,18 @@ namespace DIDA_GSTORE.commands {
         private const string UnfreezeRepeatCommandName = "Unfreeze";
         private const string WaitCommandName = "Wait";
 
-        public static ICommand GetCommand(string commandLine) {
+        public static ICommand GetCommand(string commandLine)
+        {
             var splitLine = commandLine.Split(ArgumentSeparator);
             var commandName = splitLine[0];
             var args = splitLine.Skip(1).ToArray();
             return ParseCommand(commandName, args);
         }
 
-        private static ICommand ParseCommand(string commandName, string[] args) {
-            return commandName switch {
+        private static ICommand ParseCommand(string commandName, string[] args)
+        {
+            return commandName switch
+            {
                 ReplicationFactorCommandName => ReplicationFactorCommand.ParseCommandLine(args),
                 ServerCommandName => ServerCommand.ParseCommandLine(args),
                 PartitionCommandName => PartitionCommand.ParseCommandLine(args),

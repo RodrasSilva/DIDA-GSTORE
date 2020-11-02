@@ -19,7 +19,7 @@ message ChangeReplicationFactorResponse {
 
 message PartitionMessage {
 	int32 id = 1;
-	bool master = 2;
+	string masterURL = 2;
 }
 message StartServerRequest {
 	string URL = 1;

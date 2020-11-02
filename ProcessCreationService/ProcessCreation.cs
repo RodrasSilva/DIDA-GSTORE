@@ -1,9 +1,8 @@
-﻿using Grpc.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using DIDA_GSTORE.ServerService;
 using System.Diagnostics;
+using DIDA_GSTORE.ServerService;
+using Grpc.Core;
 
 namespace ProcessCreationDomain
 {
@@ -15,8 +14,10 @@ namespace ProcessCreationDomain
         private static ServerService _serverService = new ServerService();
         const int Port = 5001;
 
-        static void Main(string[] args) {
-            Grpc.Core.Server server = new Grpc.Core.Server {
+        static void Main(string[] args)
+        {
+            Grpc.Core.Server server = new Grpc.Core.Server
+            {
                 Services = {ProcessCreationService.BindService(_serverService)},
                 Ports = {new ServerPort("localhost", Port, ServerCredentials.Insecure)}
             };
@@ -27,7 +28,8 @@ namespace ProcessCreationDomain
             server.ShutdownAsync().Wait();
         }
 
-        private static void ReadCommands() {
+        private static void ReadCommands()
+        {
             Console.WriteLine("Press any key to stop the server...");
             Console.ReadKey();
         }
@@ -35,10 +37,11 @@ namespace ProcessCreationDomain
         public static void StartServer(string url, int minDelay, int maxDelay, List<Partition> partitions)
         {
             string partitionString = "";
-            foreach(Partition p in partitions)
+            foreach (Partition p in partitions)
             {
-                partitionString += " " + p.id + " " + p.master;
+                partitionString += " " + p.id + " " + p.masterUrl;
             }
+
             Process.Start(_serverFileUrl, url + " " + minDelay + " " + maxDelay + " " + partitionString);
         }
 
@@ -51,6 +54,6 @@ namespace ProcessCreationDomain
     public struct Partition
     {
         public int id;
-        public bool master;
+        public string masterUrl;
     }
 }
