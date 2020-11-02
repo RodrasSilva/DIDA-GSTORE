@@ -10,18 +10,22 @@ namespace Client {
         private readonly string _operationsFilePath;
         private readonly GrpcService _grpcService;
 
-        public ClientLogic(string operationsFilePath) {
+        public ClientLogic(string operationsFilePath, string serverHost, int serverPort) {
             _operationsFilePath = operationsFilePath;
 
-            const string serverHost = "localhost"; // TODO : CHANGE TO DEFAULT SERVER HOSTNAME
-            const int serverPort = 50002; // TODO : CHANGE TO DEFAULT SERVER PORT
+            //const string serverHost = "localhost"; // TODO : CHANGE TO DEFAULT SERVER HOSTNAME
+            //const int serverPort = 50002; // TODO : CHANGE TO DEFAULT SERVER PORT
+
             _grpcService = new GrpcService(serverHost, serverPort);
         }
 
-        public void Execute() {
+        public void Execute(string clientHost, int clientPort) {
             ExecuteCommands();
             Console.WriteLine("Operations executed");
-            var nodeServer = new ClientNodeServer("localhost", 50001, ServerCredentials.Insecure);
+
+            //client url here
+            var nodeServer = new ClientNodeServer(clientHost, clientPort, ServerCredentials.Insecure);
+
             nodeServer.Start();
             Console.WriteLine("Listening to Status Commands");
             Console.ReadKey();

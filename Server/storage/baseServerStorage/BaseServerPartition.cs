@@ -27,7 +27,7 @@ public class BaseServerPartition : Partition
         
     }
 
-    public void Write(string objKey, string objValue, int timestamp = -1)
+    public void Write(string objKey, string objValue)
     {
         if (IsMaster) WriteMaster(objKey, objValue);
         WriteSlave(objKey, objValue);

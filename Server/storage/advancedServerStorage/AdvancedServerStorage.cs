@@ -8,11 +8,11 @@ namespace Server.advancedServerStorage
   
 
     public class AdvancedServerStorage : Storage {
-        public Dictionary<int, AdvancedVersionPartition> Partitions { get; }
+        public Dictionary<int, AdvancedServerPartition> Partitions { get; }
 
         public AdvancedServerStorage()
         {
-            Partitions = new Dictionary<int, AdvancedVersionPartition>();
+            Partitions = new Dictionary<int, AdvancedServerPartition>();
         }
 
         public string Read(int partitionId, string objKey) {
@@ -27,14 +27,13 @@ namespace Server.advancedServerStorage
             return Partitions[partitionId].GetMasterUrl();
         }
 
-        public void Write(int partitionId, string objKey, string objValue) {
+        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1) {
             Partitions[partitionId].Write(objKey, objValue, timestamp);
         }
 
-        
         public Partition GetPartitionOrThrowException(int partitionId){
-            AdvancedVersionPartition partition = null;
-            if (input.Partitions.TryGetValue(partitionId, out partition))
+            AdvancedServerPartition partition = null;
+            if (Partitions.TryGetValue(partitionId, out partition))
             {
                 return partition;
             }
@@ -42,10 +41,5 @@ namespace Server.advancedServerStorage
             throw new Exception("No such partition");
         }
 
-    }
-
-   
-    }
-
-    
+    }   
 }

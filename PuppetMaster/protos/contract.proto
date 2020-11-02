@@ -18,8 +18,8 @@ message ChangeReplicationFactorResponse {
 //PROCESS CREATION SERVICE 
 
 message PartitionMessage {
-	int32 id = 0;
-	bool master = 1;
+	int32 id = 1;
+	bool master = 2;
 }
 message StartServerRequest {
 	string URL = 1;

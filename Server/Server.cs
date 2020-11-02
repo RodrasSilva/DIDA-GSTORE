@@ -1,9 +1,10 @@
 ﻿using Grpc.Core;
 using System;
 using DIDA_GSTORE.ServerService;
-using DIDA_GSTORE.SlaveServerService;
 using Server.storage;
 using System.Threading;
+using Server.baseServerStorage;
+using Server.advancedServerStorage;
 
 namespace ServerDomain
 {
@@ -11,6 +12,8 @@ namespace ServerDomain
 
         private static float _minDelay;
         private static float _maxDelay;
+        private static bool baseVersion = true;
+
         public static void Main(string[] args) {
 
             if (args.Length < 4 || args.Length % 2 != 1)
@@ -24,11 +27,11 @@ namespace ServerDomain
             _minDelay = minDelay;
             _maxDelay = maxDelay;
 
-            Storage storage = new Storage();
+            Storage storage = baseVersion ? new BaseServerStorage() : new AdvancedServerStorage();
+            
             FillPartitionsFromArgs(args, storage);
 
             ServerService _serverService = new ServerService(storage);
-            SlaveServerServiceServer _slaveService = new SlaveServerServiceServer(storage);
 
             NodeService _nodeService = new NodeService();
 
@@ -37,7 +40,10 @@ namespace ServerDomain
                 Services = {
                     DIDAService.BindService(_serverService),
                     NodeControlService.BindService(_nodeService),
-                    SlaveService.BindService(_slaveService)
+                    baseVersion
+                        ? BaseSlaveService.BindService(new BaseSlaveServerService(storage))
+                        : AdvancedSlaveService.BindService(new AdvancedSlaveServerService(storage)) 
+
                 },
                 Ports = {new ServerPort("localhost", Port, ServerCredentials.Insecure)}
             };

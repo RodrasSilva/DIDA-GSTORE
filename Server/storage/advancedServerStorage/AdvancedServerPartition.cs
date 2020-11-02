@@ -4,7 +4,7 @@ public class AdvancedServerPartition : Partition
 {
     public bool IsMaster { get; set; }
     private int _partitionId;
-    private List<AdvancedSlaveServiceClient> slaveServiceClients;
+    private List<AdvancedSlaveServerService> slaveServiceClients;
     private string _masterUrl;
 
     public Dictionary<string, AdvancedServerObjectInfo> Objects { get; }

@@ -1,6 +1,5 @@
 ﻿public interface Storage
 {
-
     public Partition GetPartitionOrThrowException(int partitionId);
 
     public string Read(int partitionId, string objKey);
@@ -9,5 +8,5 @@
 
     public string GetMasterUrl(int partitionId);
 
-    public void Write(int partitionId, string objKey, string objValue);
+    public void Write(int partitionId, string objKey, string objValue, int timestamp);
 }

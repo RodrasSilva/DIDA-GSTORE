@@ -1,22 +1,25 @@
 ﻿using System.Threading.Tasks;
 
-public class SlaveServerServiceServer : BaseSlaveService.BaseSlaveServiceBase
+namespace Server
 {
-    private Storage _storage;
-
-    public SlaveServerServiceServer(Storage storage)
+    public class BaseSlaveServerServiceServer : BaseSlaveService.BaseSlaveServiceBase
     {
-        _storage = storage;
-    }
+        private Storage _storage;
 
-   
-    public override Task<LockResponse> lockServer(LockRequest request, Grpc.Core.ServerCallContext context)
-    {
+        public BaseSlaveServerServiceServer(Storage storage)
+        {
+            _storage = storage;
+        }
 
-    }
 
-    public override Task<UnlockResponse> unlockServer(UnlockRequest request, Grpc.Core.ServerCallContext context)
-    {
+        public override Task<LockResponse> lockServer(LockRequest request, Grpc.Core.ServerCallContext context)
+        {
+            return base.lockServer(request, context);
+        }
 
+        public override Task<UnlockResponse> unlockServer(UnlockRequest request, Grpc.Core.ServerCallContext context)
+        {
+            return base.unlockServer(request, context);
+        }
     }
 }

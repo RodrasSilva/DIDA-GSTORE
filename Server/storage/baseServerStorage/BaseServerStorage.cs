@@ -12,7 +12,7 @@ namespace Server.baseServerStorage
 
         public Partition GetPartitionOrThrowException(int partitionId)
         {
-            BaseVersionPartition partition = null;
+            BaseServerPartition partition = null;
             if (Partitions.TryGetValue(partitionId, out partition))
             {
                 return partition;
@@ -41,9 +41,9 @@ namespace Server.baseServerStorage
             return Partitions[partitionId].GetMasterUrl();
         }
 
-        public void Write(int partitionId, string objKey, string objValue)
+        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1)
         {
-            Partitions[partitionId].Write(objKey, objValue, timestamp);
+            Partitions[partitionId].Write(objKey, objValue);
         }
     }
 }
