@@ -1,14 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Server.storage;
 
-namespace DIDA_GSTORE.ServerService {
-    public class ServerService : DIDAService.DIDAServiceBase {
+namespace DIDA_GSTORE.ServerService
+{
+    public class ServerService : DIDAService.DIDAServiceBase
+    {
         private Storage _storage;
 
-        public ServerService(Storage storage) {
+        public ServerService(Storage storage)
+        {
             _storage = storage;
         }
 
@@ -29,10 +31,12 @@ namespace DIDA_GSTORE.ServerService {
                 string objectValue = request.ObjectValue;
 
                 Partition partition = _storage.GetPartitionOrThrowException(partitionId);
-                if (partition.IsMaster) {
+                if (partition.IsMaster)
+                {
                     _storage.Write(partitionId, objectId, objectValue);
                 }
-                else {
+                else
+                {
                     string url = _storage.GetMasterUrl(request.PartitionId);
                 }
             }

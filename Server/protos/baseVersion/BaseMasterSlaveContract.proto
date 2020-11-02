@@ -1,0 +1,26 @@
+﻿//
+// Protocol buffers definition for DADI-GSTORE server
+//
+syntax = "proto3";
+
+message LockRequest{
+	//nothing
+}
+
+message LockResponse{
+	string acknowledge = 1;
+}
+
+message UnlockRequest{
+	string objectId = 1;
+	string objectValue = 2;
+}
+
+message UnlockResponse{
+	string acknowledge = 1;
+}
+
+service BaseSlaveService{
+	rpc lockServer(LockRequest) returns (LockResponse);
+	rpc unlockServer(UnlockRequest) returns (UnlockResponse);
+} 

@@ -6,7 +6,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="storage\advancedServerStorage\AdvancedStorage.cs" />
+    <Compile Remove="storage\advancedServerStorage\AdvancedVersionObjectInfo.cs" />
+    <Compile Remove="storage\advancedServerStorage\AdvancedVersionPartition.cs" />
+    <Compile Remove="storage\advancedServerStorage\ObjectInfo.cs" />
+    <Compile Remove="storage\advancedServerStorage\Partition.cs" />
+    <Compile Remove="storage\advancedServerStorage\Storage.cs" />
+    <Compile Remove="storage\baseServerStorage\Storage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="grpcService\advancedVersion\NewFile1.txt" />
+    <None Remove="grpcService\baseVersion\NewFile1.txt" />
     <None Remove="NewFile1.txt" />
+    <None Remove="protos\advancedVersion\MasterSlaveContract" />
+    <None Remove="protos\advancedVersion\MasterSlaveContract.proto" />
+    <None Remove="protos\advancedVersion\NewFile1.txt" />
+    <None Remove="protos\baseVersion\MasterSlaveContract.proto" />
+    <None Remove="protos\baseVersion\NewFile1.txt" />
+    <None Remove="protos\MasterSlaveContract.proto" />
+    <None Remove="storage\advancedServerStorage\NewFile1.txt" />
+    <None Remove="storage\baseServerStorage\NewFile1.txt" />
+    <None Remove="storage\NewFile1.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,8 +39,8 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <Protobuf Include="protos\ClientContract.proto" GrpcServices="Server" />
-	  <Protobuf Include="protos\MasterSlaveContract.proto" GrpcServices="Both" />
 	  <Protobuf Include="protos\NodeContract.proto" GrpcServices="Server" />
+	  <Protobuf Include="protos\advancedVersion\AdvancedMasterSlaveContract.proto" GrpcServices="Server" />
+	  <Protobuf Include="protos\baseVersion\BaseMasterSlaveContract.proto" GrpcServices="Server" />
   </ItemGroup>
-
 </Project>

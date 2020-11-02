@@ -12,8 +12,6 @@ namespace DIDA_GSTORE.SlaveServerService {
             _storage = storage;
         }
 
-
-
         public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context)
         {
             ServerDomain.Server.DelayMessage();

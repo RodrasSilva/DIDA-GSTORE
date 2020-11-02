@@ -15,6 +15,6 @@ message WriteSlaveResponse{
 	// empty
 }
 
-service SlaveService{
+service AdvancedSlaveService{
 	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
 }
