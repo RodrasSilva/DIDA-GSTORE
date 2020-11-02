@@ -18,12 +18,15 @@ namespace DIDA_GSTORE.ServerService
 
         public override Task<WriteResponse> write(WriteRequest request, ServerCallContext context)
         {
+            ServerDomain.Server.DelayMessage();
             return Task.FromResult(Write(request));
         }
 
         public WriteResponse Write(WriteRequest request)
         {
-            try{
+            ServerDomain.Server.DelayMessage();
+            try
+            {
                 int partitionId = request.PartitionId;
                 string objectId = request.ObjectId;
                 string objectValue = request.ObjectValue;
@@ -48,16 +51,19 @@ namespace DIDA_GSTORE.ServerService
 
         public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context)
         {
+            ServerDomain.Server.DelayMessage();
             return base.read(request, context);
         }
 
         public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context)
         {
+            ServerDomain.Server.DelayMessage();
             return base.listGlobal(request, context);
         }
 
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context)
         {
+            ServerDomain.Server.DelayMessage();
             return base.listServer(request, context);
         }
     }

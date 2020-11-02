@@ -3,11 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DIDA_GSTORE.ServerService;
+using System.Diagnostics;
 
-namespace ProcessCreation
+namespace ProcessCreationDomain
 {
     class ProcessCreation
     {
+        private static string _serverFileUrl;
+        private static string _clientFileUrl;
+
         private static ServerService _serverService = new ServerService();
         const int Port = 5001;
         static void Main(string[] args)
@@ -29,5 +33,26 @@ namespace ProcessCreation
             Console.WriteLine("Press any key to stop the server...");
             Console.ReadKey();
         }
+
+        public static void StartServer(string url, int minDelay, int maxDelay, List<Partition> partitions)
+        {
+            string partitionString = "";
+            foreach(Partition p in partitions)
+            {
+                partitionString += " " + p.id + " " + p.master;
+            }
+            Process.Start(_serverFileUrl, url + " " + minDelay + " " + maxDelay + " " + partitionString);
+        }
+
+        public static void StartClient(string username, string url, string requestFile, string defaultServerUrl)
+        {
+            Process.Start(_clientFileUrl, username + " " + url + " " + requestFile + " " + defaultServerUrl);
+        }
+    }
+
+    public struct Partition
+    {
+        public int id;
+        public bool master;
     }
 }

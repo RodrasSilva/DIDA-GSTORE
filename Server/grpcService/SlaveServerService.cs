@@ -19,6 +19,7 @@ namespace DIDA_GSTORE.SlaveServerService
 
         public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context)
         {
+            ServerDomain.Server.DelayMessage();
             int partitionId = request.PartitionId;
             string objectId = request.ObjectId;
             string objectValue = request.ObjectValue;

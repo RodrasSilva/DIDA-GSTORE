@@ -17,15 +17,16 @@ message ChangeReplicationFactorResponse {
 
 //PROCESS CREATION SERVICE 
 
+message PartitionMessage {
+	int32 id = 0;
+	bool master = 1;
+}
 message StartServerRequest {
-	int32 serverId = 1;
-	string URL = 2;
-	int32 minDelay = 3;
-	int32 maxDelay = 4;
-	/* probably 
-	int32 replicationFactor = 5;
-	repeated string partitionName = 6; 
-	*/
+	string URL = 1;
+	int32 minDelay = 2;
+	int32 maxDelay = 3;
+
+	repeated PartitionMessage partitions = 4;
 }
 
 message StartServerResponse {
@@ -37,6 +38,7 @@ message StartClientRequest {
 	string username = 1;
 	string URL = 2;
 	string scriptFile = 3;
+	string defaultServerUrl = 4;
 }
 
 message StartClientResponse {
