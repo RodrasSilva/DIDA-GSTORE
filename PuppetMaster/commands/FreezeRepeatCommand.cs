@@ -2,10 +2,8 @@ using System;
 using PuppetMasterClient;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands
-{
-    public class FreezeRepeatCommand : ICommand
-    {
+namespace DIDA_GSTORE.commands {
+    public class FreezeRepeatCommand : ICommand {
         public bool IsAsync => true;
         public bool IsSetup => false;
 
@@ -13,21 +11,17 @@ namespace DIDA_GSTORE.commands
 
         private readonly int _serverId;
 
-        private FreezeRepeatCommand(int serverId)
-        {
+        private FreezeRepeatCommand(int serverId) {
             _serverId = serverId;
         }
 
 
-        public void Execute(PuppetMasterDomain puppetMaster)
-        {
+        public void Execute(PuppetMasterDomain puppetMaster) {
             FreezeResponse response = puppetMaster.GetServerNodeService(_serverId).Freeze();
         }
 
-        public static ICommand ParseCommandLine(string[] arguments)
-        {
-            if (arguments.Length != 1)
-            {
+        public static ICommand ParseCommandLine(string[] arguments) {
+            if (arguments.Length != 1) {
                 throw new Exception("Invalid Freeze Command ");
             }
 

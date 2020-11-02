@@ -1,20 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace ServerDomain
-{
-    public class AdvancedSlaveServerService : AdvancedSlaveService.AdvancedSlaveServiceBase
-    {
+namespace ServerDomain {
+    public class AdvancedSlaveServerService : AdvancedSlaveService.AdvancedSlaveServiceBase {
         private AdvancedServerStorage _storage;
 
-        public AdvancedSlaveServerService(AdvancedServerStorage storage)
-        {
+        public AdvancedSlaveServerService(AdvancedServerStorage storage) {
             _storage = storage;
         }
 
 
-        public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context)
-        {
+        public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context) {
             int partitionId = request.PartitionId;
             string objectId = request.ObjectId;
             string objectValue = request.ObjectValue;

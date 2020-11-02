@@ -2,10 +2,8 @@ using System;
 using PuppetMasterClient;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands
-{
-    public class CrashRepeatCommand : ICommand
-    {
+namespace DIDA_GSTORE.commands {
+    public class CrashRepeatCommand : ICommand {
         public bool IsAsync => true;
         public bool IsSetup => false;
 
@@ -13,21 +11,17 @@ namespace DIDA_GSTORE.commands
 
         private readonly int _serverId;
 
-        private CrashRepeatCommand(int serverId)
-        {
+        private CrashRepeatCommand(int serverId) {
             _serverId = serverId;
         }
 
 
-        public void Execute(PuppetMasterDomain puppetMaster)
-        {
+        public void Execute(PuppetMasterDomain puppetMaster) {
             CrashResponse response = puppetMaster.GetServerNodeService(_serverId).Crash();
         }
 
-        public static ICommand ParseCommandLine(string[] arguments)
-        {
-            if (arguments.Length != 1)
-            {
+        public static ICommand ParseCommandLine(string[] arguments) {
+            if (arguments.Length != 1) {
                 throw new Exception("Invalid Crash Command ");
             }
 

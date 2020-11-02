@@ -1,14 +1,10 @@
 ﻿using System;
 using Client.utils;
 
-namespace Client
-{
-    public static class Client
-    {
-        public static void Main(string[] args)
-        {
-            if (args.Length != 4)
-            {
+namespace Client {
+    public static class Client {
+        public static void Main(string[] args) {
+            if (args.Length != 4) {
                 Console.WriteLine("Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
                 return;
             }

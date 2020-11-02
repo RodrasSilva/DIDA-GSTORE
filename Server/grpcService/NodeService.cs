@@ -3,18 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace DIDA_GSTORE.ServerService
-{
-    public class NodeService : NodeControlService.NodeControlServiceBase
-    {
-        public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context)
-        {
+namespace DIDA_GSTORE.ServerService {
+    public class NodeService : NodeControlService.NodeControlServiceBase {
+        public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
             return base.status(request, context);
         }
 
-        public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context)
-        {
+        public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
 
             //return base.crash(request, context);
@@ -24,23 +20,20 @@ namespace DIDA_GSTORE.ServerService
             return Task.FromResult(new CrashResponse());
         }
 
-        public void CrashMechanism()
-        {
+        public void CrashMechanism() {
             ServerDomain.Server.DelayMessage();
 
             Thread.Sleep(1000);
             Environment.Exit(1);
         }
 
-        public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context)
-        {
+        public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
 
             return base.freeze(request, context);
         }
 
-        public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context)
-        {
+        public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
             return base.unfreeze(request, context);
         }

@@ -3,18 +3,14 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using ProcessCreationDomain;
 
-namespace DIDA_GSTORE.ServerService
-{
-    public class ServerService : ProcessCreationService.ProcessCreationServiceBase
-    {
+namespace DIDA_GSTORE.ServerService {
+    public class ServerService : ProcessCreationService.ProcessCreationServiceBase {
         public override Task<StartServerResponse> startServer(StartServerRequest request,
-            ServerCallContext context)
-        {
+            ServerCallContext context) {
             List<Partition> partitions = new List<Partition>();
 
-            foreach (PartitionMessage p in request.Partitions)
-            {
-                partitions.Add(new Partition() { id = p.Id, masterUrl = p.MasterURL });
+            foreach (PartitionMessage p in request.Partitions) {
+                partitions.Add(new Partition() {id = p.Id, masterUrl = p.MasterURL});
             }
 
             ProcessCreation.StartServer(request.URL, request.MinDelay, request.MaxDelay, partitions);
@@ -25,8 +21,7 @@ namespace DIDA_GSTORE.ServerService
         }
 
         public override Task<StartClientResponse> startClient(StartClientRequest request,
-            ServerCallContext context)
-        {
+            ServerCallContext context) {
             ProcessCreation.StartClient(request.Username, request.URL, request.ScriptFile, request.DefaultServerUrl);
             return Task.FromResult(new StartClientResponse());
 

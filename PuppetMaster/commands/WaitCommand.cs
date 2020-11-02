@@ -2,25 +2,20 @@ using System;
 using System.Threading;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands
-{
-    public class WaitCommand : ICommand
-    {
+namespace DIDA_GSTORE.commands {
+    public class WaitCommand : ICommand {
         public bool IsAsync => true;
         public bool IsSetup => false;
 
         private const int WaitTimePosition = 0;
         private readonly int _waitTime;
 
-        private WaitCommand(int waitTime)
-        {
+        private WaitCommand(int waitTime) {
             _waitTime = waitTime;
         }
 
-        public static WaitCommand ParseCommandLine(string[] arguments)
-        {
-            if (arguments.Length != 1)
-            {
+        public static WaitCommand ParseCommandLine(string[] arguments) {
+            if (arguments.Length != 1) {
                 throw new Exception("Invalid Wait Command ");
             }
 
@@ -28,8 +23,7 @@ namespace DIDA_GSTORE.commands
             return new WaitCommand(waitTime);
         }
 
-        public void Execute(PuppetMasterDomain puppetMaster)
-        {
+        public void Execute(PuppetMasterDomain puppetMaster) {
             Thread.Sleep(_waitTime);
         }
     }

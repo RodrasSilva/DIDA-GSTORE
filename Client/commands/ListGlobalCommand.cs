@@ -3,24 +3,17 @@ using System.Collections.Generic;
 using Client.model;
 using DIDA_GSTORE.grpcService;
 
-namespace DIDA_GSTORE.commands
-{
-    public class ListGlobalCommand : ICommand
-    {
-        private ListGlobalCommand()
-        {
-        }
+namespace DIDA_GSTORE.commands {
+    public class ListGlobalCommand : ICommand {
+        private ListGlobalCommand() { }
 
-        public static ListGlobalCommand ParseCommandLine(string[] arguments)
-        {
+        public static ListGlobalCommand ParseCommandLine(string[] arguments) {
             return new ListGlobalCommand();
         }
 
-        public void Execute(GrpcService grpcService)
-        {
+        public void Execute(GrpcService grpcService) {
             List<ListGlobalResult> response = grpcService.ListGlobal();
-            foreach (var result in response)
-            {
+            foreach (var result in response) {
                 result
                     .Identifiers
                     .ForEach(identifier =>
