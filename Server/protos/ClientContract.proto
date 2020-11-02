@@ -32,8 +32,9 @@ message ListServerRequest{
 }
 
 message ListServerResponseEntity{
-  string objectValue = 1;
-  bool isMaster = 2;
+  string objectId = 1;
+  string objectValue = 2;
+  bool isMaster = 3;
 }
 
 message ListServerResponse{

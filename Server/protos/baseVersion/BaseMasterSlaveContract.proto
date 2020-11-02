@@ -4,7 +4,8 @@
 syntax = "proto3";
 
 message LockRequest{
-	//nothing
+	int32 partitionId = 1;
+	string objectId = 2;
 }
 
 message LockResponse{
@@ -12,8 +13,9 @@ message LockResponse{
 }
 
 message UnlockRequest{
-	string objectId = 1;
-	string objectValue = 2;
+	int32 partitionId = 1;
+	string objectId = 2;
+	string objectValue = 3;
 }
 
 message UnlockResponse{

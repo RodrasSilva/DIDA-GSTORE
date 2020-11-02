@@ -18,8 +18,8 @@ namespace ProcessCreationDomain
         {
             Grpc.Core.Server server = new Grpc.Core.Server
             {
-                Services = {ProcessCreationService.BindService(_serverService)},
-                Ports = {new ServerPort("localhost", Port, ServerCredentials.Insecure)}
+                Services = { ProcessCreationService.BindService(_serverService) },
+                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
             };
             server.Start();
             Console.WriteLine("ChatServer server listening on port " + Port);

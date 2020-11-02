@@ -34,11 +34,11 @@ namespace DIDA_GSTORE.commands
             {
                 if (result.IsMaster)
                 {
-                    Console.WriteLine($"Server {_serverId} is master with object {result.ObjectValue}");
+                    Console.WriteLine($"Server {_serverId} is master with object [{result.ObjectId},{result.ObjectValue}]");
                 }
                 else
                 {
-                    Console.WriteLine($"Server {_serverId} contains object {result.ObjectValue}");
+                    Console.WriteLine($"Server {_serverId} contains object [{result.ObjectId},{result.ObjectValue}]");
                 }
             }
         }

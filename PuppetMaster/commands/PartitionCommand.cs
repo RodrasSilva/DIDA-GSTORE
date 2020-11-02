@@ -40,7 +40,7 @@ namespace DIDA_GSTORE.commands
                     partitions = puppetMaster.partitionsPerServer[serverId];
                 }
 
-                partitions.Add(new PartitionInfo() {partitionId: _partitionName, masterServerId: masterId});
+                partitions.Add(new PartitionInfo() { partitionId: _partitionName, masterServerId: masterId });
             }
 
             //throw new System.NotImplementedException();

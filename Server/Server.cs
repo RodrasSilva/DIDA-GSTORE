@@ -22,8 +22,8 @@ namespace ServerDomain
             }
 
             string url = args[0];
-            float minDelay = float.Parse(args[1]);
-            float maxDelay = float.Parse(args[2]);
+            _minDelay = float.Parse(args[1]);
+            _maxDelay = float.Parse(args[2]);
 
             IStorage storage;
             if (UseBaseVersion)
@@ -54,7 +54,7 @@ namespace ServerDomain
                         : AdvancedSlaveService.BindService(
                             new AdvancedSlaveServerService((AdvancedServerStorage) storage))
                 },
-                Ports = {new ServerPort(serverParameters.Hostname, serverParameters.Port, ServerCredentials.Insecure)}
+                Ports = { new ServerPort(serverParameters.Hostname, serverParameters.Port, ServerCredentials.Insecure) }
             };
             server.Start();
             Console.WriteLine("ChatServer server listening on port " + serverParameters.Port);

@@ -27,13 +27,13 @@ namespace DIDA_GSTORE.grpcService
 
         private string MapServerIdToUrl(int serverId)
         {
-            ServerUrlRequest request = new ServerUrlRequest {ServerId = serverId};
+            ServerUrlRequest request = new ServerUrlRequest { ServerId = serverId };
             return _client.getServerUrl(request).ServerUrl;
         }
 
         private static ListServerResult MapToListServerResult(ListServerResponseEntity it)
         {
-            return new ListServerResult(it.ObjectValue, it.IsMaster);
+            return new ListServerResult(it.ObjectId,it.ObjectValue, it.IsMaster);
         }
 
         private static ListGlobalResult mapToListGlobalResult(ListGlobalResponseEntity it)
@@ -48,7 +48,7 @@ namespace DIDA_GSTORE.grpcService
 
         public void Write(int partitionId, string objectId, string objectValue)
         {
-            var request = new WriteRequest {PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
+            var request = new WriteRequest { PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue };
             try
             {
                 var response = _client.write(request);
@@ -76,7 +76,7 @@ namespace DIDA_GSTORE.grpcService
 
         public string Read(int partitionId, string objectId, int serverId)
         {
-            var request = new ReadRequest {PartitionId = partitionId, ObjectId = objectId};
+            var request = new ReadRequest { PartitionId = partitionId, ObjectId = objectId };
             try
             {
                 var readResponse = _client.read(request);

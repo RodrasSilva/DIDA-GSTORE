@@ -14,7 +14,7 @@ namespace DIDA_GSTORE.ServerService
 
             foreach (PartitionMessage p in request.Partitions)
             {
-                partitions.Add(new Partition() {id = p.Id, masterUrl = p.MasterURL});
+                partitions.Add(new Partition() { id = p.Id, masterUrl = p.MasterURL });
             }
 
             ProcessCreation.StartServer(request.URL, request.MinDelay, request.MaxDelay, partitions);

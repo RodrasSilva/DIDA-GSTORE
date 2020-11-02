@@ -30,7 +30,7 @@ namespace DIDA_GSTORE.grpcService
             int minDelay, int maxDelay)
         {
             StartServerRequest request = new StartServerRequest()
-                {ServerId = serverId, URL = url, MinDelay = minDelay, MaxDelay = maxDelay};
+            { ServerId = serverId, URL = url, MinDelay = minDelay, MaxDelay = maxDelay };
             return client.startServer(request); // TODO :  Add Logic
             //start server async <= probably not
         }
@@ -38,7 +38,7 @@ namespace DIDA_GSTORE.grpcService
         public StartClientResponse StartClient(string username, string url, string scriptFile)
         {
             StartClientRequest request = new StartClientRequest()
-                {Username = username, URL = url, ScriptFile = scriptFile};
+            { Username = username, URL = url, ScriptFile = scriptFile };
             return client.startClient(request); // TODO :  Add Logic
         }
     }

@@ -32,13 +32,13 @@ namespace DIDA_GSTORE.ServerService
                 IPartition partition = _storage.GetPartitionOrThrowException(partitionId);
                 if (partition.IsMaster)
                 {
-                    _storage.Write(partitionId, objectId, objectValue, -1);
-                    return new WriteResponse {ResponseMessage = "OK"};
+                    _storage.WriteMaster(partitionId, objectId, objectValue, -1);
+                    return new WriteResponse { ResponseMessage = "OK" };
                 }
                 else
                 {
                     string url = _storage.GetMasterUrl(request.PartitionId);
-                    return new WriteResponse {MasterServerUrl = new ServerUrlResponse {ServerUrl = url}};
+                    return new WriteResponse { MasterServerUrl = new ServerUrlResponse { ServerUrl = url } };
                 }
             }
             catch (Exception) //later to be named NotFound or smth
@@ -63,13 +63,13 @@ namespace DIDA_GSTORE.ServerService
                 string objectId = request.ObjectId;
                 IPartition partition = _storage.GetPartitionOrThrowException(partitionId);
                 string objectValue = _storage.Read(partitionId, objectId);
-                ReadResponse response = new ReadResponse {ObjectValue = objectValue};
+                ReadResponse response = new ReadResponse { ObjectValue = objectValue };
                 return response;
             }
             catch (Exception)
             {
                 /*Partition not founded */
-                return new ReadResponse {ObjectValue = "-1"};
+                return new ReadResponse { ObjectValue = "-1" };
             }
         }
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context)

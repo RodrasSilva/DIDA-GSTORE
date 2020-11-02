@@ -53,5 +53,15 @@ namespace ServerDomain
         {
             throw new NotImplementedException();
         }
+
+        public void WriteMaster(int partitionId, string objKey, string objValue, int timestamp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteSlave(int partitionId, string objKey, string objValue, int timestamp)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

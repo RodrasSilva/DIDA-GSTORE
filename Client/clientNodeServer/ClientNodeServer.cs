@@ -15,7 +15,7 @@ namespace Client.clientNodeServer
                 {
                     NodeControlService.BindService(new NodeService(username)),
                 },
-                Ports = {new ServerPort(host, port, credentials)}
+                Ports = { new ServerPort(host, port, credentials) }
             };
         }
 

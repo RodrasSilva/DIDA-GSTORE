@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using Google.Protobuf.Collections;
 
 namespace ServerDomain
 {
@@ -38,20 +39,42 @@ namespace ServerDomain
         {
             return Partitions[partitionId].GetMasterUrl();
         }
-
-        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1)
+        //Assumes someone called IsMaster (True)
+        public void WriteMaster(int partitionId, string objKey, string objValue, int timestamp = -1)
         {
-            Partitions[partitionId].Write(objKey, objValue);
+            Partitions[partitionId].WriteMaster(objKey, objValue);
+        }
+
+        //Assumes someone called IsMaster (False)
+        public void WriteSlave(int partitionId, string objKey, string objValue, int timestamp = -1)
+        {
+            Partitions[partitionId].WriteSlave(objKey, objValue);
         }
 
         public ListServerResponse ListServer()
         {
-            throw new NotImplementedException();
+            List<ListServerResponseEntity> objects = new List<ListServerResponseEntity>();
+
+            (new List<int>(Partitions.Keys))
+                .ForEach(pId => {
+                    var partition = Partitions[pId];
+                    var partitionObjects = partition.Objects;
+                    (new List<string>(partitionObjects.Keys))
+                        .ForEach((objId) => {
+                            objects.Add(new ListServerResponseEntity
+                            {
+                                ObjectValue = partitionObjects[objId].Read(),
+                                ObjectId = objId,
+                                IsMaster = partition.IsMaster
+                            }); ;
+                        });
+                });
+            return new ListServerResponse { Objects = { objects } };
         }
 
         public ListGlobalResponse ListGlobal()
         {
-            throw new NotImplementedException();
+           // TODO : Implement
         }
     }
 }

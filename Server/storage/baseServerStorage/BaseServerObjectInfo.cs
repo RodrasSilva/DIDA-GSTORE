@@ -1,23 +1,28 @@
 ﻿using System;
+using System.Threading;
 
 public class BaseServerObjectInfo
 {
-    private object _monitor = new object();
+    public ReaderWriterLock _lock;
     private string _objectValue;
 
-    public string Read()
+    public BaseServerObjectInfo(string value)
     {
-        lock (_monitor)
-        {
-            return _objectValue;
-        }
+        _lock = new ReaderWriterLock();
+        _objectValue = value;
     }
 
-    public void Write(String newValue)
+
+    //assumes that it was called with the reader lock
+    public string Read()
     {
-        lock (_monitor)
-        {
-            _objectValue = newValue;
-        }
+        return _objectValue;
+    }
+
+    // assumes that it was called with the writter lock
+    public void Write(String newValue, Action action = null)
+    {
+        _objectValue = newValue;
+        action?.Invoke();
     }
 }
