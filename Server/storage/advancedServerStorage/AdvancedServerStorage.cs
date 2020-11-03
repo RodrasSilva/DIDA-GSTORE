@@ -1,36 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace ServerDomain {
     public class AdvancedServerStorage : IStorage {
-        public Dictionary<int, AdvancedServerPartition> Partitions { get; }
-
         public AdvancedServerStorage() {
-            Partitions = new Dictionary<int, AdvancedServerPartition>();
+            Partitions = new Dictionary<string, AdvancedServerPartition>();
         }
 
-        public string Read(int partitionId, string objKey) {
+        public Dictionary<string, AdvancedServerPartition> Partitions { get; }
+
+        public string Read(string partitionId, string objKey) {
             return Partitions[partitionId].Read(objKey);
         }
 
-        public bool IsPartitionMaster(int partitionId) {
-            return Partitions[partitionId].IsMaster;
-        }
-
-        public string GetMasterUrl(int partitionId) {
+        public string GetMasterUrl(string partitionId) {
             return Partitions[partitionId].GetMasterUrl();
         }
 
-        public void Write(int partitionId, string objKey, string objValue, int timestamp = -1) {
-            Partitions[partitionId].Write(objKey, objValue, timestamp);
-        }
-
-        public IPartition GetPartitionOrThrowException(int partitionId) {
+        public IPartition GetPartitionOrThrowException(string partitionId) {
             AdvancedServerPartition partition = null;
-            if (Partitions.TryGetValue(partitionId, out partition)) {
-                return partition;
-            }
+            if (Partitions.TryGetValue(partitionId, out partition)) return partition;
 
             throw new Exception("No such partition");
         }
@@ -43,12 +32,24 @@ namespace ServerDomain {
             throw new NotImplementedException();
         }
 
-        public void WriteMaster(int partitionId, string objKey, string objValue, int timestamp) {
+        public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl) {
             throw new NotImplementedException();
         }
 
-        public void WriteSlave(int partitionId, string objKey, string objValue, int timestamp) {
+        public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp) {
             throw new NotImplementedException();
+        }
+
+        public void WriteSlave(string partitionId, string objKey, string objValue, int timestamp) {
+            throw new NotImplementedException();
+        }
+
+        public bool IsPartitionMaster(string partitionId) {
+            return Partitions[partitionId].IsMaster;
+        }
+
+        public void Write(string partitionId, string objKey, string objValue, int timestamp = -1) {
+            Partitions[partitionId].Write(objKey, objValue, timestamp);
         }
     }
 }

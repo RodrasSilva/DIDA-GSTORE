@@ -9,13 +9,13 @@ namespace Client {
                 return;
             }
 
-            string username = args[0];
-            string clientUrl = args[1];
-            string operationsFilePath = args[2];
-            string defaultServerUrl = args[3];
+            var username = args[0];
+            var clientUrl = args[1];
+            var operationsFilePath = args[2];
+            var defaultServerUrl = args[3];
 
-            UrlParameters serverParameters = UrlParameters.From(defaultServerUrl);
-            UrlParameters clientParameters = UrlParameters.From(clientUrl);
+            var serverParameters = UrlParameters.From(defaultServerUrl);
+            var clientParameters = UrlParameters.From(clientUrl);
 
             var client = new ClientLogic(operationsFilePath,
                 username,

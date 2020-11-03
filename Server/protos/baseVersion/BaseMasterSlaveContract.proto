@@ -4,25 +4,27 @@
 syntax = "proto3";
 
 message LockRequest{
-	int32 partitionId = 1;
-	string objectId = 2;
+  string partitionId = 1;
+  string objectId = 2;
 }
 
 message LockResponse{
-	string acknowledge = 1;
+  string acknowledge = 1;
 }
 
 message UnlockRequest{
-	int32 partitionId = 1;
-	string objectId = 2;
-	string objectValue = 3;
+  string partitionId = 1;
+  string objectId = 2;
+  string objectValue = 3;
 }
 
 message UnlockResponse{
-	string acknowledge = 1;
+  string acknowledge = 1;
 }
 
 service BaseSlaveService{
-	rpc lockServer(LockRequest) returns (LockResponse);
-	rpc unlockServer(UnlockRequest) returns (UnlockResponse);
-} 
+  rpc lockServer(LockRequest) returns (LockResponse);
+  rpc unlockServer(UnlockRequest) returns (UnlockResponse);
+}
+
+

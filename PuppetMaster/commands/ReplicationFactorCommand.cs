@@ -3,9 +3,6 @@ using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
     public class ReplicationFactorCommand : ICommand {
-        public bool IsAsync => true;
-        public bool IsSetup => true;
-
         private const int NumberOfServersPosition = 0;
         private readonly int _numberOfServers;
 
@@ -13,15 +10,16 @@ namespace DIDA_GSTORE.commands {
             _numberOfServers = numberOfServers;
         }
 
+        public bool IsAsync => true;
+        public bool IsSetup => true;
+
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {
-            if (arguments.Length != 1) {
-                throw new Exception("Invalid ReplicationFactor Command ");
-            }
+            if (arguments.Length != 1) throw new Exception("Invalid ReplicationFactor Command ");
 
             var numberOfServers = int.Parse(arguments[NumberOfServersPosition]);
             return new ReplicationFactorCommand(numberOfServers);

@@ -3,10 +3,9 @@ using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
     public class StatusCommand : ICommand {
+        private StatusCommand() { }
         public bool IsAsync => true;
         public bool IsSetup => false;
-
-        private StatusCommand() { }
 
         public void Execute(PuppetMasterDomain puppetMaster) {
             throw new NotImplementedException();

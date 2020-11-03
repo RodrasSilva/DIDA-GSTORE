@@ -7,11 +7,9 @@ namespace DIDA_GSTORE.ServerService {
     public class ServerService : ProcessCreationService.ProcessCreationServiceBase {
         public override Task<StartServerResponse> startServer(StartServerRequest request,
             ServerCallContext context) {
-            List<Partition> partitions = new List<Partition>();
+            var partitions = new List<Partition>();
 
-            foreach (PartitionMessage p in request.Partitions) {
-                partitions.Add(new Partition() {id = p.Id, masterUrl = p.MasterURL});
-            }
+            foreach (var p in request.Partitions) partitions.Add(new Partition {id = p.Id, masterUrl = p.MasterURL});
 
             ProcessCreation.StartServer(request.URL, request.MinDelay, request.MaxDelay, partitions);
             return Task.FromResult(new StartServerResponse());

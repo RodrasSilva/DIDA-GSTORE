@@ -16,9 +16,8 @@ namespace DIDA_GSTORE.commands {
             var results = new List<ICommand>();
             string commandLine;
             using var operationsFileReader = new StreamReader(operationsFilePath);
-            while ((commandLine = operationsFileReader.ReadLine()) != null) {
+            while ((commandLine = operationsFileReader.ReadLine()) != null)
                 results.Add(GetCommand(commandLine, operationsFileReader));
-            }
 
             return results;
         }

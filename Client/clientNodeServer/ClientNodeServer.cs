@@ -8,7 +8,7 @@ namespace Client.clientNodeServer {
         public ClientNodeServer(string host, int port, string username, ServerCredentials credentials) {
             _server = new Server {
                 Services = {
-                    NodeControlService.BindService(new NodeService(username)),
+                    NodeControlService.BindService(new NodeService(username))
                 },
                 Ports = {new ServerPort(host, port, credentials)}
             };

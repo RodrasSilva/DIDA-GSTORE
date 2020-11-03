@@ -7,7 +7,7 @@ namespace PuppetMasterMain {
         public static void Main(string[] args) {
             //grpcProcessService = new GrpcProcessService("localhost", 5001);
             grpcProcessService = null;
-            PuppetMasterDomain puppetMasterDomain = new PuppetMasterDomain();
+            var puppetMasterDomain = new PuppetMasterDomain();
             puppetMasterDomain.Start(args, grpcProcessService);
         }
 

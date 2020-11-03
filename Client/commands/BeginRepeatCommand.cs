@@ -16,22 +16,11 @@ namespace DIDA_GSTORE.commands {
             _operationsFileReader = operationsFileReader;
         }
 
-        public static BeginRepeatCommand ParseCommandLine(string[] arguments, StreamReader operationsFileReader) {
-            if (arguments.Length != 1) {
-                throw new Exception("Invalid Begin Repeat Command ");
-            }
-
-            var numberOfRepeats = int.Parse(arguments[NumberOfRepeatsPosition]);
-            return new BeginRepeatCommand(numberOfRepeats, operationsFileReader
-            );
-        }
-
         public void Execute(GrpcService grpcService) {
             string line;
             var commands = new List<string>();
-            while ((line = _operationsFileReader.ReadLine()) != null && !line.Equals(EndRepeatCommand)) {
+            while ((line = _operationsFileReader.ReadLine()) != null && !line.Equals(EndRepeatCommand))
                 commands.Add(line);
-            } // Assumes that there's always an EndRepeatCommand in the end of the file at most
 
             for (var i = 0; i < _numberOfRepeats; ++i) {
                 var counter = i.ToString();
@@ -41,6 +30,14 @@ namespace DIDA_GSTORE.commands {
                     command.Execute(grpcService);
                 });
             }
+        }
+
+        public static BeginRepeatCommand ParseCommandLine(string[] arguments, StreamReader operationsFileReader) {
+            if (arguments.Length != 1) throw new Exception("Invalid Begin Repeat Command ");
+
+            var numberOfRepeats = int.Parse(arguments[NumberOfRepeatsPosition]);
+            return new BeginRepeatCommand(numberOfRepeats, operationsFileReader
+            );
         }
     }
 }

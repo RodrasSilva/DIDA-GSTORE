@@ -5,7 +5,7 @@ syntax = "proto3";
 
 
 message WriteSlaveRequest{
-  int32 partitionId = 1;
+  string partitionId = 1;
   string objectId = 2;
   string objectValue = 3;
   int32 timestamp = 4;

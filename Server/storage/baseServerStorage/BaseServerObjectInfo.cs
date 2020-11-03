@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 
 public class BaseServerObjectInfo {
     public ReaderWriterLock _lock;
@@ -17,7 +16,7 @@ public class BaseServerObjectInfo {
     }
 
     // assumes that it was called with the writter lock
-    public void Write(String newValue) {
+    public void Write(string newValue) {
         _objectValue = newValue;
     }
 }

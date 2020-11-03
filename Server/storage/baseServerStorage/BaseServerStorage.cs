@@ -1,56 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Google.Protobuf.Collections;
+using Grpc.Net.Client;
 
 namespace ServerDomain {
     public class BaseServerStorage : IStorage {
-        public Dictionary<int, BaseServerPartition> Partitions { get; }
+        public BaseServerStorage() {
+            Partitions = new Dictionary<string, BaseServerPartition>();
+        }
 
-        public IPartition GetPartitionOrThrowException(int partitionId) {
+        public Dictionary<string, BaseServerPartition> Partitions { get; }
+
+        public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl) {
+            //lock (Partitions) {
+            var partition = Partitions[partitionId];
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            var channel = GrpcChannel.ForAddress(slaveServerUrl);
+            var client = new BaseSlaveService.BaseSlaveServiceClient(channel);
+            partition.SlaveServers.Add(new BaseServerPartition.SlaveInfo(slaveServerId, client));
+            //}
+        }
+
+        public IPartition GetPartitionOrThrowException(string partitionId) {
             BaseServerPartition partition = null;
-            if (Partitions.TryGetValue(partitionId, out partition)) {
-                return partition;
-            }
+            if (Partitions.TryGetValue(partitionId, out partition)) return partition;
 
             throw new Exception("No such partition");
         }
 
-        public BaseServerStorage() {
-            Partitions = new Dictionary<int, BaseServerPartition>();
-        }
-
-        public string Read(int partitionId, string objKey) {
+        public string Read(string partitionId, string objKey) {
             return Partitions[partitionId].Read(objKey);
         }
 
-        public bool IsPartitionMaster(int partitionId) {
-            return Partitions[partitionId].IsMaster;
-        }
-
-        public string GetMasterUrl(int partitionId) {
+        public string GetMasterUrl(string partitionId) {
             return Partitions[partitionId].GetMasterUrl();
         }
 
         //Assumes someone called IsMaster (True)
-        public void WriteMaster(int partitionId, string objKey, string objValue, int timestamp = -1) {
+        public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp = -1) {
             Partitions[partitionId].WriteMaster(objKey, objValue);
         }
 
         //Assumes someone called IsMaster (False)
-        public void WriteSlave(int partitionId, string objKey, string objValue, int timestamp = -1) {
+        public void WriteSlave(string partitionId, string objKey, string objValue, int timestamp = -1) {
             Partitions[partitionId].WriteSlave(objKey, objValue);
         }
 
         public ListServerResponse ListServer() {
-            List<ListServerResponseEntity> objects = new List<ListServerResponseEntity>();
+            var objects = new List<ListServerResponseEntity>();
 
-            (new List<int>(Partitions.Keys))
+            new List<string>(Partitions.Keys)
                 .ForEach(pId => {
                     var partition = Partitions[pId];
                     var partitionObjects = partition.Objects;
-                    (new List<string>(partitionObjects.Keys))
-                        .ForEach((objId) => {
+                    new List<string>(partitionObjects.Keys)
+                        .ForEach(objId => {
                             objects.Add(new ListServerResponseEntity {
                                 ObjectValue = partitionObjects[objId].Read(),
                                 ObjectId = objId,
@@ -64,6 +67,12 @@ namespace ServerDomain {
 
         public ListGlobalResponse ListGlobal() {
             // TODO : Implement
+            return new ListGlobalResponse();
+        }
+
+
+        public bool IsPartitionMaster(string partitionId) {
+            return Partitions[partitionId].IsMaster;
         }
     }
 }

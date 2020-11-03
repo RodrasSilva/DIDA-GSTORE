@@ -1,7 +1,7 @@
 ﻿public class AdvancedServerObjectInfo {
-    private int _timestampCounter = 0;
-    private object _monitor = new object();
+    private readonly object _monitor = new object();
     private string _objectValue;
+    private int _timestampCounter;
 
     public string Read() {
         lock (_monitor) {

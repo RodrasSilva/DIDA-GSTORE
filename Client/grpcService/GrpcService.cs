@@ -21,8 +21,8 @@ namespace DIDA_GSTORE.grpcService {
             return new DIDAService.DIDAServiceClient(channel);
         }
 
-        private string MapServerIdToUrl(int serverId) {
-            ServerUrlRequest request = new ServerUrlRequest {ServerId = serverId};
+        private string MapServerIdToUrl(string serverId) {
+            var request = new ServerUrlRequest {ServerId = serverId};
             return _client.getServerUrl(request).ServerUrl;
         }
 
@@ -38,7 +38,7 @@ namespace DIDA_GSTORE.grpcService {
             return new ListGlobalResultIdentifier(it.PartitionId, it.ObjectId);
         }
 
-        public void Write(int partitionId, string objectId, string objectValue) {
+        public void Write(string partitionId, string objectId, string objectValue) {
             var request = new WriteRequest {PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
             try {
                 var response = _client.write(request);
@@ -62,13 +62,13 @@ namespace DIDA_GSTORE.grpcService {
         }
 
 
-        public string Read(int partitionId, string objectId, int serverId) {
+        public string Read(string partitionId, string objectId, string serverId) {
             var request = new ReadRequest {PartitionId = partitionId, ObjectId = objectId};
             try {
                 var readResponse = _client.read(request);
                 if (!readResponse.ObjectValue.Equals(ObjectNotPresent))
                     return readResponse.ObjectValue;
-                if (serverId == -1) return ObjectNotPresent;
+                if (serverId.Equals("-1")) return ObjectNotPresent;
                 var serverUrl = MapServerIdToUrl(serverId);
                 _client = BuildClientFromServerUrl(serverUrl);
                 var secondReadResponse = _client.read(request);
@@ -83,7 +83,7 @@ namespace DIDA_GSTORE.grpcService {
         }
 
 
-        public List<ListServerResult> ListServer(int serverId) {
+        public List<ListServerResult> ListServer(string serverId) {
             var request = new ListServerRequest();
             try {
                 var serverUrl = MapServerIdToUrl(serverId);
@@ -101,7 +101,7 @@ namespace DIDA_GSTORE.grpcService {
         }
 
         public List<ListGlobalResult> ListGlobal() {
-            ListGlobalRequest request = new ListGlobalRequest();
+            var request = new ListGlobalRequest();
             try {
                 var listServerResponse = _client.listGlobal(request);
                 return listServerResponse

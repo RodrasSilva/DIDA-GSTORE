@@ -5,15 +5,15 @@ using DIDA_GSTORE.ServerService;
 using Grpc.Core;
 
 namespace ProcessCreationDomain {
-    class ProcessCreation {
+    internal class ProcessCreation {
+        private const int Port = 5001;
         private static string _serverFileUrl;
         private static string _clientFileUrl;
 
-        private static ServerService _serverService = new ServerService();
-        const int Port = 5001;
+        private static readonly ServerService _serverService = new ServerService();
 
-        static void Main(string[] args) {
-            Grpc.Core.Server server = new Grpc.Core.Server {
+        private static void Main(string[] args) {
+            var server = new Server {
                 Services = {ProcessCreationService.BindService(_serverService)},
                 Ports = {new ServerPort("localhost", Port, ServerCredentials.Insecure)}
             };
@@ -30,10 +30,8 @@ namespace ProcessCreationDomain {
         }
 
         public static void StartServer(string url, int minDelay, int maxDelay, List<Partition> partitions) {
-            string partitionString = "";
-            foreach (Partition p in partitions) {
-                partitionString += " " + p.id + " " + p.masterUrl;
-            }
+            var partitionString = "";
+            foreach (var p in partitions) partitionString += " " + p.id + " " + p.masterUrl;
 
             Process.Start(_serverFileUrl, url + " " + minDelay + " " + maxDelay + " " + partitionString);
         }

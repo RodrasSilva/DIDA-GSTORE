@@ -12,17 +12,15 @@ namespace DIDA_GSTORE.commands {
             _waitTime = waitTime;
         }
 
+        public void Execute(GrpcService grpcService) {
+            Thread.Sleep(_waitTime);
+        }
+
         public static WaitCommand ParseCommandLine(string[] arguments) {
-            if (arguments.Length != 1) {
-                throw new Exception("Invalid Wait Command ");
-            }
+            if (arguments.Length != 1) throw new Exception("Invalid Wait Command ");
 
             var waitTime = int.Parse(arguments[WaitTimePosition]);
             return new WaitCommand(waitTime);
-        }
-
-        public void Execute(GrpcService grpcService) {
-            Thread.Sleep(_waitTime);
         }
     }
 }

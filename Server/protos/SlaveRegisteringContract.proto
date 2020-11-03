@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+
+message RegisterRequest{
+  string partitionId = 1;
+  string serverId = 2;
+  string url = 3;
+}
+
+message RegisterResponse{
+  bool ack = 1;
+}
+
+service RegisterSlaveToMasterService{
+  rpc register(RegisterRequest) returns (RegisterResponse);
+}

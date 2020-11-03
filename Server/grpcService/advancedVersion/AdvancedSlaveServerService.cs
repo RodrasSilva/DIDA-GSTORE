@@ -3,7 +3,7 @@ using Grpc.Core;
 
 namespace ServerDomain {
     public class AdvancedSlaveServerService : AdvancedSlaveService.AdvancedSlaveServiceBase {
-        private AdvancedServerStorage _storage;
+        private readonly AdvancedServerStorage _storage;
 
         public AdvancedSlaveServerService(AdvancedServerStorage storage) {
             _storage = storage;
@@ -11,10 +11,10 @@ namespace ServerDomain {
 
 
         public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context) {
-            int partitionId = request.PartitionId;
-            string objectId = request.ObjectId;
-            string objectValue = request.ObjectValue;
-            int timestamp = request.Timestamp;
+            var partitionId = request.PartitionId;
+            var objectId = request.ObjectId;
+            var objectValue = request.ObjectValue;
+            var timestamp = request.Timestamp;
             //AdvancedServerPartition partition = _storage.GetPartitionOrThrowException(partitionId);
             //partition.WriteSlave(objectId, objectValue, timestamp);
 

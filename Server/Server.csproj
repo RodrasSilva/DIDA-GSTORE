@@ -34,6 +34,7 @@
 	  <PackageReference Include="Google.Protobuf" Version="3.13.0" />
 	  <PackageReference Include="Grpc" Version="2.32.0" />
       <PackageReference Include="Grpc.Core" Version="2.32.0" />
+      <PackageReference Include="Grpc.Net.Client" Version="2.32.0" />
 	  <PackageReference Include="Grpc.Tools" Version="2.32.0">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -42,5 +43,6 @@
 	  <Protobuf Include="protos\NodeContract.proto" GrpcServices="Server" />
 	  <Protobuf Include="protos\advancedVersion\AdvancedMasterSlaveContract.proto" GrpcServices="Both" />
 	  <Protobuf Include="protos\baseVersion\BaseMasterSlaveContract.proto" GrpcServices="Both" />
+	  <Protobuf Include="protos\SlaveRegisteringContract.proto" GrpcServices="Both" />
   </ItemGroup>
 </Project>

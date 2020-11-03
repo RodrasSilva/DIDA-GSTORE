@@ -14,7 +14,7 @@ namespace DIDA_GSTORE.ServerService {
             ServerDomain.Server.DelayMessage();
 
             //return base.crash(request, context);
-            Thread t = new Thread(() => CrashMechanism());
+            var t = new Thread(() => CrashMechanism());
             t.Start();
             //new CrashResponse();
             return Task.FromResult(new CrashResponse());

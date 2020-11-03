@@ -7,9 +7,9 @@ using Grpc.Core;
 
 namespace Client {
     public class ClientLogic {
-        private readonly string _operationsFilePath;
         private readonly GrpcService _grpcService;
         private readonly ClientNodeServer _nodeServer;
+        private readonly string _operationsFilePath;
 
         public ClientLogic(string operationsFilePath, string username, string serverHost, int serverPort,
             string clientHost, int clientPort) {
@@ -31,9 +31,8 @@ namespace Client {
 
 
         private void ExecuteCommands() {
-            if (!File.Exists(_operationsFilePath)) {
+            if (!File.Exists(_operationsFilePath))
                 throw new Exception("The given path to the operations file is not valid");
-            }
 
             var commands = ClientCommands.GetCommands(_operationsFilePath);
             commands.ForEach(command => command.Execute(_grpcService));

@@ -32,7 +32,7 @@ namespace DIDA_GSTORE.commands {
                 FreezeRepeatCommandName => FreezeRepeatCommand.ParseCommandLine(args),
                 UnfreezeRepeatCommandName => UnfreezeRepeatCommand.ParseCommandLine(args),
                 WaitCommandName => WaitCommand.ParseCommandLine(args),
-                _ => throw new Exception("Command not found"),
+                _ => throw new Exception("Command not found")
             };
         }
     }

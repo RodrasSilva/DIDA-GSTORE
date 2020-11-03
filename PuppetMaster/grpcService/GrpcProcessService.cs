@@ -1,14 +1,15 @@
 using System;
 using Grpc.Net.Client;
-//using Client;
 using PuppetMasterClient;
+
+//using Client;
 
 namespace DIDA_GSTORE.grpcService {
     public class GrpcProcessService {
+        private readonly GrpcChannel channel;
+        private readonly ProcessCreationService.ProcessCreationServiceClient client;
         private string ServerIp;
         private int ServerPort;
-        private GrpcChannel channel;
-        private ProcessCreationService.ProcessCreationServiceClient client;
 
         public GrpcProcessService(string serverIp, int serverPort) {
             ServerIp = serverIp;
@@ -24,15 +25,14 @@ namespace DIDA_GSTORE.grpcService {
 
         public StartServerResponse StartServer(int serverId, string url,
             int minDelay, int maxDelay) {
-            StartServerRequest request = new StartServerRequest()
+            var request = new StartServerRequest
                 {ServerId = serverId, URL = url, MinDelay = minDelay, MaxDelay = maxDelay};
             return client.startServer(request); // TODO :  Add Logic
             //start server async <= probably not
         }
 
         public StartClientResponse StartClient(string username, string url, string scriptFile) {
-            StartClientRequest request = new StartClientRequest()
-                {Username = username, URL = url, ScriptFile = scriptFile};
+            var request = new StartClientRequest {Username = username, URL = url, ScriptFile = scriptFile};
             return client.startClient(request); // TODO :  Add Logic
         }
     }

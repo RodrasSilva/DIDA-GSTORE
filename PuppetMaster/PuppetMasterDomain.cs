@@ -12,11 +12,7 @@ namespace PuppetMasterMain {
     }
 
     public class PuppetMasterDomain {
-        private Dictionary<int, GrpcNodeService> ServerServices { get; set; }
-        public List<GrpcNodeService> ClientServices { get; set; }
-        private List<GrpcProcessService> PCSs;
-        public int ReplicationFactor { get; set; }
-        public Dictionary<int, List<PartitionInfo>> partitionsPerServer { get; set; }
+        private readonly List<GrpcProcessService> PCSs;
 
         public PuppetMasterDomain() {
             ServerServices = new Dictionary<int, GrpcNodeService>();
@@ -24,6 +20,11 @@ namespace PuppetMasterMain {
             PCSs = new List<GrpcProcessService>();
             partitionsPerServer = new Dictionary<int, List<Partition>>();
         }
+
+        private Dictionary<int, GrpcNodeService> ServerServices { get; }
+        public List<GrpcNodeService> ClientServices { get; set; }
+        public int ReplicationFactor { get; set; }
+        public Dictionary<int, List<PartitionInfo>> partitionsPerServer { get; set; }
 
         public void AddServer(int serverId, string url) {
             ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
@@ -39,7 +40,7 @@ namespace PuppetMasterMain {
         }
 
         public GrpcNodeService GetServerNodeService(int serverId) {
-            GrpcNodeService grpc = ServerServices[serverId];
+            var grpc = ServerServices[serverId];
             if (grpc == null) throw new Exception("No such server");
             return grpc;
         }
@@ -48,7 +49,7 @@ namespace PuppetMasterMain {
             GrpcProcessService grpcProcessService) {
             PCSs.Add(grpcProcessService);
 
-            GrpcNodeService grpcNodeService = new GrpcNodeService("localhost", 5001);
+            var grpcNodeService = new GrpcNodeService("localhost", 5001);
             ServerServices.Add(1, grpcNodeService);
             //GrpcNodeService = grpcNodeService;
 
@@ -56,7 +57,6 @@ namespace PuppetMasterMain {
             if (args.Length == 0) {
                 SetupOperation();
                 ExecuteCommands();
-                return;
             }
             else if (args.Length == 1) {
                 SetupOperation();
@@ -73,12 +73,11 @@ namespace PuppetMasterMain {
             }
             else {
                 Console.WriteLine("Usage: PuppetMaster <operations-file>");
-                return;
             }
         }
 
         private void ExecuteCommands() {
-            List<Thread> allThreads = new List<Thread>();
+            var allThreads = new List<Thread>();
             string commandLine;
             Console.Write(">>> ");
             while ((commandLine = Console.ReadLine()) != null) {
@@ -86,32 +85,26 @@ namespace PuppetMasterMain {
                 Console.Write("\n>>> ");
             }
 
-            foreach (Thread t in allThreads) {
-                t.Join();
-            }
+            foreach (var t in allThreads) t.Join();
         }
 
         private void ExecuteCommands(string operationsFilePath) {
             var results = new List<ICommand>();
             string commandLine;
             using var operationsFileReader = new StreamReader(operationsFilePath);
-            List<Thread> allThreads = new List<Thread>();
+            var allThreads = new List<Thread>();
 
-            while ((commandLine = operationsFileReader.ReadLine()) != null) {
-                CommandExecution(commandLine, allThreads);
-            }
+            while ((commandLine = operationsFileReader.ReadLine()) != null) CommandExecution(commandLine, allThreads);
 
-            foreach (Thread t in allThreads) {
-                t.Join();
-            }
+            foreach (var t in allThreads) t.Join();
         }
 
         private void CommandExecution(string commandLine, List<Thread> allThreads) {
             try {
-                ICommand command = PuppetCommands.GetCommand(commandLine);
+                var command = PuppetCommands.GetCommand(commandLine);
                 if (command.IsAsync) {
-                    PuppetMasterDomain puppetMaster = this;
-                    Thread t = new Thread(() => command.Execute(puppetMaster));
+                    var puppetMaster = this;
+                    var t = new Thread(() => command.Execute(puppetMaster));
 
                     // Start ThreadProc.  Note that on a uniprocessor, the new
                     // thread does not get any processor time until the main thread
@@ -136,7 +129,7 @@ namespace PuppetMasterMain {
 
         private void CommandParseSetup(string commandLine, List<ICommand> setupCommands) {
             try {
-                ICommand command = PuppetCommands.GetCommand(commandLine);
+                var command = PuppetCommands.GetCommand(commandLine);
                 setupCommands.Add(command);
             }
             catch (Exception e) {
@@ -146,10 +139,10 @@ namespace PuppetMasterMain {
 
         private void ExecuteSetup(List<ICommand> commands) {
             try {
-                foreach (ICommand command in commands) {
+                foreach (var command in commands)
                     if (command.IsAsync) {
-                        PuppetMasterDomain puppetMaster = this;
-                        Thread t = new Thread(() => command.Execute(puppetMaster));
+                        var puppetMaster = this;
+                        var t = new Thread(() => command.Execute(puppetMaster));
 
                         // Start ThreadProc.  Note that on a uniprocessor, the new
                         // thread does not get any processor time until the main thread
@@ -163,7 +156,6 @@ namespace PuppetMasterMain {
                     else {
                         command.Execute(this);
                     }
-                }
             }
             catch (NotImplementedException e) {
                 Console.WriteLine(e.Message);

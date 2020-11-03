@@ -1,14 +1,15 @@
 using System;
 using Grpc.Net.Client;
-//using Client;
 using PuppetMasterClient;
+
+//using Client;
 
 namespace DIDA_GSTORE.grpcService {
     public class GrpcNodeService {
+        private readonly GrpcChannel channel;
+        private readonly NodeControlService.NodeControlServiceClient client;
         private string ServerIp;
         private int ServerPort;
-        private GrpcChannel channel;
-        private NodeControlService.NodeControlServiceClient client;
 
         //inves de ip, url
         public GrpcNodeService(string serverIp, int serverPort) {
@@ -24,22 +25,22 @@ namespace DIDA_GSTORE.grpcService {
         }
 
         public StatusResponse Status() {
-            StatusRequest request = new StatusRequest() { };
+            var request = new StatusRequest();
             return client.status(request);
         }
 
         public CrashResponse Crash() {
-            CrashRequest request = new CrashRequest() { };
+            var request = new CrashRequest();
             return client.crash(request);
         }
 
         public FreezeResponse Freeze() {
-            FreezeRequest request = new FreezeRequest() { };
+            var request = new FreezeRequest();
             return client.freeze(request);
         }
 
         public UnfreezeResponse Unfreeze() {
-            UnfreezeRequest request = new UnfreezeRequest() { };
+            var request = new UnfreezeRequest();
             return client.unfreeze(request);
         }
     }
