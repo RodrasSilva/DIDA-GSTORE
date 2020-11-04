@@ -44,8 +44,10 @@ namespace DIDA_GSTORE.grpcService{
                 var response = _client.write(request);
                 switch (response.ResponseCase){
                     case WriteResponse.ResponseOneofCase.ResponseMessage:
+                        Console.WriteLine("Write Successful");
                         break;
                     case WriteResponse.ResponseOneofCase.MasterServerUrl:
+                        Console.WriteLine($"Write - Changing to server ${response.MasterServerUrl.ServerUrl}");
                         _client = BuildClientFromServerUrl(response.MasterServerUrl.ServerUrl);
                         Write(partitionId, objectId, objectValue);
                         break;

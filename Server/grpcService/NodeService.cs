@@ -44,8 +44,11 @@ namespace DIDA_GSTORE.ServerService{
             return Task.FromResult(new UnfreezeResponse());
         }
 
-        // partitionsInfo format : <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
-        public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
+        // partitionsInfo format : <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN> |
+        // <partitionIdM> ... 
+        //or
+        // partitionsInfo format: <partitionId1> <partitionMasterServerURLN1> <isHere>... <partitionIdN> <partitionMasterServerURLN> <isHere>
+         public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
             ServerCallContext context){
             Console.WriteLine("Server - here");
             var partitionsInfo = request.PartitionsInfo.ToArray();

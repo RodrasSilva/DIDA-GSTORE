@@ -18,7 +18,8 @@ namespace DIDA_GSTORE.ServerService{
 
         public WriteResponse Write(WriteRequest request){
             ServerDomain.Server.DelayMessage();
-            try{
+            try
+            {
                 var partitionId = request.PartitionId;
                 var objectId = request.ObjectId;
                 var objectValue = request.ObjectValue;
@@ -32,8 +33,9 @@ namespace DIDA_GSTORE.ServerService{
                 var url = _storage.GetMasterUrl(request.PartitionId);
                 return new WriteResponse{MasterServerUrl = new ServerUrlResponse{ServerUrl = url}};
             }
-            catch (Exception) //later to be named NotFound or smth
+            catch (Exception e) //later to be named NotFound or smth
             {
+                Console.WriteLine(e.Message);
                 return new WriteResponse();
             }
         }

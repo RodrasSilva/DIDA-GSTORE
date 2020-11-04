@@ -147,7 +147,7 @@ namespace ServerDomain{
         public static void DelayMessage(){
             Thread.Sleep(
                 Convert.ToInt32((new Random().NextDouble() *
-                    (_maxDelay - _minDelay) + _minDelay) * 1000)
+                    (_maxDelay - _minDelay) + _minDelay))
             );
         }
     }

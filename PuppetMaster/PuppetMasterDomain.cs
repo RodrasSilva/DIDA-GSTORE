@@ -6,9 +6,10 @@ using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
 
 namespace PuppetMasterMain{
-    public struct PartitionInfo{
+    public struct PartitionInfo {
         public string partitionId;
         public string masterUrl;
+        public string[] serverIds;
     }
 
     public class PuppetMasterDomain{
@@ -26,7 +27,8 @@ namespace PuppetMasterMain{
         private Dictionary<string, string> ServersUrls{ get; }
         public List<GrpcNodeService> ClientServices{ get; set; }
         public int ReplicationFactor{ get; set; }
-        public Dictionary<string, List<PartitionInfo>> partitionsPerServer{ get; set; }
+        //public Dictionary<string, List<PartitionInfo>> partitionsPerServer{ get; set; }
+        public List<PartitionInfo> partitions { get; set; }
 
         public List<GrpcNodeService> GetAllNodeServices(){
             var result = new List<GrpcNodeService>();
