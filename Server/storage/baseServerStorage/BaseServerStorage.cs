@@ -28,7 +28,8 @@ namespace ServerDomain {
         public void AddPartition(string partitionId, string masterUrl)
         {
             //lock (Partitions) {
-            Partitions[partitionId] = new BaseServerPartition(masterUrl);
+            Console.WriteLine("Creating partition " + partitionId);
+            Partitions.Add(partitionId, new BaseServerPartition(masterUrl));
             //}
         }
 

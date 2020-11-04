@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Grpc.Net.Client;
 using PuppetMasterClient;
 
@@ -46,9 +47,9 @@ namespace DIDA_GSTORE.grpcService {
             return client.unfreeze(request);
         }
 
-        public CompleteSetupResponse CompleteSetup()
+        public CompleteSetupResponse CompleteSetup(List<string> partitionsInfo)
         {
-            var request = new CompleteSetupRequest();
+            var request = new CompleteSetupRequest { PartitionsInfo = { partitionsInfo } };
             return client.completeSetup(request);
         }
     }

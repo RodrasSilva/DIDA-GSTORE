@@ -20,10 +20,10 @@ namespace ServerDomain {
 
         private static void ParseArgs(string[] args)
         {
-            if (args.Length < 5 || args.Length % 2 != 0)
+            if (args.Length < 5)
             {
-                Console.WriteLine("You gave: " + string.Join(" ",args) +
-                    ". Usage is: Server <id> <url> <minDelay> <maxDelay> <partitionId1> <partitionMaster1Url> ... <partitionIdN> <partitionMasterNUrl>");
+                Console.WriteLine("You gave: " + string.Join(" ", args) +
+                    ". Usage is: Server <id> <url> <minDelay> <maxDelay> <partitionId1> ... <partitionIdN>");
                 return;
             }
 
@@ -32,15 +32,26 @@ namespace ServerDomain {
             _minDelay = float.Parse(args[2]);
             _maxDelay = float.Parse(args[3]);
 
-            _partitions = args.Take(4).ToArray();
+            _partitions = args.Skip(4).ToArray();
+
+            /* See partitions args
+            for (var index = 0; index < _partitions.Length; index++)
+            {
+                Console.WriteLine(_serverId + " Partition " + index + ": " + _partitions[index]);
+            }
+            */
         }
-        public static void Main(string[] args) {
+
+        public static void Main(string[] args)
+        {
             ParseArgs(args);
 
-            if (UseBaseVersion) {
+            if (UseBaseVersion)
+            {
                 _storage = new BaseServerStorage();
             }
-            else {
+            else
+            {
 #pragma warning disable CS0162 // Unreachable code detected
                 _storage = new AdvancedServerStorage();
 #pragma warning restore CS0162 // Unreachable code detected
@@ -53,8 +64,9 @@ namespace ServerDomain {
             var registerSlavesService = new SlaveRegisteringService(_storage);
 
             FillPartitionsFromArgs();
-
-            var server = new Grpc.Core.Server {
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            var server = new Grpc.Core.Server
+            {
                 Services = {
                     DIDAService.BindService(serverService),
                     NodeControlService.BindService(nodeService),
@@ -74,7 +86,7 @@ namespace ServerDomain {
             };
 
             server.Start();
-            Console.WriteLine("ChatServer server listening on port " + serverParameters.Port);
+            Console.WriteLine("Server " + _serverId + " listening on port " + serverParameters.Port);
             ReadCommands();
 
             server.ShutdownAsync().Wait();
@@ -86,51 +98,61 @@ namespace ServerDomain {
         }
         private static void FillPartitionsFromArgs()
         {
-            for (var index = 0; index < _partitions.Length; index+=2)
+            for (var index = 0; index < _partitions.Length; index++)
             {
                 var partitionId = _partitions[index];
-                var masterUrl = _partitions[index + 1];
-
-                _storage.AddPartition(partitionId, masterUrl);
+                _storage.AddPartition(partitionId, "");
             }
         }
 
-        public static void RegisterPartitions()
+        public static void RegisterPartitions(string[] partitionsInfo)
         {
             //this string is assumed to always be 
             //[partitionId.1, partitionMasterUrl.1, ...., partitionId.N, partitionMasterUrl.N]
-            for (var i = 0; i < _partitions.Length; i += 2)
+            try
             {
-                var partitionId = _partitions[i];
-                var partitionMasterUrl = _partitions[i + 1];
-
-                if (partitionMasterUrl.Equals(_serverUrl))
+                for (var i = 0; i < partitionsInfo.Length; i += 2)
                 {
-                    _storage.RegisterPartitionMaster(partitionId);
-                    continue; // Important, cannot be slave and master to the same partition
-                }
-                try
-                {
-                    var request = new RegisterRequest { 
-                        ServerId = _serverId,
-                        Url = _serverUrl,
-                        PartitionId = partitionId 
-                    };
+                    var partitionId = partitionsInfo[i];
+                    var partitionMasterUrl = partitionsInfo[i + 1];
+                    Console.WriteLine("* Server ["+ _serverId + "] - Registering to partition " + partitionId + " with master url = " + partitionMasterUrl + " *");
+                    if (partitionMasterUrl.Equals(_serverUrl))
+                    {
+                        Console.WriteLine($"  Server {_serverId} - Registering as master to partition {partitionId}");
 
-                    Console.WriteLine($"Registering as slave to partition {partitionId}");
-                    AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+                        _storage.RegisterPartitionMaster(partitionId);
+                        continue; // Important, cannot be slave and master to the same partition
+                    }
+                    try
+                    {
+                        var request = new RegisterRequest
+                        {
+                            ServerId = _serverId,
+                            Url = _serverUrl,
+                            PartitionId = partitionId
+                        };
 
-                    var channel = GrpcChannel.ForAddress(partitionMasterUrl);
-                    var client = new RegisterSlaveToMasterService.
-                        RegisterSlaveToMasterServiceClient(channel);
+                        Console.WriteLine($" Server {_serverId} - Registering as slave to partition {partitionId}");
+                        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-                    client.registerAsSlave(request);
+                        var channel = GrpcChannel.ForAddress(partitionMasterUrl);
+                        var client = new RegisterSlaveToMasterService.
+                            RegisterSlaveToMasterServiceClient(channel);
+
+                        client.registerAsSlave(request);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"  Server {_serverId} - Error registering as slave to partition {partitionId}");
+                    }
                 }
-                catch (Exception)
-                {
-                    Console.WriteLine($"Error registering as slave to partition {partitionId}");
-                }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
+            Console.WriteLine("----------------------------------------------------");
+            Console.WriteLine($"Finished server {_serverId} setup");
+            Console.WriteLine("----------------------------------------------------");
         }
 
         public static void DelayMessage() {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -8,8 +9,7 @@ namespace DIDA_GSTORE.ServerService {
         public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
             Console.WriteLine("Status called");
-            return Task.FromResult(new StatusResponse());
-
+            return Task.FromResult(new StatusResponse { Status = " ok "});
             //return base.status(request, context);
         }
 
@@ -43,10 +43,12 @@ namespace DIDA_GSTORE.ServerService {
             //return base.unfreeze(request, context);
             return Task.FromResult(new UnfreezeResponse());
         }
-
+        // partitionsInfo format : <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
         public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request, ServerCallContext context)
         {
-            ServerDomain.Server.RegisterPartitions();
+            Console.WriteLine("Server - here");
+            string[] partitionsInfo = request.PartitionsInfo.ToArray();
+            ServerDomain.Server.RegisterPartitions(partitionsInfo);
             return Task.FromResult(new CompleteSetupResponse());
         }
 

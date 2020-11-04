@@ -59,7 +59,7 @@ message StatusRequest {
 }
 
 message StatusResponse {
-	//string status = 1;
+  string status = 1;
 }
 
 message CrashRequest {
@@ -84,8 +84,9 @@ message UnfreezeResponse {
 }
 
 message CompleteSetupRequest {
-	//nothing
+	repeated string partitionsInfo = 1;
 }
+
 
 message CompleteSetupResponse {
 	//nothing

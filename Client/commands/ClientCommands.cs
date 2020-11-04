@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace DIDA_GSTORE.commands {
 
         public static ICommand GetCommand(string commandLine, StreamReader operationsFileReader = null) {
             var splitLine = commandLine.Split(ArgumentSeparator);
+            Console.WriteLine("Client executing "+commandLine);
             var commandName = splitLine[0];
             var args = splitLine.Skip(1).ToArray();
             return ParseCommand(commandName, args, operationsFileReader);

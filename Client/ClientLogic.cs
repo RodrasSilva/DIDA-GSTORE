@@ -31,12 +31,13 @@ namespace Client {
 
 
         private void ExecuteCommands() {
-            _operationsFilePath = "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Client\\scripts\\" + _operationsFilePath;
+            var path = "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\Client\\scripts\\"; // TODO : Change Path 
+            var operationsFilePath = path + _operationsFilePath;
+            Console.WriteLine("Client reading file : " + operationsFilePath);
+            if (!File.Exists(operationsFilePath))
+                throw new Exception("The given path to the operations file is not valid, file: " + operationsFilePath);
 
-            if (!File.Exists(_operationsFilePath))
-                throw new Exception("The given path to the operations file is not valid, file: " + _operationsFilePath);
-
-            var commands = ClientCommands.GetCommands(_operationsFilePath);
+            var commands = ClientCommands.GetCommands(operationsFilePath);
             commands.ForEach(command => command.Execute(_grpcService));
         }
     }

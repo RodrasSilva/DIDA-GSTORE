@@ -17,12 +17,14 @@ namespace PuppetMasterMain {
 
         public PuppetMasterDomain() {
             ServerServices = new Dictionary<string, GrpcNodeService>();
+            ServersUrls = new Dictionary<string, string>();
             ClientServices = new List<GrpcNodeService>();
             PCSs = new List<GrpcProcessService>();
             partitionsPerServer = new Dictionary<string, List<PartitionInfo>>();
         }
 
         private Dictionary<string, GrpcNodeService> ServerServices { get; }
+        private Dictionary<string, string> ServersUrls { get; }
         public List<GrpcNodeService> ClientServices { get; set; }
         public int ReplicationFactor { get; set; }
         public Dictionary<string, List<PartitionInfo>> partitionsPerServer { get; set; }
@@ -37,6 +39,7 @@ namespace PuppetMasterMain {
 
         public void AddServer(string serverId, string url) {
             ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
+            ServersUrls.Add(serverId,url);
         }
 
         public void AddClient(string url) {
@@ -80,8 +83,8 @@ namespace PuppetMasterMain {
             }
             else if (args.Length == 1) {
                 SetupOperation();
-
-                var path = "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\PuppetMaster\\scripts\\";
+                
+                var path = "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\PuppetMaster\\scripts\\"; // TODO : Change Path 
                 var operationsFilePath = args[0];
                 operationsFilePath = path + operationsFilePath;
                 if (!File.Exists(operationsFilePath)) {
@@ -197,17 +200,34 @@ namespace PuppetMasterMain {
                     command.Execute(this);
                 }
                 //foreach (var t in setupThreads) t.Join();
-                foreach (var server in ServerServices.Values)
+                foreach (var serverId in ServerServices.Keys)
                 {
-                    server.CompleteSetup();
+                    // Send partition info to server as <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
+                    List<string> serverPartitions = new List<string>();
+                    GrpcNodeService serverNode = ServerServices[serverId];
+                    List<PartitionInfo> serverPartitionsInfo = partitionsPerServer[serverId];
+                    Console.WriteLine("Puppet Master - Completing setup for server " + serverId);
+                    serverPartitionsInfo.ForEach(p =>
+                    {
+                        Console.WriteLine("Puppet Master - Completing setup for server " + serverId + " - Adding partition " + p.partitionId + " with master " + ServersUrls[p.masterUrl] );
+                        serverPartitions.Add(p.partitionId);
+                        serverPartitions.Add(ServersUrls[p.masterUrl]);
+                    });
+                    serverNode.CompleteSetup(serverPartitions);
                 }
+                
             }
             catch (NotImplementedException e) {
                 Console.WriteLine(e.Message);
+                Console.WriteLine("here");
             }
             catch (Exception e) {
                 Console.WriteLine(e.Message);
+                Console.WriteLine("here 2.0");
             }
+            Console.WriteLine("----------------------------------------------------");
+            Console.WriteLine("Finished servers setup");
+            Console.WriteLine("----------------------------------------------------");
         }
 
         private void SetupOperation() {
