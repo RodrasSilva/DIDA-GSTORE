@@ -4,11 +4,15 @@ using Grpc.Net.Client;
 
 namespace ServerDomain{
     public class BaseServerStorage : IStorage{
+
+        public Dictionary<string, BaseServerPartition> Partitions { get; }
+        public Dictionary<string, string> Servers { get; }
+
+
         public BaseServerStorage(){
             Partitions = new Dictionary<string, BaseServerPartition>();
+            Servers = new Dictionary<string, string>();
         }
-
-        public Dictionary<string, BaseServerPartition> Partitions{ get; }
 
         public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl){
             //lock (Partitions) {
@@ -36,6 +40,14 @@ namespace ServerDomain{
             if (Partitions.TryGetValue(partitionId, out partition)) return partition;
 
             throw new Exception("No such partition");
+        }
+
+        public string GetServerOrThrowException(string serverId)
+        {
+            string s = null;
+            if (Servers.TryGetValue(serverId, out s)) return s;
+
+            throw new Exception("No such server");
         }
 
         public string Read(string partitionId, string objKey){
@@ -103,6 +115,11 @@ namespace ServerDomain{
 
         public bool IsPartitionMaster(string partitionId){
             return Partitions[partitionId].IsMaster;
+        }
+
+        public void AddServer(string serverId, string url)
+        {
+            Servers.Add(serverId, url);
         }
     }
 }

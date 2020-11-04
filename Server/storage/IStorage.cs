@@ -1,6 +1,8 @@
 ﻿public interface IStorage{
     public IPartition GetPartitionOrThrowException(string partitionId);
 
+    public string GetServerOrThrowException(string serverId);
+
     public string Read(string partitionId, string objKey);
 
     // public bool IsPartitionMaster(string partitionId);
@@ -16,4 +18,6 @@
 
     public void RegisterPartitionMaster(string partitionId);
     public void AddPartition(string partitionId, string masterUrl);
+
+    public void AddServer(string serverId, string url);
 }

@@ -98,15 +98,31 @@ namespace ServerDomain{
             }
         }
 
-        public static void RegisterPartitions(string[] partitionsInfo){
+        public static void RegisterServers(ServerInfo[] serversInfo)
+        {
+            foreach(ServerInfo serverInfo in serversInfo)
+            {
+                _storage.AddServer(serverInfo.ServerId, serverInfo.ServerUrl);
+            }
+        }
+
+        public static void RegisterPartitions(PartitionInfo[] partitionsInfo){
             //this string is assumed to always be 
             //[partitionId.1, partitionMasterUrl.1, ...., partitionId.N, partitionMasterUrl.N]
             try{
-                for (var i = 0; i < partitionsInfo.Length; i += 2){
-                    var partitionId = partitionsInfo[i];
-                    var partitionMasterUrl = partitionsInfo[i + 1];
+                for (var i = 0; i < partitionsInfo.Length; i++){
+                    var partitionId = partitionsInfo[i].PartitionId;
+                    var partitionMasterUrl = partitionsInfo[i].PartitionMasterUrl;
+                    var isMyPartition = partitionsInfo[i].IsMyPartition;
+
                     Console.WriteLine("* Server [" + _serverId + "] - Registering to partition " + partitionId +
                                       " with master url = " + partitionMasterUrl + " *");
+                    if (!isMyPartition)
+                    {
+                        _storage.AddPartition(partitionId, partitionMasterUrl);
+                        continue;
+                    }
+
                     if (partitionMasterUrl.Equals(_serverUrl)){
                         Console.WriteLine($"  Server {_serverId} - Registering as master to partition {partitionId}");
 

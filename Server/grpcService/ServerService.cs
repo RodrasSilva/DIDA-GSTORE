@@ -33,7 +33,7 @@ namespace DIDA_GSTORE.ServerService{
                 var url = _storage.GetMasterUrl(request.PartitionId);
                 return new WriteResponse{MasterServerUrl = new ServerUrlResponse{ServerUrl = url}};
             }
-            catch (Exception e) //later to be named NotFound or smth
+            catch (Exception e) 
             {
                 Console.WriteLine(e.Message);
                 return new WriteResponse();
@@ -73,7 +73,12 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<ServerUrlResponse> getServerUrl(ServerUrlRequest request, ServerCallContext context){
-            return base.getServerUrl(request, context); // TODO : Implement
+
+            string serverId = request.ServerId;
+            string serverUrl = _storage.GetServerOrThrowException(serverId);
+
+            return Task.FromResult(new ServerUrlResponse { ServerUrl = serverUrl });
+
         }
     }
 }

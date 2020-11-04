@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,13 @@ namespace DIDA_GSTORE.ServerService{
          public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
             ServerCallContext context){
             Console.WriteLine("Server - here");
-            var partitionsInfo = request.PartitionsInfo.ToArray();
+
+
+            var partitionsInfo = request.Partitions.ToArray();
+            var serversInfo = request.ServerInfo.ToArray();
+
+
+            ServerDomain.Server.RegisterServers(serversInfo);
             ServerDomain.Server.RegisterPartitions(partitionsInfo);
             return Task.FromResult(new CompleteSetupResponse());
         }
