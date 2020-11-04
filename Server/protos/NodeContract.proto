@@ -32,11 +32,20 @@ message UnfreezeResponse {
 	//nothing
 }
 
+message CompleteSetupRequest {
+	//nothing
+}
+
+message CompleteSetupResponse {
+	//nothing
+}
+
 service NodeControlService {
   rpc status(StatusRequest) returns (StatusResponse);
   rpc crash(CrashRequest) returns (CrashResponse);
   rpc freeze(FreezeRequest) returns (FreezeResponse);
   rpc unfreeze(UnfreezeRequest) returns (UnfreezeResponse);
+  rpc completeSetup(CompleteSetupRequest) returns (CompleteSetupResponse);
 }
 
 //we could have a service only for status (client).

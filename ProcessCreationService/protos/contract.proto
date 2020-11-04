@@ -4,15 +4,16 @@
 syntax = "proto3";
 
 message PartitionMessage {
-	int32 id = 1;
+	string id = 1;
 	string masterURL= 2;
 }
 message StartServerRequest {
-	string URL = 1;
-	int32 minDelay = 2;
-	int32 maxDelay = 3;
+	string serverId = 1;
+	string URL = 2;
+	float minDelay = 3;
+	float maxDelay = 4;
 
-	repeated PartitionMessage partitions = 4;
+	repeated PartitionMessage partitions = 5;
 }
 
 message StartServerResponse {

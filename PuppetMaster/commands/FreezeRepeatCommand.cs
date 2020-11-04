@@ -5,9 +5,9 @@ namespace DIDA_GSTORE.commands {
     public class FreezeRepeatCommand : ICommand {
         private const int ServerIdPosition = 0;
 
-        private readonly int _serverId;
+        private readonly string _serverId;
 
-        private FreezeRepeatCommand(int serverId) {
+        private FreezeRepeatCommand(string serverId) {
             _serverId = serverId;
         }
 
@@ -23,7 +23,7 @@ namespace DIDA_GSTORE.commands {
             if (arguments.Length != 1) throw new Exception("Invalid Freeze Command ");
 
             var serverId = arguments[ServerIdPosition];
-            return new FreezeRepeatCommand(int.Parse(serverId));
+            return new FreezeRepeatCommand(serverId);
         }
     }
 }

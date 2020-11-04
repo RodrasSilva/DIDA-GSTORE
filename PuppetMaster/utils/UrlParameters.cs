@@ -14,8 +14,9 @@ namespace Client.utils {
         public int Port { get; }
 
         public static UrlParameters From(string url) {
-            var parsedUrl = url.Split(':');
-            if (parsedUrl.Length != 2) throw new Exception("Bad format on url: " + parsedUrl);
+            Console.WriteLine(url);
+            var parsedUrl = url.Split(":");
+            if (parsedUrl.Length != 2) throw new Exception("Bad format on url: " + url);
 
             var hostname = parsedUrl[HostnamePosition];
             var server = int.Parse(parsedUrl[PortPosition]);

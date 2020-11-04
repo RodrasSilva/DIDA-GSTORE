@@ -5,9 +5,9 @@ namespace DIDA_GSTORE.commands {
     public class CrashRepeatCommand : ICommand {
         private const int ServerIdPosition = 0;
 
-        private readonly int _serverId;
+        private readonly string _serverId;
 
-        private CrashRepeatCommand(int serverId) {
+        private CrashRepeatCommand(string serverId) {
             _serverId = serverId;
         }
 
@@ -23,7 +23,7 @@ namespace DIDA_GSTORE.commands {
             if (arguments.Length != 1) throw new Exception("Invalid Crash Command ");
 
             var serverId = arguments[ServerIdPosition];
-            return new CrashRepeatCommand(int.Parse(serverId));
+            return new CrashRepeatCommand(serverId);
         }
     }
 }

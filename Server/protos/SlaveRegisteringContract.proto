@@ -12,5 +12,5 @@ message RegisterResponse{
 }
 
 service RegisterSlaveToMasterService{
-  rpc register(RegisterRequest) returns (RegisterResponse);
+  rpc registerAsSlave(RegisterRequest) returns (RegisterResponse);
 }

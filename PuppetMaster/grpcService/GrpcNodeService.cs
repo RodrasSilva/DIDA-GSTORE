@@ -10,11 +10,12 @@ namespace DIDA_GSTORE.grpcService {
         private readonly NodeControlService.NodeControlServiceClient client;
         private string ServerIp;
         private int ServerPort;
-
+        public string Url { get; set; }
         //inves de ip, url
         public GrpcNodeService(string serverIp, int serverPort) {
             ServerIp = serverIp;
             ServerPort = serverPort;
+            Url = ServerIp + ":" + serverPort;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             channel = GrpcChannel.ForAddress(BuildServerAdress(serverIp, serverPort));
             client = new NodeControlService.NodeControlServiceClient(channel);
@@ -39,9 +40,16 @@ namespace DIDA_GSTORE.grpcService {
             return client.freeze(request);
         }
 
-        public UnfreezeResponse Unfreeze() {
+        public UnfreezeResponse Unfreeze()
+        {
             var request = new UnfreezeRequest();
             return client.unfreeze(request);
+        }
+
+        public CompleteSetupResponse CompleteSetup()
+        {
+            var request = new CompleteSetupRequest();
+            return client.completeSetup(request);
         }
     }
 }

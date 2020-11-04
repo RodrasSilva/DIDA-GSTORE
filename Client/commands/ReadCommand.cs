@@ -23,7 +23,7 @@ namespace DIDA_GSTORE.commands {
         }
 
         public static ReadCommand ParseCommandLine(string[] arguments) {
-            if (arguments.Length != 2 || arguments.Length != 3) throw new Exception("Invalid Read Command ");
+            if (!( arguments.Length != 2 || arguments.Length != 3) )throw new Exception("Invalid Read Command ");
 
             var partitionId = arguments[PartitionIdPosition];
             var objectId = arguments[ObjectIdPosition];

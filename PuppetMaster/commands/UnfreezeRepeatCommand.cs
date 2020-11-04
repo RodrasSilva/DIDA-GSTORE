@@ -4,9 +4,9 @@ using PuppetMasterMain;
 namespace DIDA_GSTORE.commands {
     public class UnfreezeRepeatCommand : ICommand {
         private const int ServerIdPosition = 0;
-        private readonly int _serverId;
+        private readonly string _serverId;
 
-        private UnfreezeRepeatCommand(int serverId) {
+        private UnfreezeRepeatCommand(string serverId) {
             _serverId = serverId;
         }
 
@@ -22,7 +22,7 @@ namespace DIDA_GSTORE.commands {
             if (arguments.Length != 1) throw new Exception("Invalid Unfreeze Command ");
 
             var serverId = arguments[ServerIdPosition];
-            return new UnfreezeRepeatCommand(int.Parse(serverId));
+            return new UnfreezeRepeatCommand(serverId);
         }
     }
 }

@@ -3,13 +3,12 @@ using System.Linq;
 
 public class BaseServerPartition : IPartition {
     private readonly string _masterUrl;
-    private int _partitionId;
 
-    public BaseServerPartition(int partitionId, string masterUrl) {
-        _partitionId = partitionId;
+    public BaseServerPartition(string masterUrl) {
         _masterUrl = masterUrl;
         Objects = new Dictionary<string, BaseServerObjectInfo>();
         SlaveServers = new List<SlaveInfo>();
+        IsMaster = false;
     }
 
     public Dictionary<string, BaseServerObjectInfo> Objects { get; }

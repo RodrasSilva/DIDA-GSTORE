@@ -22,8 +22,8 @@ namespace DIDA_GSTORE.commands {
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            var response = puppetMaster.GetProcessService().StartClient(_username,
-                _clientUrl, _scriptFile);
+            var response = puppetMaster.GetProcessService().StartClient(
+                _username, _clientUrl, _scriptFile, puppetMaster.GetDefaultServerUrl()) ;
 
             //if response is cool
             puppetMaster.AddClient(_clientUrl);

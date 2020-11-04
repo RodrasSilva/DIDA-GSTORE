@@ -9,7 +9,7 @@ namespace Server.grpcService {
             _storage = storage;
         }
 
-        public override Task<RegisterResponse> register(RegisterRequest request, ServerCallContext context) {
+        public override Task<RegisterResponse> registerAsSlave(RegisterRequest request, ServerCallContext context) {
             var partitionId = request.PartitionId;
             var slaveServerId = request.ServerId;
             var slaveServerUrl = request.Url;

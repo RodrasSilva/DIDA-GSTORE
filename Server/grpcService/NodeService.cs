@@ -37,5 +37,19 @@ namespace DIDA_GSTORE.ServerService {
             ServerDomain.Server.DelayMessage();
             return base.unfreeze(request, context);
         }
+
+        public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request, ServerCallContext context)
+        {
+            ServerDomain.Server.RegisterPartitions();
+            return Task.FromResult(new CompleteSetupResponse());
+        }
+
+
+        /*
+         public void SetupComplete() {
+            ServerDomain.Server.RegisterPartitions();
+         }
+
+         */
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using PuppetMasterMain;
 
@@ -8,10 +9,11 @@ namespace DIDA_GSTORE.commands {
         private const int PartitionNamePosition = 1;
 
         private readonly int _numberOfReplicas;
-        private readonly int _partitionName;
+        private readonly string _partitionName;
         private readonly string[] _servers;
 
-        private PartitionCommand(int numberOfReplicas, int partitionName, string[] servers) {
+        private PartitionCommand(int numberOfReplicas, string partitionName, string[] servers) {
+            _numberOfReplicas = numberOfReplicas;
             _partitionName = partitionName;
             _servers = servers;
         }
@@ -24,15 +26,16 @@ namespace DIDA_GSTORE.commands {
             if (_numberOfReplicas != puppetMaster.ReplicationFactor)
                 throw new Exception("ReplicationFactor does not match");
 
-            int masterId = _servers[0];
-            foreach (int serverId in _servers) {
-                List<PartitionInfo> partitions = puppetMaster.partitionsPerServer[serverId];
-                if (partitions == null) {
-                    puppetMaster.partitionsPerServer[serverId] = new List<PartitionInfo>();
-                    partitions = puppetMaster.partitionsPerServer[serverId];
+            string masterUrl = _servers[0];
+            foreach (string serverId in _servers) {
+                if ( !puppetMaster.partitionsPerServer.ContainsKey(serverId) )
+                {
+                    puppetMaster.partitionsPerServer.Add(serverId, new List<PartitionInfo>());
                 }
 
-                partitions.Add(new PartitionInfo {_partitionName, masterId});
+                List<PartitionInfo> partitions = puppetMaster.partitionsPerServer[serverId];
+
+                partitions.Add(new PartitionInfo{ partitionId = _partitionName, masterUrl = masterUrl });
             }
 
             //throw new System.NotImplementedException();
@@ -42,7 +45,7 @@ namespace DIDA_GSTORE.commands {
             if (arguments.Length < 3) throw new Exception("Invalid Partition Command ");
 
             var numberOfReplicas = int.Parse(arguments[NumberOfReplicasPosition]);
-            var partitionName = int.Parse(arguments[PartitionNamePosition]);
+            var partitionName = arguments[PartitionNamePosition];
             var servers = arguments.Skip(2).ToArray();
             return new PartitionCommand(numberOfReplicas, partitionName, servers);
         }

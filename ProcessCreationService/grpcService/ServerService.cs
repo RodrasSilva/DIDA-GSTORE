@@ -11,7 +11,7 @@ namespace DIDA_GSTORE.ServerService {
 
             foreach (var p in request.Partitions) partitions.Add(new Partition {id = p.Id, masterUrl = p.MasterURL});
 
-            ProcessCreation.StartServer(request.URL, request.MinDelay, request.MaxDelay, partitions);
+            ProcessCreation.StartServer(request.ServerId, request.URL, request.MinDelay, request.MaxDelay, partitions);
             return Task.FromResult(new StartServerResponse());
 
             //things

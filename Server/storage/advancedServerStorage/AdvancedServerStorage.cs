@@ -35,6 +35,16 @@ namespace ServerDomain {
         public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl) {
             throw new NotImplementedException();
         }
+        public void RegisterPartitionMaster(string partitionId)
+        {
+            throw new NotImplementedException();
+        }
+        public void AddPartition(string partitionId, string masterUrl)
+        {
+            //lock (Partitions) {
+            throw new NotImplementedException();
+            //}
+        }
 
         public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp) {
             throw new NotImplementedException();

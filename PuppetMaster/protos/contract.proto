@@ -18,15 +18,16 @@ message ChangeReplicationFactorResponse {
 //PROCESS CREATION SERVICE 
 
 message PartitionMessage {
-	int32 id = 1;
+	string id = 1;
 	string masterURL = 2;
 }
 message StartServerRequest {
-	string URL = 1;
-	int32 minDelay = 2;
-	int32 maxDelay = 3;
+	string serverId = 1;
+	string URL = 2;
+	float minDelay = 3;
+	float maxDelay = 4;
 
-	repeated PartitionMessage partitions = 4;
+	repeated PartitionMessage partitions = 5;
 }
 
 message StartServerResponse {
@@ -82,11 +83,20 @@ message UnfreezeResponse {
 	//nothing
 }
 
+message CompleteSetupRequest {
+	//nothing
+}
+
+message CompleteSetupResponse {
+	//nothing
+}
+
 service NodeControlService {
   rpc status(StatusRequest) returns (StatusResponse);
   rpc crash(CrashRequest) returns (CrashResponse);
   rpc freeze(FreezeRequest) returns (FreezeResponse);
   rpc unfreeze(UnfreezeRequest) returns (UnfreezeResponse);
+  rpc completeSetup(CompleteSetupRequest) returns (CompleteSetupResponse);
 }
 
 //we could have a service only for status (client).

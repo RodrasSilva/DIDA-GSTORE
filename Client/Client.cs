@@ -5,7 +5,8 @@ namespace Client {
     public static class Client {
         public static void Main(string[] args) {
             if (args.Length != 4) {
-                Console.WriteLine("Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
+                Console.WriteLine("Given: " + string.Join(" ", args) + 
+                    "Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
                 return;
             }
 

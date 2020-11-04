@@ -15,7 +15,7 @@ namespace DIDA_GSTORE.commands {
 
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            throw new NotImplementedException();
+            puppetMaster.ReplicationFactor = _numberOfServers;
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {

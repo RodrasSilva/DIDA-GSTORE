@@ -1,4 +1,5 @@
-﻿using DIDA_GSTORE.grpcService;
+﻿using Client.utils;
+using DIDA_GSTORE.grpcService;
 
 namespace PuppetMasterMain {
     public class PuppetMaster {
@@ -6,17 +7,21 @@ namespace PuppetMasterMain {
 
         public static void Main(string[] args) {
             //grpcProcessService = new GrpcProcessService("localhost", 5001);
-            grpcProcessService = null;
+            grpcProcessService = urlToProcessService("localhost:5001");
             var puppetMasterDomain = new PuppetMasterDomain();
             puppetMasterDomain.Start(args, grpcProcessService);
         }
 
-        public static GrpcProcessService urlToProcessService(string url) {
-            return new GrpcProcessService(url, 5001);
+        public static GrpcProcessService urlToProcessService(string url) 
+        {
+            UrlParameters urlParams = UrlParameters.From(url);
+            return new GrpcProcessService(urlParams.Hostname, urlParams.Port);
         }
 
-        public static GrpcNodeService urlToNodeService(string url) {
-            return new GrpcNodeService(url, 5001);
+        public static GrpcNodeService urlToNodeService(string url)
+        {
+            UrlParameters urlParams = UrlParameters.From(url);
+            return new GrpcNodeService(urlParams.Hostname, urlParams.Port);
         }
     }
 }

@@ -10,13 +10,25 @@ namespace ServerDomain {
 
         public Dictionary<string, BaseServerPartition> Partitions { get; }
 
-        public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl) {
+        public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl)
+        {
             //lock (Partitions) {
             var partition = Partitions[partitionId];
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             var channel = GrpcChannel.ForAddress(slaveServerUrl);
             var client = new BaseSlaveService.BaseSlaveServiceClient(channel);
             partition.SlaveServers.Add(new BaseServerPartition.SlaveInfo(slaveServerId, client));
+            //}
+        }
+
+        public void RegisterPartitionMaster(string partitionId)
+        {
+            Partitions[partitionId].IsMaster = true;
+        }
+        public void AddPartition(string partitionId, string masterUrl)
+        {
+            //lock (Partitions) {
+            Partitions[partitionId] = new BaseServerPartition(masterUrl);
             //}
         }
 
@@ -65,9 +77,30 @@ namespace ServerDomain {
             return new ListServerResponse {Objects = {objects}};
         }
 
-        public ListGlobalResponse ListGlobal() {
-            // TODO : Implement
-            return new ListGlobalResponse();
+        public ListGlobalResponse ListGlobal()
+        { /*Not sure if it is right.*/
+
+            var objects = new List<ListGlobalResponseEntity>();
+
+            new List<string>(Partitions.Keys)
+              .ForEach(pId => {
+                  var identifiers = new List<ObjectIdentifier>();
+                  var partition = Partitions[pId];
+                  var partitionObjects = partition.Objects;
+                  new List<string>(partitionObjects.Keys)
+                    .ForEach(objId => {
+                        identifiers.Add(new ObjectIdentifier
+                        {
+                            ObjectId = objId,
+                            PartitionId = pId
+                        });
+                    });
+                  objects.Add(new ListGlobalResponseEntity
+                  {
+                      Identifiers = { identifiers }
+                  });
+              });
+            return new ListGlobalResponse { Objects = { objects } };
         }
 
 

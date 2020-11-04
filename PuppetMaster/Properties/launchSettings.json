@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PuppetMaster": {
+      "commandName": "Project",
+      "commandLineArgs": "sample_pm_script"
+    }
+  }
+}

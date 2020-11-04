@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Google.Protobuf.Collections;
 using Grpc.Net.Client;
 using PuppetMasterClient;
+using PuppetMasterMain;
 
 //using Client;
 
@@ -23,16 +26,34 @@ namespace DIDA_GSTORE.grpcService {
             return string.Format("http://{0}:{1}", serverIp, serverPort);
         }
 
-        public StartServerResponse StartServer(int serverId, string url,
-            int minDelay, int maxDelay) {
-            var request = new StartServerRequest
-                {ServerId = serverId, URL = url, MinDelay = minDelay, MaxDelay = maxDelay};
+        public StartServerResponse StartServer(string serverId, string url,
+            float minDelay, float maxDelay, List<PartitionInfo> partitionInfos) {
+            RepeatedField<PartitionMessage> partitionMessages = 
+                new RepeatedField<PartitionMessage>();
+            foreach(PartitionInfo partitionInfo in partitionInfos)
+            {
+                var partitionMessage = new PartitionMessage
+                {
+                    Id = partitionInfo.partitionId,
+                    MasterURL = partitionInfo.masterUrl,
+                };
+                partitionMessages.Add(partitionMessage);
+            }
+            var request = new StartServerRequest {
+                ServerId = serverId,
+                URL = url, 
+                MinDelay = minDelay,
+                MaxDelay = maxDelay,
+                Partitions = { partitionMessages },
+            };
             return client.startServer(request); // TODO :  Add Logic
             //start server async <= probably not
         }
 
-        public StartClientResponse StartClient(string username, string url, string scriptFile) {
-            var request = new StartClientRequest {Username = username, URL = url, ScriptFile = scriptFile};
+        public StartClientResponse StartClient(string username,
+            string url, string scriptFile, string defaultServerUrl) {
+            var request = new StartClientRequest {Username = username, URL = url, ScriptFile = scriptFile,
+            DefaultServerUrl = defaultServerUrl};
             return client.startClient(request); // TODO :  Add Logic
         }
     }

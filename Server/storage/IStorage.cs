@@ -12,5 +12,8 @@
 
     public ListServerResponse ListServer();
     public ListGlobalResponse ListGlobal();
-    void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl);
+    public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl);
+
+    public void RegisterPartitionMaster(string partitionId);
+    public void AddPartition(string partitionId, string masterUrl);
 }

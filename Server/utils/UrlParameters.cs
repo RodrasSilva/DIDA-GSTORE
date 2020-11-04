@@ -3,7 +3,7 @@
 namespace Client.utils {
     public class UrlParameters {
         private const int HostnamePosition = 0;
-        private const int PortPosition = 0;
+        private const int PortPosition = 1;
 
         private UrlParameters(string hostname, int port) {
             Hostname = hostname;
