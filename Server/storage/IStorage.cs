@@ -1,4 +1,4 @@
-﻿public interface IStorage {
+﻿public interface IStorage{
     public IPartition GetPartitionOrThrowException(string partitionId);
 
     public string Read(string partitionId, string objKey);

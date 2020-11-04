@@ -4,16 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace DIDA_GSTORE.ServerService {
-    public class NodeService : NodeControlService.NodeControlServiceBase {
-        public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context) {
+namespace DIDA_GSTORE.ServerService{
+    public class NodeService : NodeControlService.NodeControlServiceBase{
+        public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context){
             ServerDomain.Server.DelayMessage();
             Console.WriteLine("Status called");
-            return Task.FromResult(new StatusResponse { Status = " ok "});
+            return Task.FromResult(new StatusResponse{Status = " ok "});
             //return base.status(request, context);
         }
 
-        public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context) {
+        public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context){
             ServerDomain.Server.DelayMessage();
 
             //return base.crash(request, context);
@@ -23,31 +23,32 @@ namespace DIDA_GSTORE.ServerService {
             return Task.FromResult(new CrashResponse());
         }
 
-        public void CrashMechanism() {
+        public void CrashMechanism(){
             ServerDomain.Server.DelayMessage();
 
             Thread.Sleep(1000);
             Environment.Exit(1);
         }
 
-        public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context) {
+        public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context){
             ServerDomain.Server.DelayMessage();
             //does not do anything so we can test everything
             //return base.freeze(request, context);
             return Task.FromResult(new FreezeResponse());
         }
 
-        public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context) {
+        public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context){
             ServerDomain.Server.DelayMessage();
             //does not do anything so we can test everything
             //return base.unfreeze(request, context);
             return Task.FromResult(new UnfreezeResponse());
         }
+
         // partitionsInfo format : <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
-        public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request, ServerCallContext context)
-        {
+        public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
+            ServerCallContext context){
             Console.WriteLine("Server - here");
-            string[] partitionsInfo = request.PartitionsInfo.ToArray();
+            var partitionsInfo = request.PartitionsInfo.ToArray();
             ServerDomain.Server.RegisterPartitions(partitionsInfo);
             return Task.FromResult(new CompleteSetupResponse());
         }

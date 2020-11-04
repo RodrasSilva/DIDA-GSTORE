@@ -5,21 +5,21 @@ using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
 using Grpc.Core;
 
-namespace Client {
-    public class ClientLogic {
+namespace Client{
+    public class ClientLogic{
         private readonly GrpcService _grpcService;
         private readonly ClientNodeServer _nodeServer;
-        private string _operationsFilePath;
+        private readonly string _operationsFilePath;
 
         public ClientLogic(string operationsFilePath, string username, string serverHost, int serverPort,
-            string clientHost, int clientPort) {
+            string clientHost, int clientPort){
             _operationsFilePath = operationsFilePath;
             //TODO : Check what to do with username
             _grpcService = new GrpcService(serverHost, serverPort);
             _nodeServer = new ClientNodeServer(clientHost, clientPort, username, ServerCredentials.Insecure);
         }
 
-        public void Execute() {
+        public void Execute(){
             ExecuteCommands();
             Console.WriteLine("Operations executed");
             _nodeServer.Start();
@@ -30,8 +30,9 @@ namespace Client {
         }
 
 
-        private void ExecuteCommands() {
-            var path = "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\Client\\scripts\\"; // TODO : Change Path 
+        private void ExecuteCommands(){
+            var path =
+                "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\Client\\scripts\\"; // TODO : Change Path 
             var operationsFilePath = path + _operationsFilePath;
             Console.WriteLine("Client reading file : " + operationsFilePath);
             if (!File.Exists(operationsFilePath))

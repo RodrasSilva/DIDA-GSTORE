@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
-using System.Collections.Concurrent;
-namespace PuppetMasterMain {
-    public struct PartitionInfo {
+
+namespace PuppetMasterMain{
+    public struct PartitionInfo{
         public string partitionId;
         public string masterUrl;
     }
 
-    public class PuppetMasterDomain {
-        private List<GrpcProcessService> PCSs { get; set; }
-
-        public PuppetMasterDomain() {
+    public class PuppetMasterDomain{
+        public PuppetMasterDomain(){
             ServerServices = new Dictionary<string, GrpcNodeService>();
             ServersUrls = new Dictionary<string, string>();
             ClientServices = new List<GrpcNodeService>();
@@ -23,52 +20,49 @@ namespace PuppetMasterMain {
             partitionsPerServer = new Dictionary<string, List<PartitionInfo>>();
         }
 
-        private Dictionary<string, GrpcNodeService> ServerServices { get; }
-        private Dictionary<string, string> ServersUrls { get; }
-        public List<GrpcNodeService> ClientServices { get; set; }
-        public int ReplicationFactor { get; set; }
-        public Dictionary<string, List<PartitionInfo>> partitionsPerServer { get; set; }
+        private List<GrpcProcessService> PCSs{ get; }
 
-        public List<GrpcNodeService> GetAllNodeServices()
-        {
-            List<GrpcNodeService> result = new List<GrpcNodeService>();
+        private Dictionary<string, GrpcNodeService> ServerServices{ get; }
+        private Dictionary<string, string> ServersUrls{ get; }
+        public List<GrpcNodeService> ClientServices{ get; set; }
+        public int ReplicationFactor{ get; set; }
+        public Dictionary<string, List<PartitionInfo>> partitionsPerServer{ get; set; }
+
+        public List<GrpcNodeService> GetAllNodeServices(){
+            var result = new List<GrpcNodeService>();
             result.AddRange(ClientServices);
             result.AddRange(ServerServices.Values);
             return result;
         }
 
-        public void AddServer(string serverId, string url) {
+        public void AddServer(string serverId, string url){
             ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
-            ServersUrls.Add(serverId,url);
+            ServersUrls.Add(serverId, url);
         }
 
-        public void AddClient(string url) {
+        public void AddClient(string url){
             ClientServices.Add(PuppetMaster.urlToNodeService(url));
         }
 
-        public GrpcProcessService GetProcessService() {
+        public GrpcProcessService GetProcessService(){
             if (PCSs.Count == 0) throw new Exception("No PCS");
             return PCSs[0];
         }
 
-        public GrpcNodeService GetServerNodeService(string serverId) {
+        public GrpcNodeService GetServerNodeService(string serverId){
             var grpc = ServerServices[serverId];
             if (grpc == null) throw new Exception("No such server");
             return grpc;
         }
 
-        public string GetDefaultServerUrl()
-        {
-            foreach(GrpcNodeService grpcNodeService in ServerServices.Values)
-            {
-                return grpcNodeService.Url;
-            }
+        public string GetDefaultServerUrl(){
+            foreach (var grpcNodeService in ServerServices.Values) return grpcNodeService.Url;
             throw new Exception("No servers");
             //return ServerServices[ServerServices.Keys[new Random().Next(0, ServerServices.Keys.Count)].Url;
         }
 
         public void Start(string[] args,
-            GrpcProcessService grpcProcessService) {
+            GrpcProcessService grpcProcessService){
             PCSs.Add(grpcProcessService);
 
             //test
@@ -77,18 +71,20 @@ namespace PuppetMasterMain {
             //GrpcNodeService = grpcNodeService;
 
             /* FIXME according to usage PROBABLY THE SYSTEM CONFIGURATION FILE */
-            if (args.Length == 0) {
+            if (args.Length == 0){
                 SetupOperation();
                 ExecuteCommands();
             }
-            else if (args.Length == 1) {
+            else if (args.Length == 1){
                 SetupOperation();
-                
-                var path = "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\PuppetMaster\\scripts\\"; // TODO : Change Path 
+
+                var path =
+                    "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\PuppetMaster\\scripts\\"; // TODO : Change Path 
                 var operationsFilePath = args[0];
                 operationsFilePath = path + operationsFilePath;
-                if (!File.Exists(operationsFilePath)) {
-                    Console.WriteLine("The given path: " + operationsFilePath + ". to the operations file is not valid - App shutting down");
+                if (!File.Exists(operationsFilePath)){
+                    Console.WriteLine("The given path: " + operationsFilePath +
+                                      ". to the operations file is not valid - App shutting down");
                     return;
                 }
 
@@ -96,16 +92,16 @@ namespace PuppetMasterMain {
                 ExecuteCommands(operationsFilePath);
                 Console.WriteLine("Operations executed - App shutting down...");
             }
-            else {
+            else{
                 Console.WriteLine("Usage: PuppetMaster <operations-file>");
             }
         }
 
-        private void ExecuteCommands() {
+        private void ExecuteCommands(){
             var allThreads = new List<Thread>();
             string commandLine;
             Console.Write(">>> ");
-            while ((commandLine = Console.ReadLine()) != null) {
+            while ((commandLine = Console.ReadLine()) != null){
                 CommandExecution(commandLine, allThreads);
                 Console.Write("\n>>> ");
             }
@@ -113,40 +109,32 @@ namespace PuppetMasterMain {
             foreach (var t in allThreads) t.Join();
         }
 
-        private void ExecuteCommands(string operationsFilePath) {
+        private void ExecuteCommands(string operationsFilePath){
             var results = new List<ICommand>();
             string commandLine;
             using var operationsFileReader = new StreamReader(operationsFilePath);
             var allThreads = new List<Thread>();
-            List<ICommand> setupCommands = new List<ICommand>();
+            var setupCommands = new List<ICommand>();
             ICommand firstNonSetupCommand = null;
 
             while ((commandLine = operationsFileReader.ReadLine()) != null)
-            {
-                if( ParseSetupCommand(commandLine, setupCommands) == false )
-                {
+                if (ParseSetupCommand(commandLine, setupCommands) == false){
                     firstNonSetupCommand = setupCommands[setupCommands.Count - 1];
                     setupCommands.RemoveAt(setupCommands.Count - 1);
                     break;
                 }
-            }
 
             ExecuteSetup(setupCommands);
 
             ExecuteGivenCommand(firstNonSetupCommand, allThreads);
 
-            while ((commandLine = operationsFileReader.ReadLine()) != null)
-            {
-                CommandExecution(commandLine, allThreads);
-            }
+            while ((commandLine = operationsFileReader.ReadLine()) != null) CommandExecution(commandLine, allThreads);
 
             foreach (var t in allThreads) t.Join();
         }
 
-        private void ExecuteGivenCommand(ICommand command, List<Thread> allThreads)
-        {
-            if (command.IsAsync)
-            {
+        private void ExecuteGivenCommand(ICommand command, List<Thread> allThreads){
+            if (command.IsAsync){
                 var puppetMaster = this;
                 var t = new Thread(() => command.Execute(puppetMaster));
 
@@ -159,78 +147,75 @@ namespace PuppetMasterMain {
                 //we might have to sleep
                 //Thread.Sleep(0);
             }
-            else
-            {
+            else{
                 command.Execute(this);
             }
         }
 
-        private void CommandExecution(string commandLine, List<Thread> allThreads) {
-            try {
+        private void CommandExecution(string commandLine, List<Thread> allThreads){
+            try{
                 var command = PuppetCommands.GetCommand(commandLine);
                 ExecuteGivenCommand(command, allThreads);
             }
-            catch (NotImplementedException e) {
+            catch (NotImplementedException e){
                 Console.WriteLine(e.Message);
             }
-            catch (Exception e) {
+            catch (Exception e){
                 Console.WriteLine(e.Message);
             }
         }
 
-        private bool ParseSetupCommand(string commandLine, List<ICommand> setupCommands) {
-            try
-            {
+        private bool ParseSetupCommand(string commandLine, List<ICommand> setupCommands){
+            try{
                 var command = PuppetCommands.GetCommand(commandLine);
                 setupCommands.Add(command);
                 return command.IsSetup;
             }
-            catch (Exception e) {
+            catch (Exception e){
                 Console.WriteLine(e.Message);
             }
+
             return false;
         }
 
-        private void ExecuteSetup(List<ICommand> commands) {
-            try {
-                List<Thread> setupThreads = new List<Thread>();
+        private void ExecuteSetup(List<ICommand> commands){
+            try{
+                var setupThreads = new List<Thread>();
                 foreach (var command in commands)
-                {
                     //all setup commands will be linear
                     command.Execute(this);
-                }
                 //foreach (var t in setupThreads) t.Join();
-                foreach (var serverId in ServerServices.Keys)
-                {
+                foreach (var serverId in ServerServices.Keys){
                     // Send partition info to server as <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
-                    List<string> serverPartitions = new List<string>();
-                    GrpcNodeService serverNode = ServerServices[serverId];
-                    List<PartitionInfo> serverPartitionsInfo = partitionsPerServer[serverId];
+                    var serverPartitions = new List<string>();
+                    var serverNode = ServerServices[serverId];
+                    var serverPartitionsInfo = partitionsPerServer[serverId];
                     Console.WriteLine("Puppet Master - Completing setup for server " + serverId);
-                    serverPartitionsInfo.ForEach(p =>
-                    {
-                        Console.WriteLine("Puppet Master - Completing setup for server " + serverId + " - Adding partition " + p.partitionId + " with master " + ServersUrls[p.masterUrl] );
+                    serverPartitionsInfo.ForEach(p => {
+                        Console.WriteLine("Puppet Master - Completing setup for server " + serverId +
+                                          " - Adding partition " + p.partitionId + " with master " +
+                                          ServersUrls[p.masterUrl]);
                         serverPartitions.Add(p.partitionId);
                         serverPartitions.Add(ServersUrls[p.masterUrl]);
                     });
                     serverNode.CompleteSetup(serverPartitions);
                 }
-                
             }
-            catch (NotImplementedException e) {
+            catch (NotImplementedException e){
                 Console.WriteLine(e.Message);
                 Console.WriteLine("here");
             }
-            catch (Exception e) {
+            catch (Exception e){
                 Console.WriteLine(e.Message);
                 Console.WriteLine("here 2.0");
             }
+
             Console.WriteLine("----------------------------------------------------");
             Console.WriteLine("Finished servers setup");
             Console.WriteLine("----------------------------------------------------");
         }
 
-        private void SetupOperation() {
+        private void SetupOperation(){
             //starts all relevant processes
             //PuppetMaster will request the PCS to create processes
             //information about the entire set of available PCSs via command line or config file

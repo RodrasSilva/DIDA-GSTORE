@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands {
-    public class PartitionCommand : ICommand {
+namespace DIDA_GSTORE.commands{
+    public class PartitionCommand : ICommand{
         private const int NumberOfReplicasPosition = 0;
         private const int PartitionNamePosition = 1;
 
@@ -12,7 +12,7 @@ namespace DIDA_GSTORE.commands {
         private readonly string _partitionName;
         private readonly string[] _servers;
 
-        private PartitionCommand(int numberOfReplicas, string partitionName, string[] servers) {
+        private PartitionCommand(int numberOfReplicas, string partitionName, string[] servers){
             _numberOfReplicas = numberOfReplicas;
             _partitionName = partitionName;
             _servers = servers;
@@ -22,28 +22,27 @@ namespace DIDA_GSTORE.commands {
         public bool IsSetup => true;
 
 
-        public void Execute(PuppetMasterDomain puppetMaster) {
+        public void Execute(PuppetMasterDomain puppetMaster){
             if (_numberOfReplicas != puppetMaster.ReplicationFactor)
                 throw new Exception("ReplicationFactor: " + puppetMaster.ReplicationFactor +
-                    " does not match: " + _numberOfReplicas);
+                                    " does not match: " + _numberOfReplicas);
 
-            string masterUrl = _servers[0];
-            foreach (string serverId in _servers) {
-                if ( !puppetMaster.partitionsPerServer.ContainsKey(serverId) )
-                {
+            var masterUrl = _servers[0];
+            foreach (var serverId in _servers){
+                if (!puppetMaster.partitionsPerServer.ContainsKey(serverId)){
                     Console.WriteLine(serverId);
                     puppetMaster.partitionsPerServer.Add(serverId, new List<PartitionInfo>());
                 }
 
-                List<PartitionInfo> partitions = puppetMaster.partitionsPerServer[serverId];
+                var partitions = puppetMaster.partitionsPerServer[serverId];
 
-                partitions.Add(new PartitionInfo{ partitionId = _partitionName, masterUrl = masterUrl });
+                partitions.Add(new PartitionInfo{partitionId = _partitionName, masterUrl = masterUrl});
             }
 
             //throw new System.NotImplementedException();
         }
 
-        public static ICommand ParseCommandLine(string[] arguments) {
+        public static ICommand ParseCommandLine(string[] arguments){
             if (arguments.Length < 3) throw new Exception("Invalid Partition Command ");
 
             var numberOfReplicas = int.Parse(arguments[NumberOfReplicasPosition]);

@@ -1,12 +1,12 @@
 ﻿using System;
 using Client.utils;
 
-namespace Client {
-    public static class Client {
-        public static void Main(string[] args) {
-            if (args.Length != 4) {
-                Console.WriteLine("Given: " + string.Join(" ", args) + 
-                    "Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
+namespace Client{
+    public static class Client{
+        public static void Main(string[] args){
+            if (args.Length != 4){
+                Console.WriteLine("Given: " + string.Join(" ", args) +
+                                  "Usage: Client <username> <clientUrl> <operations-file> <defaultServerUrl>");
                 return;
             }
 

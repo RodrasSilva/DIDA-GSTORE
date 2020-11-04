@@ -15,5 +15,5 @@
     </PackageReference>
     <Protobuf Include="protos\contract.proto" GrpcServices="Server" />
   </ItemGroup>
-
+ 
 </Project>

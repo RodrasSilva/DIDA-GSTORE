@@ -1,8 +1,8 @@
 using System;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands {
-    public class ServerCommand : ICommand {
+namespace DIDA_GSTORE.commands{
+    public class ServerCommand : ICommand{
         private const int ServerIdPosition = 0;
         private const int UrlPosition = 1;
         private const int MinDelayPosition = 2;
@@ -14,7 +14,7 @@ namespace DIDA_GSTORE.commands {
         private readonly string _url;
 
         private ServerCommand(string serverId, string url,
-            float minDelay, float maxDelay) {
+            float minDelay, float maxDelay){
             _serverId = serverId;
             _url = url;
             _minDelay = minDelay;
@@ -25,7 +25,7 @@ namespace DIDA_GSTORE.commands {
         public bool IsSetup => true;
 
 
-        public void Execute(PuppetMasterDomain puppetMaster) {
+        public void Execute(PuppetMasterDomain puppetMaster){
             var response = puppetMaster.GetProcessService().StartServer(
                 _serverId, _url, _minDelay, _maxDelay, puppetMaster.partitionsPerServer[_serverId]);
 
@@ -34,7 +34,7 @@ namespace DIDA_GSTORE.commands {
             //throw new System.NotImplementedException();
         }
 
-        public static ICommand ParseCommandLine(string[] arguments) {
+        public static ICommand ParseCommandLine(string[] arguments){
             if (arguments.Length != 4) throw new Exception("Invalid Server Command ");
 
             var serverId = arguments[ServerIdPosition];

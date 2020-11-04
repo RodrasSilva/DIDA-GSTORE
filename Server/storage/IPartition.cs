@@ -1,3 +1,3 @@
-public interface IPartition {
-    public bool IsMaster { get; set; }
+public interface IPartition{
+    public bool IsMaster{ get; set; }
 }

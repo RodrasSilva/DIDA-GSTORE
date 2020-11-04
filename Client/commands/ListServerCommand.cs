@@ -1,17 +1,17 @@
 using System;
 using DIDA_GSTORE.grpcService;
 
-namespace DIDA_GSTORE.commands {
-    public class ListServerCommand : ICommand {
+namespace DIDA_GSTORE.commands{
+    public class ListServerCommand : ICommand{
         private const int ServerIdPosition = 0;
 
         private readonly string _serverId;
 
-        private ListServerCommand(string serverId) {
+        private ListServerCommand(string serverId){
             _serverId = serverId;
         }
 
-        public void Execute(GrpcService grpcService) {
+        public void Execute(GrpcService grpcService){
             var response = grpcService.ListServer(_serverId);
             foreach (var result in response)
                 if (result.IsMaster)
@@ -21,7 +21,7 @@ namespace DIDA_GSTORE.commands {
                     Console.WriteLine($"Server {_serverId} contains object [{result.ObjectId},{result.ObjectValue}]");
         }
 
-        public static ListServerCommand ParseCommandLine(string[] arguments) {
+        public static ListServerCommand ParseCommandLine(string[] arguments){
             if (arguments.Length != 1) throw new Exception("Invalid List Server Command ");
 
             var serverId = arguments[ServerIdPosition];
