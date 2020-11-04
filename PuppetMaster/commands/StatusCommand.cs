@@ -1,4 +1,5 @@
 using System;
+using DIDA_GSTORE.grpcService;
 using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands {
@@ -8,7 +9,10 @@ namespace DIDA_GSTORE.commands {
         public bool IsSetup => false;
 
         public void Execute(PuppetMasterDomain puppetMaster) {
-            throw new NotImplementedException();
+            foreach(GrpcNodeService grpc in puppetMaster.GetAllNodeServices())
+            {
+                grpc.Status();
+            }
         }
 
         public static ICommand ParseCommandLine(string[] arguments) {

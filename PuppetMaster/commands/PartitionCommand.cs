@@ -24,12 +24,14 @@ namespace DIDA_GSTORE.commands {
 
         public void Execute(PuppetMasterDomain puppetMaster) {
             if (_numberOfReplicas != puppetMaster.ReplicationFactor)
-                throw new Exception("ReplicationFactor does not match");
+                throw new Exception("ReplicationFactor: " + puppetMaster.ReplicationFactor +
+                    " does not match: " + _numberOfReplicas);
 
             string masterUrl = _servers[0];
             foreach (string serverId in _servers) {
                 if ( !puppetMaster.partitionsPerServer.ContainsKey(serverId) )
                 {
+                    Console.WriteLine(serverId);
                     puppetMaster.partitionsPerServer.Add(serverId, new List<PartitionInfo>());
                 }
 

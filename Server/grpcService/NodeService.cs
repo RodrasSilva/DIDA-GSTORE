@@ -7,7 +7,10 @@ namespace DIDA_GSTORE.ServerService {
     public class NodeService : NodeControlService.NodeControlServiceBase {
         public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
-            return base.status(request, context);
+            Console.WriteLine("Status called");
+            return Task.FromResult(new StatusResponse());
+
+            //return base.status(request, context);
         }
 
         public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context) {
@@ -29,13 +32,16 @@ namespace DIDA_GSTORE.ServerService {
 
         public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
-
-            return base.freeze(request, context);
+            //does not do anything so we can test everything
+            //return base.freeze(request, context);
+            return Task.FromResult(new FreezeResponse());
         }
 
         public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context) {
             ServerDomain.Server.DelayMessage();
-            return base.unfreeze(request, context);
+            //does not do anything so we can test everything
+            //return base.unfreeze(request, context);
+            return Task.FromResult(new UnfreezeResponse());
         }
 
         public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request, ServerCallContext context)

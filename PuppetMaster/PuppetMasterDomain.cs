@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
-
+using System.Collections.Concurrent;
 namespace PuppetMasterMain {
     public struct PartitionInfo {
         public string partitionId;
@@ -27,6 +27,14 @@ namespace PuppetMasterMain {
         public int ReplicationFactor { get; set; }
         public Dictionary<string, List<PartitionInfo>> partitionsPerServer { get; set; }
 
+        public List<GrpcNodeService> GetAllNodeServices()
+        {
+            List<GrpcNodeService> result = new List<GrpcNodeService>();
+            result.AddRange(ClientServices);
+            result.AddRange(ServerServices.Values);
+            return result;
+        }
+
         public void AddServer(string serverId, string url) {
             ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
         }
@@ -37,7 +45,6 @@ namespace PuppetMasterMain {
 
         public GrpcProcessService GetProcessService() {
             if (PCSs.Count == 0) throw new Exception("No PCS");
-            Console.WriteLine("Foda-se");
             return PCSs[0];
         }
 
@@ -74,9 +81,11 @@ namespace PuppetMasterMain {
             else if (args.Length == 1) {
                 SetupOperation();
 
+                var path = "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\PuppetMaster\\scripts\\";
                 var operationsFilePath = args[0];
+                operationsFilePath = path + operationsFilePath;
                 if (!File.Exists(operationsFilePath)) {
-                    Console.WriteLine("The given path to the operations file is not valid - App shutting down");
+                    Console.WriteLine("The given path: " + operationsFilePath + ". to the operations file is not valid - App shutting down");
                     return;
                 }
 
@@ -184,26 +193,10 @@ namespace PuppetMasterMain {
                 List<Thread> setupThreads = new List<Thread>();
                 foreach (var command in commands)
                 {
-                    if (command.IsAsync)
-                    {
-                        var puppetMaster = this;
-                        var t = new Thread(() => command.Execute(puppetMaster));
-
-                        // Start ThreadProc.  Note that on a uniprocessor, the new
-                        // thread does not get any processor time until the main thread
-                        // is preempted or yields.  Uncomment the Thread.Sleep that
-                        // follows t.Start() to see the difference.
-                        t.Start();
-                        setupThreads.Add(t);
-                        //we might have to sleep
-                        //Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        command.Execute(this);
-                    }
+                    //all setup commands will be linear
+                    command.Execute(this);
                 }
-                foreach (var t in setupThreads) t.Join();
+                //foreach (var t in setupThreads) t.Join();
                 foreach (var server in ServerServices.Values)
                 {
                     server.CompleteSetup();

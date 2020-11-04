@@ -12,7 +12,8 @@ namespace DIDA_GSTORE.ServerService {
 
         public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context) {
             Console.WriteLine($" Status called : {_username}");
-            return base.status(request, context); // TODO : Print status ? 
+            //return base.status(request, context); // TODO : Print status ? 
+            return Task.FromResult(new StatusResponse());
         }
     }
 }
