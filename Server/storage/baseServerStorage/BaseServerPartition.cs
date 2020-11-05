@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public class BaseServerPartition : IPartition{
@@ -59,12 +60,29 @@ public class BaseServerPartition : IPartition{
         objectInfo._lock.Set();
         objectInfo.Write(objValue);
 
-        foreach (var slave in orderedSlaves) slave.SlaveChannel.lockServer(lockRequest);
+        foreach (var slave in orderedSlaves) {
+            try
+            {
+                slave.SlaveChannel.lockServer(lockRequest);
+            }catch(Exception e)
+            {
+                Console.WriteLine($"Error locking partition {_id} slave {slave.ServerId}");
+            }
+           
+        }
 
-        //storage.Objects.Add(request.ObjectId, request.ObjectValue);
+        foreach (var slave in orderedSlaves)
+        {
+            try
+            {
+                slave.SlaveChannel.unlockServer(unlockRequest);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error unlocking partition {_id} slave {slave.ServerId}");
+            }
 
-        foreach (var slave in orderedSlaves) slave.SlaveChannel.unlockServer(unlockRequest);
-
+        }
         objectInfo._lock.Reset();
     }
 

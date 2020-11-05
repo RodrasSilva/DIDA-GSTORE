@@ -4,9 +4,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Server.utils;
 
 namespace DIDA_GSTORE.ServerService{
     public class NodeService : NodeControlService.NodeControlServiceBase{
+        private FreezeUtilities freezeUtilities;
+
+        public NodeService(FreezeUtilities freezeUtilities)
+        {
+            this.freezeUtilities = freezeUtilities;
+        }
+
         public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context){
             ServerDomain.Server.DelayMessage();
             Console.WriteLine("Status called");
@@ -32,16 +40,16 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context){
-            ServerDomain.Server.DelayMessage();
-            //does not do anything so we can test everything
-            //return base.freeze(request, context);
+            
+            Console.WriteLine("Freezing server");
+            freezeUtilities.Freeze();
             return Task.FromResult(new FreezeResponse());
         }
 
         public override Task<UnfreezeResponse> unfreeze(UnfreezeRequest request, ServerCallContext context){
-            ServerDomain.Server.DelayMessage();
-            //does not do anything so we can test everything
-            //return base.unfreeze(request, context);
+            
+            Console.WriteLine("Unfreezing server");
+            freezeUtilities.Unfreeze();
             return Task.FromResult(new UnfreezeResponse());
         }
 

@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Server.utils;
 using ServerDomain;
 
 namespace DIDA_GSTORE.ServerService{
     public class ServerService : DIDAService.DIDAServiceBase{
         private readonly IStorage _storage;
+        private readonly FreezeUtilities _freezeUtilities;
         private string _myUrl;
 
-        public ServerService(IStorage storage, string myUrl){
+        public ServerService(IStorage storage, FreezeUtilities freezeUtilities, string myUrl){
             _storage = storage;
+            _freezeUtilities = freezeUtilities;
             _myUrl = myUrl;
         }
 
 
         public override Task<WriteResponse> write(WriteRequest request, ServerCallContext context){
+            _freezeUtilities.WaitForUnfreeze();
             ServerDomain.Server.DelayMessage();
             return Task.FromResult(Write(request));
         }
@@ -54,6 +58,7 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context){
+            _freezeUtilities.WaitForUnfreeze();
             ServerDomain.Server.DelayMessage();
             return Task.FromResult(Read(request));
         }
@@ -77,14 +82,16 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context){
+            _freezeUtilities.WaitForUnfreeze();
             ServerDomain.Server.DelayMessage();
             Console.WriteLine("Received List Server Request: " + request.ToString());
             return Task.FromResult(_storage.ListServer());
         }
 
         public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context){
+            _freezeUtilities.WaitForUnfreeze();
             ServerDomain.Server.DelayMessage();
-            Console.WriteLine("Received List Global Request: " + request.ToString());
+            Console.WriteLine("Received List Global Request ");
 
             List<ListGlobalResponseEntity> listGlobalResponseEntities = new List<ListGlobalResponseEntity>();
             foreach(var partitionMaster in _storage.GetPartitionMasters())
@@ -99,7 +106,8 @@ namespace DIDA_GSTORE.ServerService{
                     });
                     continue;
                 }
-                Console.WriteLine(partitionMaster.ToString());
+                try { 
+                //Console.WriteLine(partitionMaster.ToString());
                 //result += "{ partition: " + partitionMaster.partitionId + ", [ ";
                 ClientService grpcService = new ClientService(partitionMaster.masterUrl);
                 var response = grpcService.ListPartitionGlobal(partitionMaster.partitionId);
@@ -109,8 +117,11 @@ namespace DIDA_GSTORE.ServerService{
                     ObjectIds = { response.ObjectIds.ToList() }, 
                     PartitionId = partitionMaster.partitionId,
                 });
-                //result += " ]}, ";
-
+                    //result += " ]}, ";
+                }catch(Exception e)
+                {
+                    Console.WriteLine($"Failed to fetch partition {partitionMaster.partitionId} from partition master {partitionMaster.masterUrl}");
+                }
             }
             //Console.WriteLine(listGlobalResponseEntities.Count);
             return Task.FromResult(new ListGlobalResponse { Objects = { listGlobalResponseEntities } });
@@ -118,12 +129,13 @@ namespace DIDA_GSTORE.ServerService{
 
         public override Task<ListPartitionGlobalResponse> listPartitionGlobal(ListPartitionGlobalRequest request, ServerCallContext context)
         {
+            _freezeUtilities.WaitForUnfreeze();
             Console.WriteLine("List PARTITION Global Request: " + request.ToString());
             return Task.FromResult(_storage.ListPartition(request.PartitionId));
         }
 
         public override Task<ServerUrlResponse> getServerUrl(ServerUrlRequest request, ServerCallContext context){
-
+            _freezeUtilities.WaitForUnfreeze();
             string serverId = request.ServerId;
             string serverUrl = _storage.GetServerOrThrowException(serverId);
 

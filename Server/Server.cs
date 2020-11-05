@@ -6,6 +6,7 @@ using DIDA_GSTORE.ServerService;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Server.grpcService;
+using Server.utils;
 
 namespace ServerDomain{
     public class Server{
@@ -44,10 +45,13 @@ namespace ServerDomain{
 #pragma warning restore CS0162 // Unreachable code detected
             }
 
-            Console.WriteLine(_serverUrl);
+            //Console.WriteLine(_serverUrl);
+            FreezeUtilities freezeUtilities = new FreezeUtilities();
+
+
             var serverParameters = UrlParameters.From(_serverUrl);
-            var serverService = new ServerService(_storage, _serverUrl);
-            var nodeService = new NodeService();
+            var serverService = new ServerService(_storage, freezeUtilities, _serverUrl);
+            var nodeService = new NodeService(freezeUtilities);
             var registerSlavesService = new SlaveRegisteringService(_storage);
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
