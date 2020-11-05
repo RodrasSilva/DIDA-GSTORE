@@ -27,7 +27,13 @@ namespace DIDA_GSTORE.commands{
                 throw new Exception("ReplicationFactor: " + puppetMaster.ReplicationFactor +
                                     " does not match: " + _numberOfReplicas);
 
-            var masterUrl = _servers[0];
+            PartitionInfo partition = new PartitionInfo()
+            {
+                masterUrl = _servers[0],
+                partitionId = _partitionName,
+                serverIds = _servers
+            };
+            /*
             foreach (var serverId in _servers){
                 if (!puppetMaster.partitionsPerServer.ContainsKey(serverId)){
                     Console.WriteLine(serverId);
@@ -37,8 +43,9 @@ namespace DIDA_GSTORE.commands{
                 var partitions = puppetMaster.partitionsPerServer[serverId];
 
                 partitions.Add(new PartitionInfo{partitionId = _partitionName, masterUrl = masterUrl});
-            }
+            }*/
 
+            puppetMaster.Partitions.Add(partition);
             //throw new System.NotImplementedException();
         }
 

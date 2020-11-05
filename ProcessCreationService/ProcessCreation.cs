@@ -49,7 +49,7 @@ namespace ProcessCreationDomain{
             //Console.WriteLine($"Combined path = {path}"); 
             //string  path = "../../../../../../Server/bin/Debug/netcoreapp3.1/Server.exe";
             var path =
-                "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\Server\\bin\\Debug\\netcoreapp3.1\\Server.exe";
+                "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Server\\bin\\Debug\\netcoreapp3.1\\Server.exe";
             var psi = new ProcessStartInfo(path);
             psi.Arguments = $"{id} {url} {minDelay} {maxDelay} {partitionString}";
             psi.UseShellExecute = true;
@@ -70,7 +70,7 @@ namespace ProcessCreationDomain{
                 "\\..\\..\\..\\..\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe");
 
             path =
-                "C:\\Users\\Rodrigo Silva\\Desktop\\DAD\\Project\\DIDA-GSTORE\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe";
+                "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe";
             ;
 
             var psi = new ProcessStartInfo(path);

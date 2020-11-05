@@ -27,23 +27,13 @@ namespace DIDA_GSTORE.grpcService{
         }
 
         public StartServerResponse StartServer(string serverId, string url,
-            float minDelay, float maxDelay, List<PartitionInfo> partitionInfos){
-            var partitionMessages =
-                new RepeatedField<PartitionMessage>();
-            foreach (var partitionInfo in partitionInfos){
-                var partitionMessage = new PartitionMessage {
-                    Id = partitionInfo.partitionId,
-                    MasterURL = partitionInfo.masterUrl
-                };
-                partitionMessages.Add(partitionMessage);
-            }
+            float minDelay, float maxDelay){
 
             var request = new StartServerRequest {
                 ServerId = serverId,
                 URL = url,
                 MinDelay = minDelay,
                 MaxDelay = maxDelay,
-                Partitions = {partitionMessages}
             };
             return client.startServer(request); // TODO :  Add Logic
             //start server async <= probably not

@@ -39,7 +39,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
-	  <Protobuf Include="protos\ClientContract.proto" GrpcServices="Server" />
+	  <Protobuf Include="protos\ClientContract.proto" GrpcServices="Both" />
 	  <Protobuf Include="protos\NodeContract.proto" GrpcServices="Server" />
 	  <Protobuf Include="protos\advancedVersion\AdvancedMasterSlaveContract.proto" GrpcServices="Both" />
 	  <Protobuf Include="protos\baseVersion\BaseMasterSlaveContract.proto" GrpcServices="Both" />

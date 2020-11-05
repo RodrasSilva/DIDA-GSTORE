@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 
 public class BaseServerObjectInfo{
-    public ReaderWriterLock _lock;
+    public ManualResetEvent _lock;
     private string _objectValue;
 
     public BaseServerObjectInfo(string value){
-        _lock = new ReaderWriterLock();
+        _lock = new ManualResetEvent(false);
         _objectValue = value;
     }
 

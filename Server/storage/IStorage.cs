@@ -1,4 +1,7 @@
-﻿public interface IStorage{
+﻿using ServerDomain;
+using System.Collections.Generic;
+
+public interface IStorage{
     public IPartition GetPartitionOrThrowException(string partitionId);
 
     public string GetServerOrThrowException(string serverId);
@@ -12,6 +15,9 @@
     public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp);
     public void WriteSlave(string partitionId, string objKey, string objValue, int timestamp);
 
+    public List<PartitionMasters> GetPartitionMasters();
+
+    public ListPartitionGlobalResponse ListPartition(string id);
     public ListServerResponse ListServer();
     public ListGlobalResponse ListGlobal();
     public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl);

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Grpc.Core;
 
 namespace ServerDomain{
@@ -11,29 +12,55 @@ namespace ServerDomain{
 
 
         public override Task<LockResponse> lockServer(LockRequest request, ServerCallContext context){
-            var partitionId = request.PartitionId;
-            var objectId = request.ObjectId;
-            var partition = _storage.Partitions[partitionId];
+            Console.WriteLine("Locking the server to write" +
+                request.ObjectId + " in partition " +
+                request.PartitionId
+            );
 
-            BaseServerObjectInfo objectInfo;
+            try
+            {
+                var partitionId = request.PartitionId;
+                var objectId = request.ObjectId;
+                var partition = _storage.Partitions[partitionId];
 
-            lock (partition.Objects){
-                if (!partition.Objects.TryGetValue(objectId, out objectInfo))
-                    partition.Objects.Add(objectId, objectInfo = new BaseServerObjectInfo("NA"));
-
-                objectInfo._lock.AcquireWriterLock(0); //unlock is called inside partition write slave
+                BaseServerObjectInfo objectInfo;
+                lock (partition.Objects) {
+                    if (!partition.Objects.TryGetValue(objectId, out objectInfo))
+                        partition.Objects.Add(objectId, objectInfo = new BaseServerObjectInfo("NA"));
+                }
+                objectInfo._lock.Set(); //unlock is called inside partition write slave
             }
-
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e.Message);
+                System.Console.WriteLine(e.StackTrace);
+                return Task.FromResult(new LockResponse { Acknowledge = "NOK" });
+            }
             return Task.FromResult(new LockResponse{Acknowledge = "Ok"});
         }
 
         public override Task<UnlockResponse> unlockServer(UnlockRequest request, ServerCallContext context){
-            var partitionId = request.PartitionId;
-            var objectId = request.ObjectId;
-            var objectValue = request.ObjectValue;
+            System.Console.WriteLine("Unlocking the server to write" +
+                request.ObjectId + " in partition " +
+                request.PartitionId + ". Object value: " + 
+                request.ObjectValue
+            );
+            try
+            {
 
-            _storage.Partitions[partitionId].WriteSlave(objectId, objectValue);
-            return Task.FromResult(new UnlockResponse{Acknowledge = "Ok"});
+                var partitionId = request.PartitionId;
+                var objectId = request.ObjectId;
+                var objectValue = request.ObjectValue;
+
+                _storage.Partitions[partitionId].WriteSlave(objectId, objectValue);
+                return Task.FromResult(new UnlockResponse { Acknowledge = "Ok" });
+            }
+            catch(Exception e)
+            {
+                System.Console.WriteLine(e.Message);
+                System.Console.WriteLine(e.StackTrace);
+                return Task.FromResult(new UnlockResponse { Acknowledge = "NOK" });
+            }
         }
     }
 }

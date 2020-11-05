@@ -33,20 +33,25 @@ message UnfreezeResponse {
 	//nothing
 }
 
+//ServerId
+//ServerUrl
+//Partition
+//Master
+
 message ServerInfo {
-    string serverId = 1;
-    string serverUrl = 2;
+	string serverId = 1;
+	string serverUrl = 2;
 }
 
 message PartitionInfo {
-    string partitionId = 1;
-    string partitionMasterUrl = 2;
-    bool isMyPartition = 3;
+	string partitionId = 1;
+	string partitionMasterUrl = 2;
+	bool isMyPartition = 3;
 }
 
 message CompleteSetupRequest {
-    repeated ServerInfo serverInfo = 1;
-    repeated PartitionInfo partitions = 2;
+	repeated ServerInfo serverInfo = 1;
+	repeated PartitionInfo partitions = 2;
 }
 
 message CompleteSetupResponse {

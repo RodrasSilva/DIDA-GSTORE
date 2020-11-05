@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace ServerDomain{
-    public class AdvancedServerStorage : IStorage{
+    public class AdvancedServerStorage : IStorage {
         public AdvancedServerStorage(){
             Partitions = new Dictionary<string, AdvancedServerPartition>();
         }
@@ -60,6 +60,26 @@ namespace ServerDomain{
 
         public void Write(string partitionId, string objKey, string objValue, int timestamp = -1){
             Partitions[partitionId].Write(objKey, objValue, timestamp);
+        }
+
+        public string GetServerOrThrowException(string serverId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddServer(string serverId, string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListPartitionGlobalResponse ListPartition(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<PartitionMasters> GetPartitionMasters()
+        {
+            throw new NotImplementedException();
         }
     }
 }

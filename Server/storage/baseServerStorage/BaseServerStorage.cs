@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using Grpc.Net.Client;
 
 namespace ServerDomain{
+    public struct PartitionMasters
+    {
+        public string partitionId;
+        public string masterUrl;
+    }
     public class BaseServerStorage : IStorage{
 
         public Dictionary<string, BaseServerPartition> Partitions { get; }
@@ -12,6 +17,21 @@ namespace ServerDomain{
         public BaseServerStorage(){
             Partitions = new Dictionary<string, BaseServerPartition>();
             Servers = new Dictionary<string, string>();
+        }
+
+        public List<PartitionMasters> GetPartitionMasters()
+        {
+            List<PartitionMasters> lists = new List<PartitionMasters>();
+            List<PartitionMasters> result = lists;
+            foreach(string partitionId in Partitions.Keys)
+            {
+                result.Add(new PartitionMasters()
+                {
+                    partitionId = partitionId,
+                    masterUrl = Partitions[partitionId].GetMasterUrl()
+                });
+            }
+            return result;
         }
 
         public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl){
@@ -31,7 +51,7 @@ namespace ServerDomain{
         public void AddPartition(string partitionId, string masterUrl){
             //lock (Partitions) {
             Console.WriteLine("Creating partition " + partitionId);
-            Partitions.Add(partitionId, new BaseServerPartition(masterUrl));
+            Partitions.Add(partitionId, new BaseServerPartition(partitionId, masterUrl));
             //}
         }
 
@@ -69,14 +89,20 @@ namespace ServerDomain{
         }
 
         public ListServerResponse ListServer(){
+            /*Not sure if it is right.*/
+
             var objects = new List<ListServerResponseEntity>();
 
             new List<string>(Partitions.Keys)
                 .ForEach(pId => {
                     var partition = Partitions[pId];
                     var partitionObjects = partition.Objects;
+                    Console.WriteLine("About to add objects");
+                    Console.WriteLine(partitionObjects.Keys.Count);
+                    Console.WriteLine(new List<string>(partitionObjects.Keys));
                     new List<string>(partitionObjects.Keys)
                         .ForEach(objId => {
+                            Console.WriteLine("Adding a object");
                             objects.Add(new ListServerResponseEntity {
                                 ObjectValue = partitionObjects[objId].Read(),
                                 ObjectId = objId,
@@ -85,13 +111,27 @@ namespace ServerDomain{
                             ;
                         });
                 });
+
+            Console.WriteLine("ListServer ->");
+            objects.ForEach((o) => Console.WriteLine($" Is master = " +
+                $"{o.IsMaster}, object {o.ObjectId} with value {o.ObjectValue}"));
+
             return new ListServerResponse{Objects = {objects}};
         }
 
-        public ListGlobalResponse ListGlobal(){
-            /*Not sure if it is right.*/
+        public ListPartitionGlobalResponse ListPartition(string id)
+        {
+            return new ListPartitionGlobalResponse { ObjectIds = { Partitions[id].Objects.Keys } };
+        }
 
+        public ListGlobalResponse ListGlobal(){
+            /*It's wrong, missing one object.*/
+            throw new System.NotImplementedException();
+            /*
             var objects = new List<ListGlobalResponseEntity>();
+
+            Console.WriteLine("ListGlobal -> I'm here and I'm not queer = BaseServerStorage.cs");
+
 
             new List<string>(Partitions.Keys)
                 .ForEach(pId => {
@@ -109,7 +149,15 @@ namespace ServerDomain{
                         Identifiers = {identifiers}
                     });
                 });
+
+            foreach (ListGlobalResponseEntity ls in objects)
+            {
+                Console.WriteLine("ListGlobal " + ls.ToString());
+            }
+
+            Console.WriteLine("ListGlobal " + objects.ToString());
             return new ListGlobalResponse{Objects = {objects}};
+            */
         }
 
 

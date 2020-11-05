@@ -27,7 +27,7 @@ namespace DIDA_GSTORE.commands{
 
         public void Execute(PuppetMasterDomain puppetMaster){
             var response = puppetMaster.GetProcessService().StartServer(
-                _serverId, _url, _minDelay, _maxDelay, puppetMaster.partitionsPerServer[_serverId]);
+                _serverId, _url, _minDelay, _maxDelay);
 
             //if response is cool
             puppetMaster.AddServer(_serverId, _url);

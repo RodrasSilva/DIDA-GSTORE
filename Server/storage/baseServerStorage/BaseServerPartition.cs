@@ -3,8 +3,10 @@ using System.Linq;
 
 public class BaseServerPartition : IPartition{
     private readonly string _masterUrl;
+    private string _id;
 
-    public BaseServerPartition(string masterUrl){
+    public BaseServerPartition(string id, string masterUrl){
+        _id = id;
         _masterUrl = masterUrl;
         Objects = new Dictionary<string, BaseServerObjectInfo>();
         SlaveServers = new List<SlaveInfo>();
@@ -22,18 +24,23 @@ public class BaseServerPartition : IPartition{
 
     public string Read(string objKey){
         var objectInfo = Objects[objKey];
-        objectInfo._lock.AcquireReaderLock(0);
+        objectInfo._lock.Set();
         try{
             return objectInfo.Read();
         }
         finally{
-            objectInfo._lock.ReleaseReaderLock();
+            objectInfo._lock.Reset();
         }
     }
 
     public void WriteMaster(string objKey, string objValue){
-        var lockRequest = new LockRequest();
+        var lockRequest = new LockRequest()
+        {
+            PartitionId = _id,
+            ObjectId = objKey,
+        };
         var unlockRequest = new UnlockRequest {
+            PartitionId = _id,
             ObjectId = objKey,
             ObjectValue = objValue
         };
@@ -44,10 +51,12 @@ public class BaseServerPartition : IPartition{
         BaseServerObjectInfo objectInfo;
         lock (Objects){
             if (!Objects.TryGetValue(objKey, out objectInfo))
+            {
                 Objects.Add(objKey, objectInfo = new BaseServerObjectInfo("NA"));
+            }
         }
 
-        objectInfo._lock.AcquireWriterLock(0);
+        objectInfo._lock.Set();
         objectInfo.Write(objValue);
 
         foreach (var slave in orderedSlaves) slave.SlaveChannel.lockServer(lockRequest);
@@ -56,7 +65,7 @@ public class BaseServerPartition : IPartition{
 
         foreach (var slave in orderedSlaves) slave.SlaveChannel.unlockServer(unlockRequest);
 
-        objectInfo._lock.ReleaseWriterLock();
+        objectInfo._lock.Reset();
     }
 
     public void WriteSlave(string objKey, string objectValue){
@@ -64,7 +73,7 @@ public class BaseServerPartition : IPartition{
         var objectInfo = Objects[objKey];
         //write slave 
         objectInfo.Write(objectValue);
-        objectInfo._lock.ReleaseWriterLock();
+        objectInfo._lock.Reset();
         //unlock object
 
         //ignore, in base version write slave is done by lock and unlock

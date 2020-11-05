@@ -29,29 +29,31 @@ namespace DIDA_GSTORE.grpcService{
         private static ListServerResult MapToListServerResult(ListServerResponseEntity it){
             return new ListServerResult(it.ObjectId, it.ObjectValue, it.IsMaster);
         }
-
-        private static ListGlobalResult mapToListGlobalResult(ListGlobalResponseEntity it){
-            return new ListGlobalResult(it.Identifiers.Select(mapToListGlobalResultIdentifier).ToList());
+        /*
+        private static ListGlobalResult mapToListGlobalResult(ListGlobalResponse it){
+            return new ListGlobalResult(it.Objects.Select(mapToListGlobalResultIdentifier).ToList());
         }
 
         private static ListGlobalResultIdentifier mapToListGlobalResultIdentifier(ObjectIdentifier it){
             return new ListGlobalResultIdentifier(it.PartitionId, it.ObjectId);
         }
-
+        */
         public void Write(string partitionId, string objectId, string objectValue){
             var request = new WriteRequest{PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
             try{
                 var response = _client.write(request);
+                Console.WriteLine("Am i here?");
                 switch (response.ResponseCase){
                     case WriteResponse.ResponseOneofCase.ResponseMessage:
                         Console.WriteLine("Write Successful");
                         break;
                     case WriteResponse.ResponseOneofCase.MasterServerUrl:
-                        Console.WriteLine($"Write - Changing to server ${response.MasterServerUrl.ServerUrl}");
+                        Console.WriteLine($"Write - Changing to server {response.MasterServerUrl.ServerUrl}");
                         _client = BuildClientFromServerUrl(response.MasterServerUrl.ServerUrl);
                         Write(partitionId, objectId, objectValue);
                         break;
                     case WriteResponse.ResponseOneofCase.None:
+                        Console.WriteLine("TO DO CASE");
                         break; //  TODO : Check how to handle when none of the above are returned  
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -102,14 +104,12 @@ namespace DIDA_GSTORE.grpcService{
             }
         }
 
-        public List<ListGlobalResult> ListGlobal(){
+        public List<ListGlobalResponseEntity> ListGlobal(){
             var request = new ListGlobalRequest();
             try{
                 var listServerResponse = _client.listGlobal(request);
-                return listServerResponse
-                    .Objects
-                    .Select(mapToListGlobalResult)
-                    .ToList();
+                Console.WriteLine(listServerResponse.Objects.Count);
+                return listServerResponse.Objects.ToList();
             }
             catch (Exception e){
                 Console.WriteLine(e.ToString());

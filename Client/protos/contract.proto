@@ -41,13 +41,9 @@ message ListServerResponse{
   repeated ListServerResponseEntity objects = 1;
 }
 
-message ObjectIdentifier {
-  string partitionId = 1;
-  string objectId = 2;
-}
-
 message ListGlobalResponseEntity{
-  repeated ObjectIdentifier identifiers = 1;
+  string partitionId = 1;
+  repeated string objectIds = 2;
 }
 
 message ListGlobalRequest{

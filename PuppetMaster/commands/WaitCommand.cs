@@ -11,11 +11,13 @@ namespace DIDA_GSTORE.commands{
             _waitTime = waitTime;
         }
 
-        public bool IsAsync => true;
+        public bool IsAsync => false;
         public bool IsSetup => false;
 
         public void Execute(PuppetMasterDomain puppetMaster){
+            Console.WriteLine("teste1");
             Thread.Sleep(_waitTime);
+            Console.WriteLine("teste2");
         }
 
         public static WaitCommand ParseCommandLine(string[] arguments){
