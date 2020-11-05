@@ -1,4 +1,4 @@
-write part2 o1 1
+write part2 o1 "the object's value"
 read p1 MyObject -1
 read part2 o1 s3
 listServer s1

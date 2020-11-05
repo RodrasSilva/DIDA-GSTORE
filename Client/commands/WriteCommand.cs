@@ -1,14 +1,13 @@
 using System;
+using System.Linq;
 using DIDA_GSTORE.grpcService;
 
 namespace DIDA_GSTORE.commands{
     public class WriteCommand : ICommand{
         private const int PartitionIdPosition = 0;
         private const int ObjectIdPosition = 1;
-        private const int ObjectValuePosition = 2;
         private readonly string _objectId;
         private readonly string _objectValue;
-
         private readonly string _partitionId;
 
         private WriteCommand(string partitionId, string objectId, string objectValue){
@@ -23,14 +22,13 @@ namespace DIDA_GSTORE.commands{
         }
 
         public static WriteCommand ParseCommandLine(string[] arguments){
-            if (arguments.Length != 3) throw new Exception("Invalid Write Command ");
+            if (arguments.Length < 3) throw new Exception("Invalid Write Command ");
             var partitionId = arguments[PartitionIdPosition];
             var objectId = arguments[ObjectIdPosition];
-            var objectValue = arguments[ObjectValuePosition];
+            var objectValueArguments = arguments.Skip(2);
+            var objectValue = string.Join(" ", objectValueArguments);
+            objectValue = objectValue.Substring(0, objectValue.Length - 1).Substring(1);
             return new WriteCommand(partitionId, objectId, objectValue);
-           
-        
-          
         }
     }
 }
