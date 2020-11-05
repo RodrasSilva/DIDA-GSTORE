@@ -95,11 +95,7 @@ namespace PuppetMasterMain{
             }
             else if (args.Length == 1){
                 SetupOperation();
-
-                var path =
-                    "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\PuppetMaster\\scripts\\"; // TODO : Change Path 
-                var operationsFilePath = args[0];
-                operationsFilePath = path + operationsFilePath;
+                var  operationsFilePath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, @$"..\..\..\scripts\{args[0]}"));
                 if (!File.Exists(operationsFilePath)){
                     Console.WriteLine("The given path: " + operationsFilePath +
                                       ". to the operations file is not valid - App shutting down");

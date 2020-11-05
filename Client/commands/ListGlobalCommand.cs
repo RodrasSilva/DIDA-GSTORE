@@ -6,15 +6,14 @@ namespace DIDA_GSTORE.commands{
         private ListGlobalCommand(){ }
 
         public void Execute(GrpcService grpcService){
+            Console.WriteLine("List Global: \n");
             var response = grpcService.ListGlobal();
-            Console.WriteLine(response.Count);
-
+           
             string finalResult ="";
-            Console.Write("teste1");
+            
             foreach (var result in response)
             {
-                Console.Write("teste2");
-
+                
                 finalResult += $" Partition {result.PartitionId} has: \n";
                 foreach(var objResult in result.ObjectIds)
                 {
@@ -22,7 +21,6 @@ namespace DIDA_GSTORE.commands{
                 }
                 finalResult += "\n";
             }
-            Console.Write("teste3");
             Console.Write(finalResult);
         }
 

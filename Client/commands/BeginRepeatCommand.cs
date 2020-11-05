@@ -17,6 +17,7 @@ namespace DIDA_GSTORE.commands{
         }
 
         public void Execute(GrpcService grpcService){
+            Console.WriteLine("Begin Repeat: \n");
             for (var i = 1; i <= _numberOfRepeats; ++i){
                 var counter = i.ToString();
                 _commands.ForEach(cmd => {
@@ -35,12 +36,11 @@ namespace DIDA_GSTORE.commands{
 
             string line;
             var commands = new List<string>();
-            Console.WriteLine("die");
 
             while ((line = operationsFileReader.ReadLine()) != null && !line.Equals(EndRepeatCommand))
             {
-                Console.WriteLine(line);
-                Console.WriteLine(EndRepeatCommand);
+                //Console.WriteLine(line);
+                //Console.WriteLine(EndRepeatCommand);
                 commands.Add(line);
             }
             

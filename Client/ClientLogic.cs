@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using Client.clientNodeServer;
 using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
@@ -32,10 +31,8 @@ namespace Client{
 
 
         private void ExecuteCommands(){
-            var path =
-                "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Client\\scripts\\"; // TODO : Change Path 
-            var operationsFilePath = path + _operationsFilePath;
-            Console.WriteLine("Client reading file : " + operationsFilePath);
+            var operationsFilePath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, @$"..\..\..\scripts\{_operationsFilePath}"));
+            Console.WriteLine("Client reading file : " + operationsFilePath + " \n " );
             if (!File.Exists(operationsFilePath))
                 throw new Exception("The given path to the operations file is not valid, file: " + operationsFilePath);
 

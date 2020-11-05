@@ -40,16 +40,9 @@ namespace ProcessCreationDomain{
                 if (partitionString == null) partitionString = p.id;
                 else partitionString += " " + p.id;
             Console.WriteLine("----------------------------------------------------");
-            Console.WriteLine(
-                $"Creating server {id} with url {url}, min delay =  {minDelay}, max delay =  {maxDelay}, part of partitions [{partitionString}]");
+            Console.WriteLine($"Creating server {id} with url {url}, min delay =  {minDelay}, max delay =  {maxDelay}, part of partitions [{partitionString}]");
+            var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @$"..\..\..\..\\Server\\bin\\Debug\\netcoreapp3.1\\Server.exe"));
 
-
-            //Console.WriteLine($"Base path = {AppDomain.CurrentDomain.BaseDirectory}"); C:\Users\Rodrigo Silva\Desktop\DAD\Project\DIDA-GSTORE\ProcessCreationService\bin\Debug\netcoreapp3.1
-            //var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "\\..\\..\\..\\..\\Server\\bin\\Debug\\netcoreapp3.1\\Server.exe");
-            //Console.WriteLine($"Combined path = {path}"); 
-            //string  path = "../../../../../../Server/bin/Debug/netcoreapp3.1/Server.exe";
-            var path =
-                "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Server\\bin\\Debug\\netcoreapp3.1\\Server.exe";
             var psi = new ProcessStartInfo(path);
             psi.Arguments = $"{id} {url} {minDelay} {maxDelay} {partitionString}";
             psi.UseShellExecute = true;
@@ -62,22 +55,12 @@ namespace ProcessCreationDomain{
 
         public static void StartClient(string username, string url, string requestFile, string defaultServerUrl){
             Console.WriteLine("----------------------------------------------------");
-            Console.WriteLine(
-                $"Creating client {username} with url {url}, request file =  {requestFile}, defaultServer =  {defaultServerUrl}");
-
-
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                "\\..\\..\\..\\..\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe");
-
-            path =
-                "D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe";
-            ;
-
+            Console.WriteLine($"Creating client {username} with url {url}, request file =  {requestFile}, defaultServer =  {defaultServerUrl}");
+            var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @$"..\..\..\..\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe"));
             var psi = new ProcessStartInfo(path);
             psi.Arguments = $"{username} {url} {requestFile} {defaultServerUrl} ";
             psi.UseShellExecute = true;
 
-            //Process.Start(path, username + " " + url + " " + requestFile + " " + defaultServerUrl);
             Process.Start(psi);
             Console.WriteLine("Finished creating client ");
             Console.WriteLine("----------------------------------------------------\n");

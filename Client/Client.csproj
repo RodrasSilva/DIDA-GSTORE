@@ -16,6 +16,6 @@
 	  <Protobuf Include="protos\nodeContract.proto" GrpcServices="Server" />
   </ItemGroup>
 <ItemGroup>
-  <Folder Include="scripts\" />
+  <Folder Include="Properties\" />
 </ItemGroup>	
 </Project>

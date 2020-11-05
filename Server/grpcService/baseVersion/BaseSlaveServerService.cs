@@ -40,7 +40,7 @@ namespace ServerDomain{
         }
 
         public override Task<UnlockResponse> unlockServer(UnlockRequest request, ServerCallContext context){
-            System.Console.WriteLine("Unlocking the server to write" +
+            System.Console.WriteLine("Unlocking the server to write " +
                 request.ObjectId + " in partition " +
                 request.PartitionId + ". Object value: " + 
                 request.ObjectValue

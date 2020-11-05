@@ -14,8 +14,4 @@
     </PackageReference>
     <Protobuf Include="protos\contract.proto" GrpcServices="Client" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="scripts\" />
-  </ItemGroup>
 </Project>

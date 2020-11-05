@@ -13,6 +13,7 @@ namespace DIDA_GSTORE.commands{
         }
 
         public void Execute(GrpcService grpcService){
+            Console.WriteLine($"Waiting for {_waitTime} milliseconds");
             Thread.Sleep(_waitTime);
         }
 

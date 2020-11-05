@@ -112,7 +112,7 @@ namespace DIDA_GSTORE.ServerService{
                 //result += " ]}, ";
 
             }
-            Console.WriteLine(listGlobalResponseEntities.Count);
+            //Console.WriteLine(listGlobalResponseEntities.Count);
             return Task.FromResult(new ListGlobalResponse { Objects = { listGlobalResponseEntities } });
         }
 

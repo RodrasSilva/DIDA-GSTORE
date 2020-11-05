@@ -14,7 +14,6 @@ namespace ServerDomain{
         private static float _maxDelay;
         private static string _serverId;
         private static string _serverUrl;
-        private static string[] _partitions;
         private static IStorage _storage;
 
 
@@ -30,14 +29,7 @@ namespace ServerDomain{
             _minDelay = float.Parse(args[2]);
             _maxDelay = float.Parse(args[3]);
 
-            //_partitions = args.Skip(4).ToArray();
-
-            /* See partitions args
-            for (var index = 0; index < _partitions.Length; index++)
-            {
-                Console.WriteLine(_serverId + " Partition " + index + ": " + _partitions[index]);
-            }
-            */
+           
         }
 
         public static void Main(string[] args){
@@ -90,13 +82,6 @@ namespace ServerDomain{
             Console.ReadKey();
         }
 
-        private static void FillPartitionsFromArgs(){
-            for (var index = 0; index < _partitions.Length; index++){
-                var partitionId = _partitions[index];
-                _storage.AddPartition(partitionId, "");
-            }
-        }
-
         public static void RegisterServers(ServerInfo[] serversInfo)
         {
             foreach(ServerInfo serverInfo in serversInfo)
@@ -119,13 +104,13 @@ namespace ServerDomain{
                     _storage.AddPartition(partitionId, partitionMasterUrl);
                     if (!isMyPartition)
                     {
-                        Console.WriteLine("Partition placeholder registered");
+                        Console.WriteLine($"Server [{_serverId}]  - Partition {partitionId} placeholder registered");
                         continue;
                     }
-                    Console.WriteLine("* Server [" + _serverId + "] - Adding to partition " + partitionId +
-                                                          " with master url = " + partitionMasterUrl + " *");
+                    Console.WriteLine($"Server [{_serverId}] - Adding to partition " + partitionId +
+                                                          " with master url = " + partitionMasterUrl);
                     if (partitionMasterUrl.Equals(_serverUrl)){
-                        Console.WriteLine($"  Server {_serverId} - Registering as master to partition {partitionId}");
+                        Console.WriteLine($"Server [{_serverId}] - Registering as master to partition {partitionId}");
 
                         _storage.RegisterPartitionMaster(partitionId);
                         continue; // Important, cannot be slave and master to the same partition
@@ -138,7 +123,7 @@ namespace ServerDomain{
                             PartitionId = partitionId
                         };
 
-                        Console.WriteLine($" Server {_serverId} - Registering as slave to partition {partitionId}");
+                        Console.WriteLine($"Server [{_serverId}] - Registering as slave to partition {partitionId}");
                         AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
                         var channel = GrpcChannel.ForAddress(partitionMasterUrl);
@@ -148,7 +133,7 @@ namespace ServerDomain{
                     }
                     catch (Exception e){
                         Console.WriteLine(
-                            $"  Server {_serverId} - Error registering as slave to partition {partitionId}. Error message: {e.Message}. {_serverUrl}. {partitionMasterUrl}");
+                            $"Server [{_serverId}] - Error registering as slave to partition {partitionId}. Error message: {e.Message}. {_serverUrl}. {partitionMasterUrl}");
                     }
                 }
             }

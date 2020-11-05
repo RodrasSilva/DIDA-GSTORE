@@ -12,6 +12,7 @@ namespace DIDA_GSTORE.commands{
         }
 
         public void Execute(GrpcService grpcService){
+            Console.WriteLine($"List Server [{_serverId}]: \n");
             var response = grpcService.ListServer(_serverId);
             foreach (var result in response)
                 if (result.IsMaster)

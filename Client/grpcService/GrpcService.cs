@@ -42,7 +42,7 @@ namespace DIDA_GSTORE.grpcService{
             var request = new WriteRequest{PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue};
             try{
                 var response = _client.write(request);
-                Console.WriteLine("Am i here?");
+                //Console.WriteLine("Am i here?");
                 switch (response.ResponseCase){
                     case WriteResponse.ResponseOneofCase.ResponseMessage:
                         Console.WriteLine("Write Successful");
@@ -108,7 +108,7 @@ namespace DIDA_GSTORE.grpcService{
             var request = new ListGlobalRequest();
             try{
                 var listServerResponse = _client.listGlobal(request);
-                Console.WriteLine(listServerResponse.Objects.Count);
+                //Console.WriteLine(listServerResponse.Objects.Count);
                 return listServerResponse.Objects.ToList();
             }
             catch (Exception e){

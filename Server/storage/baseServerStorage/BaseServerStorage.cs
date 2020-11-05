@@ -97,12 +97,12 @@ namespace ServerDomain{
                 .ForEach(pId => {
                     var partition = Partitions[pId];
                     var partitionObjects = partition.Objects;
-                    Console.WriteLine("About to add objects");
-                    Console.WriteLine(partitionObjects.Keys.Count);
-                    Console.WriteLine(new List<string>(partitionObjects.Keys));
+                    //Console.WriteLine("About to add objects");
+                    //Console.WriteLine(partitionObjects.Keys.Count);
+                    //Console.WriteLine(new List<string>(partitionObjects.Keys));
                     new List<string>(partitionObjects.Keys)
                         .ForEach(objId => {
-                            Console.WriteLine("Adding a object");
+                            //Console.WriteLine("Adding a object");
                             objects.Add(new ListServerResponseEntity {
                                 ObjectValue = partitionObjects[objId].Read(),
                                 ObjectId = objId,
