@@ -60,8 +60,12 @@ namespace DIDA_GSTORE.grpcService{
                 }
             }
             catch (Exception e){
-                Console.WriteLine(e.ToString());
-                throw; //  TODO : Check how to handle connection exceptions 
+
+                Console.WriteLine("Error Writing");
+
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                //throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
@@ -81,8 +85,12 @@ namespace DIDA_GSTORE.grpcService{
                     : secondReadResponse.ObjectValue;
             }
             catch (Exception e){
-                Console.WriteLine(e.ToString());
-                throw; //  TODO : Check how to handle connection exceptions 
+                Console.WriteLine("Error reading");
+                Console.WriteLine(e.Message);
+                
+                Console.ReadLine();
+                return "Error";
+                //throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
@@ -99,7 +107,10 @@ namespace DIDA_GSTORE.grpcService{
                     .ToList();
             }
             catch (Exception e){
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Error List Server");
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                //Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }
         }
@@ -112,7 +123,11 @@ namespace DIDA_GSTORE.grpcService{
                 return listServerResponse.Objects.ToList();
             }
             catch (Exception e){
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("List Global Error");
+                Console.WriteLine(e.Message);
+              
+                Console.ReadLine();
+                //Console.WriteLine(e.ToString());
                 throw; //  TODO : Check how to handle connection exceptions 
             }
         }

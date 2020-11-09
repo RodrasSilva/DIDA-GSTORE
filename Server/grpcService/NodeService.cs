@@ -35,7 +35,7 @@ namespace DIDA_GSTORE.ServerService{
         public void CrashMechanism(){
             ServerDomain.Server.DelayMessage();
 
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             Environment.Exit(1);
         }
 

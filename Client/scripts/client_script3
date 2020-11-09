@@ -1,0 +1,8 @@
+write p2 o2 "p1-o2-v2"
+read p2 o5 -1
+read p2 o6 -1
+read p1 o1 s3
+listServer s1
+listServer s3
+wait 5000
+listGlobal

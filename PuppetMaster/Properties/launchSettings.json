@@ -2,7 +2,7 @@
   "profiles": {
     "PuppetMaster": {
       "commandName": "Project",
-      "commandLineArgs": "sample_pm_script"
+      "commandLineArgs": "pm_script1"
     }
   }
 }

@@ -1,0 +1,7 @@
+write p1 o2 "p1-o2-v1"
+read p2 o5 -1
+read p2 o6 -1
+read p1 o2 s3
+listServer s1
+listServer s4
+listGlobal
