@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Server.utils;
 
 namespace Server.grpcService{
     public class SlaveRegisteringService : RegisterSlaveToMasterService.RegisterSlaveToMasterServiceBase{

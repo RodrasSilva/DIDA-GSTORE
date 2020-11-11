@@ -9,21 +9,27 @@ using Server.utils;
 namespace DIDA_GSTORE.ServerService{
     public class NodeService : NodeControlService.NodeControlServiceBase{
         private FreezeUtilities freezeUtilities;
+        private Action delayFunction;
+        private Action<ServerInfo[]> registerServersFunction;
+        private Action<PartitionInfo[]> registerPartitionsFunction;
 
-        public NodeService(FreezeUtilities freezeUtilities)
+        public NodeService(FreezeUtilities freezeUtilities, Action delayFunction, Action<ServerInfo[]>  registerServersFunction,Action<PartitionInfo[]> registerPartitionsFunction)
         {
             this.freezeUtilities = freezeUtilities;
+            this.delayFunction = delayFunction;
+            this.registerServersFunction = registerServersFunction;
+            this.registerPartitionsFunction = registerPartitionsFunction;
         }
 
         public override Task<StatusResponse> status(StatusRequest request, ServerCallContext context){
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
             Console.WriteLine("Status called");
             return Task.FromResult(new StatusResponse{Status = " ok "});
             //return base.status(request, context);
         }
 
         public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context){
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
 
             //return base.crash(request, context);
             var t = new Thread(() => CrashMechanism());
@@ -33,7 +39,7 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public void CrashMechanism(){
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
 
             //Thread.Sleep(1000);
             Environment.Exit(1);
@@ -53,11 +59,7 @@ namespace DIDA_GSTORE.ServerService{
             return Task.FromResult(new UnfreezeResponse());
         }
 
-        // partitionsInfo format : <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN> |
-        // <partitionIdM> ... 
-        //or
-        // partitionsInfo format: <partitionId1> <partitionMasterServerURLN1> <isHere>... <partitionIdN> <partitionMasterServerURLN> <isHere>
-         public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
+        public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
             ServerCallContext context){
             Console.WriteLine("Server - here");
 
@@ -66,17 +68,12 @@ namespace DIDA_GSTORE.ServerService{
             var serversInfo = request.ServerInfo.ToArray();
 
 
-            ServerDomain.Server.RegisterServers(serversInfo);
-            ServerDomain.Server.RegisterPartitions(partitionsInfo);
+            registerServersFunction(serversInfo);
+            registerPartitionsFunction(partitionsInfo);
             return Task.FromResult(new CompleteSetupResponse());
         }
 
 
-        /*
-         public void SetupComplete() {
-            ServerDomain.Server.RegisterPartitions();
-         }
-
-         */
+      
     }
 }

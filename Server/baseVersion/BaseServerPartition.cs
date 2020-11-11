@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Server.utils;
 
 public class BaseServerPartition : IPartition{
     private readonly string _masterUrl;
@@ -64,7 +65,7 @@ public class BaseServerPartition : IPartition{
             try
             {
                 slave.SlaveChannel.lockServer(lockRequest);
-            }catch(Exception e)
+            }catch(Exception)
             {
                 Console.WriteLine($"Error locking partition {_id} slave {slave.ServerId}");
             }
@@ -77,7 +78,7 @@ public class BaseServerPartition : IPartition{
             {
                 slave.SlaveChannel.unlockServer(unlockRequest);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine($"Error unlocking partition {_id} slave {slave.ServerId}");
             }

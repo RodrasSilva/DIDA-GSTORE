@@ -11,17 +11,19 @@ namespace DIDA_GSTORE.ServerService{
         private readonly IStorage _storage;
         private readonly FreezeUtilities _freezeUtilities;
         private string _myUrl;
-
-        public ServerService(IStorage storage, FreezeUtilities freezeUtilities, string myUrl){
+        private Action delayFunction;
+        public ServerService(IStorage storage, FreezeUtilities freezeUtilities, string myUrl, Action delayFunction)
+        {
             _storage = storage;
             _freezeUtilities = freezeUtilities;
             _myUrl = myUrl;
+            this.delayFunction = delayFunction;
         }
 
 
         public override Task<WriteResponse> write(WriteRequest request, ServerCallContext context){
             _freezeUtilities.WaitForUnfreeze();
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
             return Task.FromResult(Write(request));
         }
 
@@ -59,7 +61,7 @@ namespace DIDA_GSTORE.ServerService{
 
         public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context){
             _freezeUtilities.WaitForUnfreeze();
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
             return Task.FromResult(Read(request));
         }
 
@@ -83,14 +85,14 @@ namespace DIDA_GSTORE.ServerService{
 
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context){
             _freezeUtilities.WaitForUnfreeze();
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
             Console.WriteLine("Received List Server Request: " + request.ToString());
             return Task.FromResult(_storage.ListServer());
         }
 
         public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context){
             _freezeUtilities.WaitForUnfreeze();
-            ServerDomain.Server.DelayMessage();
+            delayFunction();
             Console.WriteLine("Received List Global Request ");
 
             List<ListGlobalResponseEntity> listGlobalResponseEntities = new List<ListGlobalResponseEntity>();
@@ -118,7 +120,7 @@ namespace DIDA_GSTORE.ServerService{
                     PartitionId = partitionMaster.partitionId,
                 });
                     //result += " ]}, ";
-                }catch(Exception e)
+                }catch(Exception)
                 {
                     Console.WriteLine($"Failed to fetch partition {partitionMaster.partitionId} from partition master {partitionMaster.masterUrl}");
                 }
