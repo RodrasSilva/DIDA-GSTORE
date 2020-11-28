@@ -90,8 +90,6 @@ namespace ServerDomain{
         }
 
         public ListServerResponse ListServer(){
-            /*Not sure if it is right.*/
-
             var objects = new List<ListServerResponseEntity>();
 
             new List<string>(Partitions.Keys)
@@ -124,43 +122,6 @@ namespace ServerDomain{
         {
             return new ListPartitionGlobalResponse { ObjectIds = { Partitions[id].Objects.Keys } };
         }
-
-        public ListGlobalResponse ListGlobal(){
-            /*It's wrong, missing one object.*/
-            throw new System.NotImplementedException();
-            /*
-            var objects = new List<ListGlobalResponseEntity>();
-
-            Console.WriteLine("ListGlobal -> I'm here and I'm not queer = BaseServerStorage.cs");
-
-
-            new List<string>(Partitions.Keys)
-                .ForEach(pId => {
-                    var identifiers = new List<ObjectIdentifier>();
-                    var partition = Partitions[pId];
-                    var partitionObjects = partition.Objects;
-                    new List<string>(partitionObjects.Keys)
-                        .ForEach(objId => {
-                            identifiers.Add(new ObjectIdentifier {
-                                ObjectId = objId,
-                                PartitionId = pId
-                            });
-                        });
-                    objects.Add(new ListGlobalResponseEntity {
-                        Identifiers = {identifiers}
-                    });
-                });
-
-            foreach (ListGlobalResponseEntity ls in objects)
-            {
-                Console.WriteLine("ListGlobal " + ls.ToString());
-            }
-
-            Console.WriteLine("ListGlobal " + objects.ToString());
-            return new ListGlobalResponse{Objects = {objects}};
-            */
-        }
-
 
         public bool IsPartitionMaster(string partitionId){
             return Partitions[partitionId].IsMaster;

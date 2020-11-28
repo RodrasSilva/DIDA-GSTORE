@@ -1,9 +1,9 @@
-﻿public class AdvancedServerObjectInfo{
+﻿public class AdvancedServerObjectInfo {
     private readonly object _monitor = new object();
     private string _objectValue;
     private int _timestampCounter;
 
-    public string Read(){
+    public string Read() {
         lock (_monitor){
             return _objectValue;
         }
@@ -14,13 +14,7 @@
         */
     }
 
-    public void Write(string newValue, int timestampCounter){
-        //int observed = -1;
-        //while (true) {
-        //    observed = _timestampCounter;
-        //    if (timestampCounter <= observed) return;
-        //    if (Interlocked.CompareExchange(ref _timestampCounter, timestampCounter, observed) == timestampCounter) {  _objectValue = newValue; return;}
-        //}
+    public void Write(string newValue, int timestampCounter) {
 
         lock (_monitor){
             if (timestampCounter <= _timestampCounter) return;
@@ -29,7 +23,7 @@
         }
     }
 
-    public int WriteNext(string newValue){
+    public int WriteNext(string newValue) {
         lock (_monitor){
             _objectValue = newValue;
             return ++_timestampCounter;

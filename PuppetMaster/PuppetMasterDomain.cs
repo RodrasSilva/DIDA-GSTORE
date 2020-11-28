@@ -221,7 +221,8 @@ namespace PuppetMasterMain{
                         {
                             PartitionId = partition.partitionId,
                             PartitionMasterUrl = ServersUrls[partition.masterUrl],
-                            IsMyPartition = partition.serverIds.Contains(serverId) //change later
+                            IsMyPartition = partition.serverIds.Contains(serverId), //change later
+                            ServerIds = { partition.serverIds },
                         });
                     }
 

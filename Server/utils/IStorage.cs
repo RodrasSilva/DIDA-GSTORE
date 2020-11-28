@@ -24,7 +24,6 @@ namespace Server.utils
 
         public ListPartitionGlobalResponse ListPartition(string id);
         public ListServerResponse ListServer();
-        public ListGlobalResponse ListGlobal();
         public void RegisterPartitionSlave(string partitionId, string slaveServerId, string slaveServerUrl);
 
         public void RegisterPartitionMaster(string partitionId);

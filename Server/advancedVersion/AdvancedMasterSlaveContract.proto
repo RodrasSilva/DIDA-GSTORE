@@ -15,6 +15,8 @@ message WriteSlaveResponse{
 	// empty
 }
 
+//do raft here?
+
 service AdvancedSlaveService{
 	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
 }

@@ -86,7 +86,7 @@ namespace Server.advancedVersion
                     var partitionId = partitionsInfo[i].PartitionId;
                     var partitionMasterUrl = partitionsInfo[i].PartitionMasterUrl;
                     var isMyPartition = partitionsInfo[i].IsMyPartition;
-
+                    List<string> serverIds = new List<string>(partitionsInfo[i].ServerIds);
 
                     _storage.AddPartition(partitionId, partitionMasterUrl);
                     if (!isMyPartition)
@@ -96,35 +96,19 @@ namespace Server.advancedVersion
                     }
                     Console.WriteLine($"Server [{_serverId}] - Adding to partition " + partitionId +
                                                           " with master url = " + partitionMasterUrl);
+
+                    foreach (string serverId in serverIds) {
+                        string serverUrl = _storage.GetServerOrThrowException(serverId);
+
+                        _storage.RegisterServer(partitionId, serverId, serverUrl);
+                    }
+
                     if (partitionMasterUrl.Equals(_serverUrl))
                     {
                         Console.WriteLine($"Server [{_serverId}] - Registering as master to partition {partitionId}");
 
                         _storage.RegisterPartitionMaster(partitionId);
                         continue; // Important, cannot be slave and master to the same partition
-                    }
-
-                    try
-                    {
-                        var request = new RegisterRequest
-                        {
-                            ServerId = _serverId,
-                            Url = _serverUrl,
-                            PartitionId = partitionId
-                        };
-
-                        Console.WriteLine($"Server [{_serverId}] - Registering as slave to partition {partitionId}");
-                        AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-                        var channel = GrpcChannel.ForAddress(partitionMasterUrl);
-                        var client = new RegisterSlaveToMasterService.RegisterSlaveToMasterServiceClient(channel);
-
-                        client.registerAsSlave(request);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(
-                            $"Server [{_serverId}] - Error registering as slave to partition {partitionId}. Error message: {e.Message}. {_serverUrl}. {partitionMasterUrl}");
                     }
                 }
             }

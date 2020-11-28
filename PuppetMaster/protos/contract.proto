@@ -92,6 +92,9 @@ message PartitionInfoMessage {
 	string partitionId = 1;
 	string partitionMasterUrl = 2;
 	bool isMyPartition = 3;
+
+	//not used in base
+	repeated string serverIds = 4; 
 }
 
 message CompleteSetupRequest {
