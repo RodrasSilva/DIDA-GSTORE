@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Grpc.Core;
 
 namespace ServerDomain{
@@ -19,6 +20,7 @@ namespace ServerDomain{
             //partition.WriteSlave(objectId, objectValue, timestamp);
 
             _storage.Write(partitionId, objectId, objectValue, timestamp);
+
             //if exception occurs its because:
             //Partition doesn't exist O.o - Ignore ? Should never occur because master server called this...
             return Task.FromResult(new WriteSlaveResponse());

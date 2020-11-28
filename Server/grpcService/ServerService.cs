@@ -59,14 +59,22 @@ namespace DIDA_GSTORE.ServerService{
             }
         }
 
-        public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context){
+        public override Task<ReadResponse> read(ReadRequest request, ServerCallContext context)
+        {
             _freezeUtilities.WaitForUnfreeze();
             delayFunction();
             return Task.FromResult(Read(request));
         }
+        public override Task<ReadAdvancedResponse> readAdvanced(ReadAdvancedRequest request, ServerCallContext context)
+        {
+            _freezeUtilities.WaitForUnfreeze();
+            delayFunction();
+            return Task.FromResult(ReadAdvanced(request));
+        }
 
 
-        public ReadResponse Read(ReadRequest request){
+        public ReadResponse Read(ReadRequest request)
+        {
             Console.WriteLine("Received Read Request: " + request.ToString());
             try
             {
@@ -74,12 +82,41 @@ namespace DIDA_GSTORE.ServerService{
                 var objectId = request.ObjectId;
                 var partition = _storage.GetPartitionOrThrowException(partitionId);
                 var objectValue = _storage.Read(partitionId, objectId);
-                var response = new ReadResponse{ObjectValue = objectValue};
+                var response = new ReadResponse { ObjectValue = objectValue };
                 return response;
             }
-            catch (Exception){
+            catch (Exception)
+            {
                 /*Partition not founded */
-                return new ReadResponse{ObjectValue = "N/A"};
+                return new ReadResponse { ObjectValue = "N/A" };
+            }
+        }
+
+        public ReadAdvancedResponse ReadAdvanced(ReadAdvancedRequest request)
+        {
+            Console.WriteLine("Received Read Request: " + request.ToString());
+            try
+            {
+                var partitionId = request.PartitionId;
+                var objectId = request.ObjectId;
+                var curobjectValue = request.CurObjectValue;
+                var objectTimestamp = request.CurTimestamp;
+
+                var partition = _storage.GetPartitionOrThrowException(partitionId);
+                var objectValue = _storage.ReadAdvanced(partitionId, objectId, curobjectValue, objectTimestamp);
+
+                var response = new ReadAdvancedResponse
+                {
+                    ObjectValue = objectValue.value,
+                    Timestamp = objectValue.timestampCounter
+                };
+
+                return response;
+            }
+            catch (Exception)
+            {
+                /*Partition not founded */
+                return new ReadAdvancedResponse { ObjectValue = "N/A" };
             }
         }
 

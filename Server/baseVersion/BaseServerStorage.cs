@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Grpc.Net.Client;
 using Server.utils;
+using static AdvancedServerObjectInfo;
 
 namespace ServerDomain{
     public struct PartitionMasters
@@ -130,6 +131,11 @@ namespace ServerDomain{
         public void AddServer(string serverId, string url)
         {
             Servers.Add(serverId, url);
+        }
+
+        public ObjectVal ReadAdvanced(string partitionId, string objKey, string clientObjectValue, int clientTimestamp)
+        {
+            throw new NotImplementedException();
         }
     }
 }

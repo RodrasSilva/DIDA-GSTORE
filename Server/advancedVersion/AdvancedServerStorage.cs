@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Grpc.Net.Client;
 using Server.utils;
+using static AdvancedServerObjectInfo;
 
 namespace ServerDomain{
     
@@ -81,8 +82,17 @@ namespace ServerDomain{
             throw new Exception("No such server");
         }
 
-        public string Read(string partitionId, string objKey){
-            return Partitions[partitionId].Read(objKey);
+
+        public ObjectVal ReadAdvanced(string partitionId, string objKey,
+            string clientObjectValue, int clientTimestamp)
+        {
+            return Partitions[partitionId].ReadAdvanced(objKey,
+                clientObjectValue, clientTimestamp);
+        }
+
+        public string Read(string partitionId, string objKey)
+        {
+            throw new NotImplementedException();
         }
 
         public string GetMasterUrl(string partitionId){
@@ -113,7 +123,7 @@ namespace ServerDomain{
                             //Console.WriteLine("Adding a object");
                             objects.Add(new ListServerResponseEntity
                             {
-                                ObjectValue = partitionObjects[objId].Read(),
+                                ObjectValue = partitionObjects[objId].Read().value,
                                 ObjectId = objId,
                                 IsMaster = partition.IsMaster
                             });

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Server.utils;
+using static AdvancedServerObjectInfo;
 
 public class AdvancedServerPartition : IPartition{
     private readonly string _masterUrl;
@@ -21,8 +23,19 @@ public class AdvancedServerPartition : IPartition{
         return _masterUrl;
     }
 
-    public string Read(string objKey){
-        return Objects[objKey].Read();
+    public ObjectVal ReadAdvanced(string objKey, 
+        string clientObjectValue, int clientTimestamp)
+    {
+        var objectInfo = Objects[objKey];
+        objectInfo._lock.Set();
+        try
+        {
+            return objectInfo.Read(clientObjectValue, clientTimestamp);
+        }
+        finally
+        {
+            objectInfo._lock.Reset();
+        }
     }
 
     public void Write(string objKey, string objValue, int timestamp = -1){
@@ -30,7 +43,17 @@ public class AdvancedServerPartition : IPartition{
         WriteSlave(objKey, objValue, timestamp);
     }
 
-    public void WriteMaster(string objKey, string objValue){
+    public void WriteMaster(string objKey, string objValue)
+    {
+        AdvancedServerObjectInfo objectInfo;
+
+        lock (Objects)
+        {
+            if (!Objects.TryGetValue(objKey, out objectInfo))
+            {
+                Objects.Add(objKey, objectInfo = new AdvancedServerObjectInfo("NA"));
+            }
+        }
         var timeStamp = Objects[objKey].WriteNext(objValue);
         var request = new WriteSlaveRequest {
             PartitionId = _id,
@@ -38,7 +61,27 @@ public class AdvancedServerPartition : IPartition{
             ObjectValue = objValue,
             Timestamp = timeStamp
         };
-        foreach (var slave in Servers) slave.ServerChannel.WriteSlaveAsync(request);
+
+        List<ServerInfo> toRemove = new List<ServerInfo>();
+        foreach (var slave in Servers)
+        {
+            try
+            {
+                slave.ServerChannel.WriteSlaveAsync(request);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + slave.ServerId +
+                    ") OFFICIALLY DIED");
+                toRemove.Add(slave);
+            }
+        }
+
+        foreach(var slave in toRemove)
+        {
+            Servers.Remove(slave);
+        }
     }
 
     public void WriteSlave(string objKey, string objValue, int timestamp){

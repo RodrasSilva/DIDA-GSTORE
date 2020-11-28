@@ -68,9 +68,41 @@ namespace DIDA_GSTORE.grpcService{
                 //throw; //  TODO : Check how to handle connection exceptions 
             }
         }
+        public string ReadAdvanced(string partitionId, string objectId, string serverId)
+        {
+            var request = new ReadAdvancedRequest { PartitionId = partitionId, ObjectId = objectId,
+                CurObjectValue = "NA(CLIENT)", CurTimestamp = -1 };
+            try
+            {
+                var readResponse = _client.readAdvanced(request);
+                if (!readResponse.ObjectValue.Equals(ObjectNotPresent))
+                    return readResponse.ObjectValue;
+                if (serverId.Equals("-1")) return ObjectNotPresent;
+                var serverUrl = MapServerIdToUrl(serverId);
+                _client = BuildClientFromServerUrl(serverUrl);
+                var secondReadResponse = _client.readAdvanced(request);
+                return secondReadResponse.ObjectValue.Equals(ObjectNotPresent)
+                    ? ObjectNotPresent
+                    : secondReadResponse.ObjectValue;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error reading");
+                Console.WriteLine(e.Message);
 
+                Console.ReadLine();
+                return "Error";
+                //throw; //  TODO : Check how to handle connection exceptions 
+            }
+        }
 
-        public string Read(string partitionId, string objectId, string serverId){
+        public string Read(string partitionId, string objectId, string serverId) {
+            var advanced = true;
+            if(advanced)
+            {
+                return ReadAdvanced(partitionId, objectId, serverId);
+            }
+            
             var request = new ReadRequest{PartitionId = partitionId, ObjectId = objectId};
             try{
                 var readResponse = _client.read(request);

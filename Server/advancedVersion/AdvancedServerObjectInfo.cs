@@ -1,12 +1,37 @@
-﻿public class AdvancedServerObjectInfo {
-    private readonly object _monitor = new object();
-    private string _objectValue;
-    private int _timestampCounter;
+﻿using System.Threading;
 
-    public string Read() {
-        lock (_monitor){
-            return _objectValue;
+public class AdvancedServerObjectInfo {
+    public struct ObjectVal
+    {
+        public string value;
+        public int timestampCounter;
+
+    }
+
+    public ManualResetEvent _lock;
+    private ObjectVal _objectVal;
+    //private string _objectValue;
+    //private int _timestampCounter;
+
+    public AdvancedServerObjectInfo(string value)
+    {
+        _lock = new ManualResetEvent(false);
+        _objectVal = new ObjectVal() 
+            { value = value, timestampCounter = 0 };
+    }
+
+    public ObjectVal Read()
+    {
+        return _objectVal;
+    }
+
+    public ObjectVal Read(string clientObjectValue, int clientTimestamp) {
+        if(clientTimestamp > _objectVal.timestampCounter)
+        {
+            _objectVal.value = clientObjectValue;
+            _objectVal.timestampCounter = clientTimestamp;
         }
+        return _objectVal;
 
         /* 
             client will need a cache if this _timestampcounter is lower than the
@@ -16,17 +41,13 @@
 
     public void Write(string newValue, int timestampCounter) {
 
-        lock (_monitor){
-            if (timestampCounter <= _timestampCounter) return;
-            _objectValue = newValue;
-            _timestampCounter = timestampCounter;
-        }
+        if (timestampCounter <= _objectVal.timestampCounter) return;
+        _objectVal.value = newValue;
+        _objectVal.timestampCounter = timestampCounter;
     }
 
     public int WriteNext(string newValue) {
-        lock (_monitor){
-            _objectValue = newValue;
-            return ++_timestampCounter;
-        }
+        _objectVal.value = newValue;
+        return ++_objectVal.timestampCounter;
     }
 }

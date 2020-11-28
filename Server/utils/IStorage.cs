@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ServerDomain;
+using static AdvancedServerObjectInfo;
 
 namespace Server.utils
 {
@@ -13,6 +14,8 @@ namespace Server.utils
 
         public string Read(string partitionId, string objKey);
 
+        public ObjectVal ReadAdvanced(string partitionId, string objKey,
+            string clientObjectValue, int clientTimestamp);
         // public bool IsPartitionMaster(string partitionId);
 
         public string GetMasterUrl(string partitionId);
