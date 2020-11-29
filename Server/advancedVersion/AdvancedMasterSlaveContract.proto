@@ -4,19 +4,54 @@
 syntax = "proto3";
 
 
-message WriteSlaveRequest{
+message WriteSlaveRequest {
   string partitionId = 1;
   string objectId = 2;
   string objectValue = 3;
   int32 timestamp = 4;
 }
 
-message WriteSlaveResponse{
-	// empty
+message WriteSlaveResponse {
+}
+
+message HeartbeatRequest {
+  string partitionId = 1;
+}
+
+message HeartbeatResponse {
+	//empty
+}
+
+message VoteRequest {
+	//empty
+}
+
+message VoteResponse{
+	bool res = 1;
+}
+
+message InformLeaderPartitionRequest {
+
+}
+
+message InformLeaderPartitionResponse {
+
+}
+
+message InformLeaderRequest {
+
+}
+
+message InformLeaderResponse {
+
 }
 
 //do raft here?
 
-service AdvancedSlaveService{
+service AdvancedSlaveService {
 	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
+	rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+	rpc AskVote(VoteRequest) returns (VoteResponse);
+	rpc InformLeaderPartition(InformLeaderPartitionRequest) returns (InformLeaderPartitionResponse);
+	rpc InformLeader(InformLeaderRequest) returns (InformLeaderResponse);
 }

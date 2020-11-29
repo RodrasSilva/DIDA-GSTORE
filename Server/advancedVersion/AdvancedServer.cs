@@ -110,6 +110,10 @@ namespace Server.advancedVersion
                         _storage.RegisterPartitionMaster(partitionId);
                         continue; // Important, cannot be slave and master to the same partition
                     }
+                    else
+                    {
+                        _storage.SetSlaveTimeout(partitionId);
+                    }
                 }
             }
             catch (Exception e)

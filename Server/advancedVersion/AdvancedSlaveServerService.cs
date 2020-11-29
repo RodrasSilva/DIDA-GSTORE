@@ -25,5 +25,25 @@ namespace ServerDomain{
             //Partition doesn't exist O.o - Ignore ? Should never occur because master server called this...
             return Task.FromResult(new WriteSlaveResponse());
         }
+
+        public override Task<HeartbeatResponse> Heartbeat(HeartbeatRequest request, ServerCallContext context) {
+            _storage.ResetTimeout(request.PartitionId);
+            return Task.FromResult(new HeartbeatResponse());
+        }
+
+        public override Task<VoteResponse> AskVote(VoteRequest request, ServerCallContext context)
+        {
+            return base.AskVote(request, context);
+        }
+
+        public override Task<InformLeaderResponse> InformLeader(InformLeaderRequest request, ServerCallContext context)
+        {
+            return base.InformLeader(request, context);
+        }
+
+        public override Task<InformLeaderPartitionResponse> InformLeaderPartition(InformLeaderPartitionRequest request, ServerCallContext context)
+        {
+            return base.InformLeaderPartition(request, context);
+        }
     }
 }

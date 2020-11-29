@@ -148,6 +148,7 @@ namespace DIDA_GSTORE.ServerService{
                 try { 
                 //Console.WriteLine(partitionMaster.ToString());
                 //result += "{ partition: " + partitionMaster.partitionId + ", [ ";
+                //FIXME
                 ClientService grpcService = new ClientService(partitionMaster.masterUrl);
                 var response = grpcService.ListPartitionGlobal(partitionMaster.partitionId);
 

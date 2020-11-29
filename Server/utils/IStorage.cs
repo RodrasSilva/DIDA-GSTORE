@@ -33,5 +33,9 @@ namespace Server.utils
         public void AddPartition(string partitionId, string masterUrl);
 
         public void AddServer(string serverId, string url);
+
+        public void ResetTimeout(string partitionId);
+
+        public void SetSlaveTimeout(string partitionId);
     }
 }

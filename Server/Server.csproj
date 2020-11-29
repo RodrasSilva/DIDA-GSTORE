@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="advancedVersion\NewFile1.txt" />
     <None Remove="NewFile1.txt" />
     <None Remove="protos\MasterSlaveContract.proto" />
   </ItemGroup>

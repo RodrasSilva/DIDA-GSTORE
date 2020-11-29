@@ -5,16 +5,29 @@ using Server.utils;
 using static AdvancedServerObjectInfo;
 
 namespace ServerDomain{
-    
+
 
     public class AdvancedServerStorage : IStorage {
 
+        public class ServerExtraInfo
+        {
+            public ServerExtraInfo(string serverId, string serverUrl, AdvancedSlaveService.AdvancedSlaveServiceClient serverChannel)
+            {
+                ServerId = serverId;
+                ServerUrl = serverUrl;
+                ServerChannel = serverChannel;
+            }
+            public string ServerId { get; }
+            public string ServerUrl { get; }
+            public AdvancedSlaveService.AdvancedSlaveServiceClient ServerChannel { get; }
+        }
+
         public Dictionary<string, AdvancedServerPartition> Partitions { get; }
-        public Dictionary<string, string> Servers { get; }
+        public List<ServerExtraInfo> Servers { get; }
 
         public AdvancedServerStorage(){
             Partitions = new Dictionary<string, AdvancedServerPartition>();
-            Servers = new Dictionary<string, string>();
+            Servers = new List<ServerExtraInfo>();
         }
 
         //stuff from base server 
@@ -55,10 +68,37 @@ namespace ServerDomain{
         public void RegisterServer(string partitionId, string serverId, string serverUrl)
         {
             var partition = Partitions[partitionId];
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            var channel = GrpcChannel.ForAddress(serverUrl);
-            var client = new AdvancedSlaveService.AdvancedSlaveServiceClient (channel);
-            partition.Servers.Add(new AdvancedServerPartition.ServerInfo(serverId, client));
+            foreach(var server in Servers)
+            {
+                if(server.ServerId.Equals(serverId))
+                {
+                    partition.Servers.Add(new AdvancedServerPartition.ServerInfo(serverId, server.ServerChannel));
+                    break;
+                }
+            }
+        }
+
+        public List<ServerExtraInfo> GetServersNotFromPartition(string partitionId)
+        {
+            var partition = Partitions[partitionId];
+            List<ServerExtraInfo> result = new List<ServerExtraInfo>();
+            foreach (var server in Servers)
+            {
+                bool inPar = false;
+                foreach(var parServer in partition.Servers)
+                {
+                    if(server.ServerId.Equals(parServer.ServerId))
+                    {
+                        inPar = true;
+                        break;
+                    }
+                }
+                if(!inPar)
+                {
+                    result.Add(server);
+                }
+            }
+            return result;
         }
 
         public void RegisterPartitionMaster(string partitionId)
@@ -76,8 +116,14 @@ namespace ServerDomain{
 
         public string GetServerOrThrowException(string serverId)
         {
-            string s = null;
-            if (Servers.TryGetValue(serverId, out s)) return s;
+            foreach(var server in Servers)
+            {
+                if(server.ServerId.Equals(serverId))
+                {
+                    return server.ServerUrl;
+                }
+            }
+            //if (Servers.TryGetValue(serverId, out s)) return s;
 
             throw new Exception("No such server");
         }
@@ -156,7 +202,10 @@ namespace ServerDomain{
 
         public void AddServer(string serverId, string url)
         {
-            Servers.Add(serverId, url);
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            var channel = GrpcChannel.ForAddress(url);
+            var client = new AdvancedSlaveService.AdvancedSlaveServiceClient(channel);
+            Servers.Add(new ServerExtraInfo(serverId, url, client));
         }
 
         public ListPartitionGlobalResponse ListPartition(string id)
@@ -164,5 +213,27 @@ namespace ServerDomain{
             return new ListPartitionGlobalResponse { ObjectIds = { Partitions[id].Objects.Keys } };
         }
 
+        public void ResetTimeout(string partitionId)
+        {
+            Partitions[partitionId].ResetTimeout();
+        }
+
+        public void SetSlaveTimeout(string partitionId)
+        {
+            Partitions[partitionId].SetSlaveTimeout();
+        }
+        /*
+        public bool IsMasterInAnyPartition()
+        {
+            foreach(var partition in Partitions.Values)
+            {
+                if(partition.IsMaster)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        */
     }
 }
