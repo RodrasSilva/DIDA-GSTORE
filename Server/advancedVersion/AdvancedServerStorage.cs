@@ -22,6 +22,9 @@ namespace ServerDomain{
             public AdvancedSlaveService.AdvancedSlaveServiceClient ServerChannel { get; }
         }
 
+        public string ServerId { get; set; }
+        public string ServerUrl { get; set; }
+
         public Dictionary<string, AdvancedServerPartition> Partitions { get; }
         public List<ServerExtraInfo> Servers { get; }
 
@@ -110,7 +113,7 @@ namespace ServerDomain{
         {
             //lock (Partitions) {
             Console.WriteLine("Creating partition " + partitionId);
-            Partitions.Add(partitionId, new AdvancedServerPartition(partitionId, masterUrl));
+            Partitions.Add(partitionId, new AdvancedServerPartition(partitionId, masterUrl, this));
             //}
         }
 

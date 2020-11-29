@@ -7,13 +7,13 @@ using System.Threading;
 using static AdvancedServerObjectInfo;
 
 public class AdvancedServerPartition : IPartition{
-    private readonly string _masterUrl;
+    private string _masterUrl;
     private string _id;
     private readonly int _masterTimeout = 200;
     private readonly int _slaveMaxTimeout = 1000;
     private readonly int _slaveMinTimeout = 500;
     private bool _timeoutReset = true;
-    private AdvancedServerStorage _advancedServerStorage;
+    private AdvancedServerStorage _storage;
     public List<ServerInfo> Servers { get; }
 
     public Dictionary<string, AdvancedServerObjectInfo> Objects { get; }
@@ -37,7 +37,7 @@ public class AdvancedServerPartition : IPartition{
         Objects = new Dictionary<string, AdvancedServerObjectInfo>();
         Servers = new List<ServerInfo>();
         IsMaster = false;
-        _advancedServerStorage = advancedServerStorage;
+        _storage = advancedServerStorage;
     }
 
     private void SetMasterTimeout()
@@ -111,7 +111,45 @@ public class AdvancedServerPartition : IPartition{
 
     public void BecomeMaster()
     {
+        foreach (var server in _storage.GetServersNotFromPartition(_id))
+        {
+            //try
+            //{
+                server.ServerChannel.InformLeader(new InformLeaderRequest());
+            //}
+            //do rpc exception stuff
+        }
 
+        _masterUrl = _storage.ServerUrl;
+
+        List<ObjectInfo> objectInfo = new List<ObjectInfo>();
+
+        foreach(var obj in Objects) {
+            var objInfo = obj.Value.Read();
+            objectInfo.Add(new ObjectInfo{
+                ObjectId = obj.Key, 
+                ObjectValue = objInfo.value, 
+                Timestamp = objInfo.timestampCounter 
+            });
+        }
+
+        var request = new InformLeaderPartitionRequest {
+            PartitionId = _id,
+            NewMasterUrl = _masterUrl,
+            ServerId = _storage.ServerId,
+            ObjectInfo = { objectInfo }
+        };
+              
+        foreach(var server in Servers) {
+            var response = server.ServerChannel.InformLeaderPartition(request);
+            
+        }
+
+        foreach (var server in Servers)
+        {
+            var response = server.ServerChannel.InformLeaderPartition(request);
+
+        }
     }
 
     public void Heartbeat()

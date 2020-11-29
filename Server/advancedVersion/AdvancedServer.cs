@@ -73,7 +73,9 @@ namespace Server.advancedVersion
             {
                 _storage.AddServer(serverInfo.ServerId, serverInfo.ServerUrl);
             }
-         
+
+            _storage.ServerId = _serverId;
+            _storage.ServerUrl = _serverUrl;
         }
 
         public void RegisterPartitions(PartitionInfo[] partitionsInfo)

@@ -30,23 +30,28 @@ message VoteResponse{
 	bool res = 1;
 }
 
-message InformLeaderPartitionRequest {
+message ObjectInfo {
+  string objectId = 2;
+  string objectValue = 3;
+  int32 timestamp = 4;
+}
 
+message InformLeaderPartitionRequest {
+	string newMasterUrl = 1;
+	string serverId = 2;
+	string partitionId = 3;
+	repeated ObjectInfo objectInfo = 4;
 }
 
 message InformLeaderPartitionResponse {
-
+	repeated ObjectInfo objectInfo = 1;
 }
 
 message InformLeaderRequest {
-
 }
 
 message InformLeaderResponse {
-
 }
-
-//do raft here?
 
 service AdvancedSlaveService {
 	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
