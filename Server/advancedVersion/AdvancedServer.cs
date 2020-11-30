@@ -32,6 +32,8 @@ namespace Server.advancedVersion
 
         public void Run()
         {
+            Console.Title = "Server: " + _serverId;
+            Console.WriteLine("advanced version");
             FreezeUtilities freezeUtilities = new FreezeUtilities();
             var serverParameters = UrlParameters.From(_serverUrl);
             var serverService = new ServerService(_storage, freezeUtilities, _serverUrl,DelayMessage);
@@ -71,6 +73,7 @@ namespace Server.advancedVersion
             
             foreach (ServerInfo serverInfo in serversInfo)
             {
+                if (_serverId == serverInfo.ServerId) continue;
                 _storage.AddServer(serverInfo.ServerId, serverInfo.ServerUrl);
             }
 
@@ -110,13 +113,13 @@ namespace Server.advancedVersion
                         Console.WriteLine($"Server [{_serverId}] - Registering as master to partition {partitionId}");
 
                         _storage.RegisterPartitionMaster(partitionId);
-                        continue; // Important, cannot be slave and master to the same partition
                     }
                     else
                     {
                         _storage.SetSlaveTimeout(partitionId);
                     }
                 }
+
             }
             catch (Exception e)
             {

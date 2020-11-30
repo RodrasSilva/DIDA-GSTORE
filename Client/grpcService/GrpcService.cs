@@ -3,17 +3,81 @@ using System.Collections.Generic;
 using System.Linq;
 using Client;
 using Client.model;
+using Grpc.Core;
 using Grpc.Net.Client;
 
 namespace DIDA_GSTORE.grpcService{
     public class GrpcService{
         private const string ObjectNotPresent = "N/A";
         private DIDAService.DIDAServiceClient _client;
+        private ClientLogic _clientLogic;
+        private string _usedUrl;
 
-        public GrpcService(string serverIp, int serverPort){
+        public GrpcService(string serverIp, int serverPort, ClientLogic clientLogic){
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-            var serverUrl = $"http://{serverIp}:{serverPort}";
-            _client = BuildClientFromServerUrl(serverUrl);
+            _usedUrl = $"http://{serverIp}:{serverPort}";
+            _client = BuildClientFromServerUrl(_usedUrl);
+            _clientLogic = clientLogic;
+        }
+
+        private void ConnectToNewServer(string partitionId)
+        {
+            //_clientLogic.ServerList[partitionId].Remove(_usedUrl);
+            _client = null;
+            var aux = _usedUrl.Split("//");
+            string url = aux[1];
+            foreach (var parId in _clientLogic.ServerList.Keys)
+            {
+                foreach (var thing in _clientLogic.ServerList[parId])
+                {
+                    Console.WriteLine(thing);
+                }
+
+                _clientLogic.ServerList[parId].Remove(url);
+                foreach(var thing in _clientLogic.ServerList[parId])
+                {
+                    Console.WriteLine(thing);
+                }
+            }
+
+            if (_clientLogic.ServerList[partitionId].Count == 0)
+                throw new Exception("should not happen");
+
+            Random r = new Random();
+            _usedUrl = "http://" + _clientLogic.ServerList[partitionId][
+                r.Next(0, _clientLogic.ServerList[partitionId].Count)];
+            Console.WriteLine(_usedUrl);
+            _client = BuildClientFromServerUrl(_usedUrl);
+        }
+
+        private void RemoveClientUrl(string url)
+        {
+            foreach (var parId in _clientLogic.ServerList.Keys)
+            {
+                _clientLogic.ServerList[parId].Remove(url);
+            }
+        }
+
+        private void ConnectToNewServer()
+        {
+            //_clientLogic.ServerList[partitionId].Remove(_usedUrl);
+            _client = null;
+            RemoveClientUrl(_usedUrl);
+
+            //if (_clientLogic.ServerList[partitionId].Count == 0)
+            //    throw new Exception("should not happen");
+
+            Random r = new Random();
+            foreach(var parId in _clientLogic.ServerList.Keys)
+            {
+                if (_clientLogic.ServerList[parId].Count == 0) continue;
+
+                _usedUrl = "http://" + _clientLogic.ServerList[parId][
+                    r.Next(0, _clientLogic.ServerList[parId].Count)];
+                _client = BuildClientFromServerUrl(_usedUrl);
+                return;
+            }
+            throw new Exception("should not happen");
         }
 
         private static DIDAService.DIDAServiceClient BuildClientFromServerUrl(string serverUrl){
@@ -49,6 +113,7 @@ namespace DIDA_GSTORE.grpcService{
                         break;
                     case WriteResponse.ResponseOneofCase.MasterServerUrl:
                         Console.WriteLine($"Write - Changing to server {response.MasterServerUrl.ServerUrl}");
+                        _usedUrl = response.MasterServerUrl.ServerUrl;
                         _client = BuildClientFromServerUrl(response.MasterServerUrl.ServerUrl);
                         Write(partitionId, objectId, objectValue);
                         break;
@@ -59,13 +124,22 @@ namespace DIDA_GSTORE.grpcService{
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            catch (Exception e){
+            catch (RpcException e){
+                ConnectToNewServer(partitionId);
+                Write(partitionId, objectId, objectValue);
+                return;
+                Console.WriteLine("Error Writing");
 
+                Console.WriteLine(e.Message);
+                //Console.ReadLine();
+                //throw; //  TODO : Check how to handle connection exceptions 
+            } catch(Exception e)
+            {
                 Console.WriteLine("Error Writing");
 
                 Console.WriteLine(e.Message);
                 Console.ReadLine();
-                //throw; //  TODO : Check how to handle connection exceptions 
+
             }
         }
         public string ReadAdvanced(string partitionId, string objectId, string serverId)
@@ -85,13 +159,17 @@ namespace DIDA_GSTORE.grpcService{
                     ? ObjectNotPresent
                     : secondReadResponse.ObjectValue;
             }
-            catch (Exception e)
+            catch (RpcException e)
             {
+                ConnectToNewServer(partitionId);
+                
                 Console.WriteLine("Error reading");
                 Console.WriteLine(e.Message);
 
-                Console.ReadLine();
-                return "Error";
+                //Console.ReadLine();
+                
+                return ReadAdvanced(partitionId, objectId, serverId);
+                //return "Error";
                 //throw; //  TODO : Check how to handle connection exceptions 
             }
         }
@@ -116,21 +194,27 @@ namespace DIDA_GSTORE.grpcService{
                     ? ObjectNotPresent
                     : secondReadResponse.ObjectValue;
             }
-            catch (Exception e){
+            catch (RpcException e) 
+            {
+                ConnectToNewServer(partitionId);
+
                 Console.WriteLine("Error reading");
                 Console.WriteLine(e.Message);
                 
-                Console.ReadLine();
-                return "Error";
+                //Console.ReadLine();
+
+                return Read(partitionId, objectId, serverId);
                 //throw; //  TODO : Check how to handle connection exceptions 
             }
         }
 
 
-        public List<ListServerResult> ListServer(string serverId){
+        public List<ListServerResult> ListServer(string serverId)
+        {
             var request = new ListServerRequest();
-            try{
-                var serverUrl = MapServerIdToUrl(serverId);
+            var serverUrl = MapServerIdToUrl(serverId);
+            try
+            {
                 _client = BuildClientFromServerUrl(serverUrl);
                 var listServerResponse = _client.listServer(request);
                 return listServerResponse
@@ -138,30 +222,80 @@ namespace DIDA_GSTORE.grpcService{
                     .Select(MapToListServerResult)
                     .ToList();
             }
-            catch (Exception e){
-                Console.WriteLine("Error List Server");
+            catch (RpcException e)
+            {
+
+                //ConnectToNewServer();
+                RemoveClientUrl(serverUrl);
+                //_clientLogic.ServerList.Remove(serverId);
+
+                Console.WriteLine("Server is down");
                 Console.WriteLine(e.Message);
-                Console.ReadLine();
-                //Console.WriteLine(e.ToString());
-                throw; //  TODO : Check how to handle connection exceptions 
+                //Console.ReadLine();
+
+                return new List<ListServerResult>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+
+                return new List<ListServerResult>();
+
+            }
+        }
+        public List<ListServerResult> ListServerUrl(string serverUrl)
+        {
+            var request = new ListServerRequest();
+            try
+            {
+                _client = BuildClientFromServerUrl("http://" + serverUrl);
+                var listServerResponse = _client.listServer(request);
+                return listServerResponse
+                    .Objects
+                    .Select(MapToListServerResult)
+                    .ToList();
+            }
+            catch (RpcException e)
+            {
+
+                //ConnectToNewServer();
+                RemoveClientUrl(serverUrl);
+                //_clientLogic.ServerList.Remove(serverUrl);
+
+                Console.WriteLine("Server is down");
+                Console.WriteLine(e.Message);
+                //Console.ReadLine();
+
+                return new List<ListServerResult>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+
+                return new List<ListServerResult>();
+
             }
         }
 
-        public List<ListGlobalResponseEntity> ListGlobal(){
+        public Dictionary<string, List<ListServerResult>> ListGlobal()
+        {
             var request = new ListGlobalRequest();
-            try{
-                var listServerResponse = _client.listGlobal(request);
-                //Console.WriteLine(listServerResponse.Objects.Count);
-                return listServerResponse.Objects.ToList();
+            Dictionary<string, List<ListServerResult>> result = new Dictionary<string, List<ListServerResult>> ();
+            Console.WriteLine("I'm gonna try for each server in the serverlist");
+            foreach (var serverUrl in _clientLogic.GetServerUrlList())
+            {
+                Console.WriteLine("Server: " + serverUrl);
+                var res = ListServerUrl(serverUrl);
+                if(res.Count > 0)
+                {
+                    Console.WriteLine("Success!");
+                    result.Add(serverUrl, res);
+                }
             }
-            catch (Exception e){
-                Console.WriteLine("List Global Error");
-                Console.WriteLine(e.Message);
-              
-                Console.ReadLine();
-                //Console.WriteLine(e.ToString());
-                throw; //  TODO : Check how to handle connection exceptions 
-            }
+
+            return result;
         }
     }
 }

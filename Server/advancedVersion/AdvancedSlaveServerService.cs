@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 
@@ -27,23 +28,48 @@ namespace ServerDomain{
         }
 
         public override Task<HeartbeatResponse> Heartbeat(HeartbeatRequest request, ServerCallContext context) {
+            Console.WriteLine("[RECEIVED] Heartbeat. Heartbeat for Partition: " + request.PartitionId);
             _storage.ResetTimeout(request.PartitionId);
             return Task.FromResult(new HeartbeatResponse());
         }
 
         public override Task<VoteResponse> AskVote(VoteRequest request, ServerCallContext context)
         {
-            return base.AskVote(request, context);
+            Console.WriteLine("Finished Asking for Votes for Partition :" + request.PartitionId);
+            bool res = _storage.AskVote(request.PartitionId);
+
+            return Task.FromResult(new VoteResponse { Res = res });
+            //return base.AskVote(request, context);
         }
 
         public override Task<InformLeaderResponse> InformLeader(InformLeaderRequest request, ServerCallContext context)
         {
-            return base.InformLeader(request, context);
+            Console.WriteLine("[Not Mine:" + request.PartitionId + "] THERE IS A NEW LEADER: " + request.MasterUrl);
+
+            _storage.InformLeader(request.PartitionId, request.MasterUrl);
+
+            return Task.FromResult(new InformLeaderResponse {});
         }
 
         public override Task<InformLeaderPartitionResponse> InformLeaderPartition(InformLeaderPartitionRequest request, ServerCallContext context)
         {
-            return base.InformLeaderPartition(request, context);
+            Console.WriteLine("[MyPartition:" + request.PartitionId + "] THERE IS A NEW LEADER: " + request.NewMasterUrl);
+            List<ObjectInfo> objectInfos = _storage.InformLeaderPartition(request.PartitionId, request.NewMasterUrl, new List<ObjectInfo>(request.ObjectInfo));
+
+            return Task.FromResult(new InformLeaderPartitionResponse { ObjectInfo = { objectInfos } });
+        }
+
+        public override Task<FinishLeaderTransitionResponse> FinishLeaderTransition(FinishLeaderTransitionRequest request, ServerCallContext context)
+        {
+            Console.WriteLine("Finished Leader transition.");
+
+            foreach(var objInfo in request.ObjectInfo)
+            {
+                _storage.Write(request.PartitionId, objInfo.ObjectId,
+                    objInfo.ObjectValue, objInfo.Timestamp);
+            }
+
+            return Task.FromResult(new FinishLeaderTransitionResponse {});
         }
     }
 }

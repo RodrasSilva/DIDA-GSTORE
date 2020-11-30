@@ -34,8 +34,12 @@ namespace Server.utils
 
         public void AddServer(string serverId, string url);
 
+        /*
         public void ResetTimeout(string partitionId);
 
         public void SetSlaveTimeout(string partitionId);
+
+        public bool AskVote(string partitionId);
+        */
     }
 }

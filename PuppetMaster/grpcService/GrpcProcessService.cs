@@ -40,10 +40,12 @@ namespace DIDA_GSTORE.grpcService{
         }
 
         public StartClientResponse StartClient(string username,
-            string url, string scriptFile, string defaultServerUrl){
+            string url, string scriptFile, string defaultServerUrl, List<PartitionClientMessage> partitions)
+        {
             var request = new StartClientRequest {
                 Username = username, URL = url, ScriptFile = scriptFile,
-                DefaultServerUrl = defaultServerUrl
+                DefaultServerUrl = defaultServerUrl,
+                Partitions = { partitions }
             };
             return client.startClient(request); // TODO :  Add Logic
         }

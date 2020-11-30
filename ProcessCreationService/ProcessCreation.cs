@@ -53,12 +53,23 @@ namespace ProcessCreationDomain{
             Console.WriteLine("----------------------------------------------------\n");
         }
 
-        public static void StartClient(string username, string url, string requestFile, string defaultServerUrl){
+        public static void StartClient(string username, string url, string requestFile, string defaultServerUrl,
+            IEnumerable<PartitionClientMessage> partitionInfoMessage)
+        {
             Console.WriteLine("----------------------------------------------------");
             Console.WriteLine($"Creating client {username} with url {url}, request file =  {requestFile}, defaultServer =  {defaultServerUrl}");
+            string partitionInfo = "";
+            foreach(var partition in partitionInfoMessage)
+            {
+                partitionInfo += " " + partition.PartitionId + " " + partition.ServerUrls.Count;
+                foreach(var serverUrl in partition.ServerUrls)
+                {
+                    partitionInfo += " " + serverUrl;
+                }
+            }
             var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @$"..\..\..\..\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe"));
             var psi = new ProcessStartInfo(path);
-            psi.Arguments = $"{username} {url} {requestFile} {defaultServerUrl} ";
+            psi.Arguments = $"{username} {url} {requestFile} {defaultServerUrl} {partitionInfo}";
             psi.UseShellExecute = true;
 
             Process.Start(psi);

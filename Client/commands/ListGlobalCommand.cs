@@ -8,20 +8,31 @@ namespace DIDA_GSTORE.commands{
         public void Execute(GrpcService grpcService){
             Console.WriteLine("List Global: \n");
             var response = grpcService.ListGlobal();
-           
-            string finalResult ="";
-            
-            foreach (var result in response)
+            foreach (var wrapperRes in response)
             {
-                
-                finalResult += $" Partition {result.PartitionId} has: \n";
-                foreach(var objResult in result.ObjectIds)
-                {
-                    finalResult += $" \t {objResult} \n";
-                }
-                finalResult += "\n";
+                Console.WriteLine("List server for server: " + wrapperRes.Key);
+                foreach (var result in wrapperRes.Value)
+                    if (result.IsMaster)
+                        Console.WriteLine(
+                            $"Server {wrapperRes.Key} is master with object [{result.ObjectId},{result.ObjectValue}]");
+                    else
+                        Console.WriteLine($"Server {wrapperRes.Key} contains object [{result.ObjectId},{result.ObjectValue}]");
             }
-            Console.Write(finalResult);
+            /*
+             string finalResult ="";
+
+             foreach (var result in response)
+             {
+
+                 finalResult += $" Partition {result.PartitionId} has: \n";
+                 foreach(var objResult in result.ObjectIds)
+                 {
+                     finalResult += $" \t {objResult} \n";
+                 }
+                 finalResult += "\n";
+             }
+             Console.Write(finalResult);
+            */
         }
 
         public static ListGlobalCommand ParseCommandLine(string[] arguments){

@@ -20,7 +20,8 @@ namespace DIDA_GSTORE.ServerService{
 
         public override Task<StartClientResponse> startClient(StartClientRequest request,
             ServerCallContext context){
-            ProcessCreation.StartClient(request.Username, request.URL, request.ScriptFile, request.DefaultServerUrl);
+            ProcessCreation.StartClient(request.Username, request.URL, request.ScriptFile, request.DefaultServerUrl,
+                request.Partitions);
             return Task.FromResult(new StartClientResponse());
 
             //things

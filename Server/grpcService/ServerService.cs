@@ -158,7 +158,7 @@ namespace DIDA_GSTORE.ServerService{
                     PartitionId = partitionMaster.partitionId,
                 });
                     //result += " ]}, ";
-                }catch(Exception)
+                } catch(Exception)
                 {
                     Console.WriteLine($"Failed to fetch partition {partitionMaster.partitionId} from partition master {partitionMaster.masterUrl}");
                 }

@@ -17,6 +17,8 @@ namespace DIDA_GSTORE.commands{
 
         public void Execute(PuppetMasterDomain puppetMaster){
             var response = puppetMaster.GetServerNodeService(_serverId).Crash();
+
+            puppetMaster.RemoveServer(_serverId);
         }
 
         public static ICommand ParseCommandLine(string[] arguments){

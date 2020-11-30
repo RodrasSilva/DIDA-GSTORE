@@ -23,7 +23,7 @@ message HeartbeatResponse {
 }
 
 message VoteRequest {
-	//empty
+	string partitionId = 1;
 }
 
 message VoteResponse{
@@ -38,16 +38,27 @@ message ObjectInfo {
 
 message InformLeaderPartitionRequest {
 	string newMasterUrl = 1;
-	string serverId = 2;
-	string partitionId = 3;
-	repeated ObjectInfo objectInfo = 4;
+	string partitionId = 2;
+	repeated ObjectInfo objectInfo = 3;
 }
 
 message InformLeaderPartitionResponse {
 	repeated ObjectInfo objectInfo = 1;
 }
 
+message FinishLeaderTransitionRequest {
+	repeated ObjectInfo objectInfo = 1;
+	string partitionId = 2;
+}
+
+message FinishLeaderTransitionResponse {
+
+}
+
+
 message InformLeaderRequest {
+	string partitionId = 1;
+	string masterUrl = 2;
 }
 
 message InformLeaderResponse {
@@ -59,4 +70,5 @@ service AdvancedSlaveService {
 	rpc AskVote(VoteRequest) returns (VoteResponse);
 	rpc InformLeaderPartition(InformLeaderPartitionRequest) returns (InformLeaderPartitionResponse);
 	rpc InformLeader(InformLeaderRequest) returns (InformLeaderResponse);
+	rpc FinishLeaderTransition(FinishLeaderTransitionRequest) returns (FinishLeaderTransitionResponse);
 }

@@ -20,11 +20,18 @@ message StartServerResponse {
 	//empty
 }
 
+message PartitionClientMessage {
+	string partitionId = 1;
+	repeated string serverUrls = 2; 
+}
+
 message StartClientRequest {
 	string username = 1;
 	string URL = 2;
 	string scriptFile = 3;
 	string defaultServerUrl = 4;
+
+	repeated PartitionClientMessage partitions = 5;
 }
 
 message StartClientResponse {

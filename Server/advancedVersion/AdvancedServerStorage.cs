@@ -119,6 +119,8 @@ namespace ServerDomain{
 
         public string GetServerOrThrowException(string serverId)
         {
+            if (serverId == ServerId) return ServerUrl;
+
             foreach(var server in Servers)
             {
                 if(server.ServerId.Equals(serverId))
@@ -238,5 +240,20 @@ namespace ServerDomain{
             return false;
         }
         */
+        public bool AskVote(string partitionId)
+        {
+            return Partitions[partitionId].AskVote();
+        }
+
+        public void InformLeader(string partitionId, string masterUrl)
+        {
+            Partitions[partitionId].SetMasterUrl(masterUrl);
+        }
+
+        public List<ObjectInfo> InformLeaderPartition(string partitionId,
+            string newMasterUrl, List<ObjectInfo> objectInfos)
+        {
+            return Partitions[partitionId].InformLeaderPartition(newMasterUrl, objectInfos);
+        }
     }
 }

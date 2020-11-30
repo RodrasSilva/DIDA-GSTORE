@@ -39,7 +39,7 @@ namespace PuppetMasterMain{
 
         private List<GrpcProcessService> PCSs{ get; }
 
-        private Dictionary<string, GrpcNodeService> ServerServices{ get; }
+        public Dictionary<string, GrpcNodeService> ServerServices{ get; }
         private Dictionary<string, string> ServersUrls{ get; }
         public List<GrpcNodeService> ClientServices{ get; set; }
         public int ReplicationFactor{ get; set; }
@@ -56,6 +56,45 @@ namespace PuppetMasterMain{
         public void AddServer(string serverId, string url){
             ServerServices.Add(serverId, PuppetMaster.urlToNodeService(url));
             ServersUrls.Add(serverId, url);
+        }
+
+        public void RemoveServer(string serverId)
+        {
+            ServerServices.Remove(serverId);
+            foreach(var partitionInfo in Partitions)
+            {
+                List<string> serverIdsButCool = partitionInfo.serverIds.ToList();
+
+                foreach (var thing in serverIdsButCool)
+                {
+                    Console.WriteLine(thing.ToString());
+                }
+                serverIdsButCool.Remove(serverId);
+                foreach (var thing in serverIdsButCool)
+                {
+                    Console.WriteLine(thing.ToString());
+                }
+                foreach (var thing in partitionInfo.serverIds)
+                {
+                    Console.WriteLine(thing.ToString());
+                }
+                for (int m = 0; m < partitionInfo.serverIds.Length; m++)
+                {
+                    if(serverIdsButCool.Count <= m)
+                    {
+                        partitionInfo.serverIds[m] = "-1";
+                        continue;
+                    }
+                    partitionInfo.serverIds[m] = serverIdsButCool[m];
+                    //Console.WriteLine(thing.ToString());
+                }
+                //serverIdsButCool.CopyTo(partitionInfo.serverIds);
+
+                foreach (var thing in partitionInfo.serverIds)
+                {
+                    Console.WriteLine(thing.ToString());
+                }
+            }
         }
 
         public void AddClient(string url){
@@ -152,10 +191,6 @@ namespace PuppetMasterMain{
                 var puppetMaster = this;
                 var t = new Thread(() => command.Execute(puppetMaster));
 
-                // Start ThreadProc.  Note that on a uniprocessor, the new
-                // thread does not get any processor time until the main thread
-                // is preempted or yields.  Uncomment the Thread.Sleep that
-                // follows t.Start() to see the difference.
                 t.Start();
                 allThreads.Add(t);
                 //we might have to sleep
@@ -193,6 +228,61 @@ namespace PuppetMasterMain{
             return false;
         }
 
+        public List<ServerInfoMessage> GetServerInfoMessages()
+        {
+            List<ServerInfoMessage> serverInfosDtos = new List<ServerInfoMessage>();
+            foreach (var serverId in ServerServices.Keys)
+            {
+                var serverNode = ServerServices[serverId];
+                Console.WriteLine(serverNode.Url);
+                serverInfosDtos.Add(new ServerInfoMessage()
+                {
+                    ServerId = serverId,
+                    ServerUrl = "http://" + serverNode.Url
+                });
+            }
+            return serverInfosDtos;
+        }
+
+        public List<PartitionInfoMessage> GetPartitionInfo (string serverId)
+        {
+            List<PartitionInfoMessage> partitionInfoDTOs = new List<PartitionInfoMessage>();
+            foreach (var partition in Partitions)
+            {
+                Console.WriteLine(partition.masterUrl);
+                partitionInfoDTOs.Add(new PartitionInfoMessage()
+                {
+                    PartitionId = partition.partitionId,
+                    PartitionMasterUrl = ServersUrls[partition.masterUrl],
+                    IsMyPartition = partition.serverIds.Contains(serverId), //change later
+                    ServerIds = { partition.serverIds },
+                });
+            }
+            return partitionInfoDTOs;
+        }
+
+        public List<PartitionClientMessage> GetPartitionClientInfo()
+        {
+            List<PartitionClientMessage> partitionInfoDTOs = new List<PartitionClientMessage>();
+            foreach (var partition in Partitions)
+            {
+                var serverUrls = new List<string>();
+                foreach(var serverId in partition.serverIds)
+                {
+                    if (serverId.Equals("-1")) continue;
+                    serverUrls.Add(ServerServices[serverId].Url);
+                }
+                Console.WriteLine(partition.masterUrl);
+                partitionInfoDTOs.Add(new PartitionClientMessage()
+                {
+                    PartitionId = partition.partitionId,
+                    ServerUrls = { serverUrls },
+                });
+            }
+            return partitionInfoDTOs;
+
+        }
+
         private void ExecuteSetup(List<ICommand> commands){
             try{
                 var setupThreads = new List<Thread>();
@@ -200,31 +290,11 @@ namespace PuppetMasterMain{
                     //all setup commands will be linear
                     command.Execute(this);
                 //foreach (var t in setupThreads) t.Join();
-                List<ServerInfoMessage> serverInfosDtos = new List<ServerInfoMessage>();
-                foreach (var serverId in ServerServices.Keys)
-                {
-                    var serverNode = ServerServices[serverId];
-                    Console.WriteLine(serverNode.Url);
-                    serverInfosDtos.Add(new ServerInfoMessage() {
-                        ServerId = serverId,
-                        ServerUrl = "http://" + serverNode.Url
-                    });
-                }
+                List<ServerInfoMessage> serverInfosDtos = GetServerInfoMessages();
 
                 foreach (var serverId in ServerServices.Keys) 
                 {
-                    List<PartitionInfoMessage> partitionInfoDTOs = new List<PartitionInfoMessage>();
-                    foreach (var partition in Partitions)
-                    {
-                        Console.WriteLine(partition.masterUrl);
-                        partitionInfoDTOs.Add(new PartitionInfoMessage()
-                        {
-                            PartitionId = partition.partitionId,
-                            PartitionMasterUrl = ServersUrls[partition.masterUrl],
-                            IsMyPartition = partition.serverIds.Contains(serverId), //change later
-                            ServerIds = { partition.serverIds },
-                        });
-                    }
+                    List<PartitionInfoMessage> partitionInfoDTOs = GetPartitionInfo(serverId);
 
                     // Send partition info to server as <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
 

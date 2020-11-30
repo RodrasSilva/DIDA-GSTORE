@@ -10,7 +10,7 @@ namespace DIDA_GSTORE.commands{
             _serverId = serverId;
         }
 
-        public bool IsAsync => true;
+        public bool IsAsync => false;
         public bool IsSetup => false;
 
 
