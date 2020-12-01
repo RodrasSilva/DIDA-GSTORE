@@ -1,10 +1,11 @@
-write part2 o1 "the object's value"
+write p1 o1 "the object's value"
 read p1 MyObject -1
-read part2 o1 s3
+read p1 o1 s3
 listServer s1
 wait 3000
-begin-repeat 5
+begin-repeat 20
 write p1 obj-$i "value-$i"
-wait 1000
 end-repeat
+listGlobal
+wait 10000
 listGlobal

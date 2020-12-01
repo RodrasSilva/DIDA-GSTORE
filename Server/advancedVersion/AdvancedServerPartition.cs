@@ -11,8 +11,8 @@ public class AdvancedServerPartition : IPartition{
     private string _masterUrl;
     private string _id;
     private readonly int _masterTimeout = 200;
-    private readonly int _slaveMaxTimeout = 2000;
-    private readonly int _slaveMinTimeout = 1000;
+    private readonly int _slaveMaxTimeout = 4000;
+    private readonly int _slaveMinTimeout = 2500;
     private bool _timeoutReset = true;
     private AdvancedServerStorage _storage;
     public List<ServerInfo> Servers { get; }
@@ -117,14 +117,16 @@ public class AdvancedServerPartition : IPartition{
         {
             try
             {
+                Console.WriteLine("Asking vote from: " + server.ServerId);
                 VoteResponse response = server.ServerChannel.AskVote(new VoteRequest { PartitionId = _id });
-
+                Console.WriteLine("I can still write");
                 if (response.Res) votes++;
                 if (votes >= (Math.Ceiling(Servers.Count / 2f) + 1))
                 {
                     BecomeMaster();
                     return;
                 }
+                Console.WriteLine("I can still write");
             }
             catch (RpcException e)
             {
@@ -140,6 +142,7 @@ public class AdvancedServerPartition : IPartition{
                 Console.WriteLine(e.StackTrace);
             }
         }
+        Console.WriteLine("after for each");
 
         foreach (var server in toRemove)
         {
@@ -327,7 +330,8 @@ public class AdvancedServerPartition : IPartition{
                 try
                 {
                     Console.WriteLine("[SENDING] Heartbeat. Heartbeat for Server:" + server.ServerId);
-                    server.ServerChannel.HeartbeatAsync(new HeartbeatRequest { PartitionId = _id} );
+                    //heartbeat should be async
+                    server.ServerChannel.HeartbeatAsync(new HeartbeatRequest { PartitionId = _id, Sending = _masterUrl} );
                 }
                 catch (RpcException e)
                 {
@@ -359,27 +363,23 @@ public class AdvancedServerPartition : IPartition{
         _masterUrl = url;
     }
 
-    public ObjectVal ReadAdvanced(string objKey, 
-        string clientObjectValue, int clientTimestamp)
+    public ObjectVal Read(string objKey)
     {
         var objectInfo = Objects[objKey];
-        objectInfo._lock.Set();
-        try
-        {
-            return objectInfo.Read(clientObjectValue, clientTimestamp);
-        }
-        finally
-        {
-            objectInfo._lock.Reset();
-        }
+        return objectInfo.Read();
     }
 
     public void Write(string objKey, string objValue, int timestamp = -1){
-        if (IsMaster) WriteMaster(objKey, objValue);
+        Console.WriteLine("Write decision, Master: " + IsMaster);
+        if (IsMaster)
+        {
+            WriteMaster(objKey, objValue);
+            return;
+        }
         WriteSlave(objKey, objValue, timestamp);
     }
 
-    public void WriteMaster(string objKey, string objValue)
+    public int WriteMaster(string objKey, string objValue)
     {
         AdvancedServerObjectInfo objectInfo;
 
@@ -423,10 +423,31 @@ public class AdvancedServerPartition : IPartition{
         {
             Servers.Remove(slave);
         }
+
+        return timeStamp;
     }
 
     public void WriteSlave(string objKey, string objValue, int timestamp){
-        Objects[objKey].Write(objValue, timestamp);
+        Console.WriteLine("Hello?");
+        AdvancedServerObjectInfo objectInfo = null;
+        lock (Objects)
+        {
+            Console.WriteLine("Hello2?");
+            if (Objects.ContainsKey(objKey))
+            {
+                Console.Write("I have the object key");
+                //Objects[objKey].Write(objValue, timestamp);
+                objectInfo = Objects[objKey];
+            }
+            else
+            {
+                Console.Write("I DONT have the object key");
+                Objects.Add(objKey, objectInfo = new AdvancedServerObjectInfo("NA"));
+                //Objects[objKey].Write(objValue, timestamp);
+            }
+        }
+        objectInfo.Write(objValue, timestamp);
+        Console.WriteLine("Hello3?");
     }
 
     public bool AskVote()
@@ -448,8 +469,16 @@ public class AdvancedServerPartition : IPartition{
         _masterUrl = newMasterUrl;
         IsMaster = false;
         List<ObjectInfo> result = new List<ObjectInfo>();
+        AdvancedServerObjectInfo objectInfo = null;
+
         foreach (var objInfo in objectInfos)
         {
+
+            if (!Objects.ContainsKey(objInfo.ObjectId)) {
+                Console.Write("InformLeaderPartition: I DONT have the object key");
+                Objects.Add(objInfo.ObjectId, objectInfo = new AdvancedServerObjectInfo("NA"));
+            }
+
             ObjectVal objVal =  Objects[objInfo.ObjectId].Read();
             if (objVal.timestampCounter == objInfo.Timestamp) continue;
             if (objVal.timestampCounter > objInfo.Timestamp)
@@ -466,6 +495,29 @@ public class AdvancedServerPartition : IPartition{
                 Objects[objInfo.ObjectId].Write(objInfo.ObjectValue, objInfo.Timestamp);
             }
         }
+
+        foreach (var myObj in Objects) 
+        {
+            var newLeaderHasThisObj = false;
+            foreach(var objInfo in objectInfos)
+            {
+                if(objInfo.ObjectId.Equals(myObj.Key))
+                {
+                    newLeaderHasThisObj = true;
+                    break;
+                }
+            }
+
+            if(newLeaderHasThisObj) { continue; }
+            
+            result.Add(new ObjectInfo
+            {
+                ObjectId = myObj.Key,
+                ObjectValue = myObj.Value.Read().value,
+                Timestamp = myObj.Value.Read().timestampCounter
+            });
+        }
+
         return result;
     }
 

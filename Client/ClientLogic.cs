@@ -11,6 +11,7 @@ namespace Client{
         private readonly GrpcService _grpcService;
         private readonly ClientNodeServer _nodeServer;
         private readonly string _operationsFilePath;
+        private readonly bool _useBaseVersion = true;
 
         public Dictionary<string, List<string>> ServerList = new Dictionary<string, List<string>>();
 
@@ -18,7 +19,7 @@ namespace Client{
             string clientHost, int clientPort, string[] partitions) {
             _operationsFilePath = operationsFilePath;
             //TODO : Check what to do with username
-            _grpcService = new GrpcService(serverHost, serverPort, this);
+            _grpcService = new GrpcService(serverHost, serverPort, this, _useBaseVersion);
             _nodeServer = new ClientNodeServer(clientHost, clientPort, username, ServerCredentials.Insecure);
             parsePartitions(new List<string>(partitions));
         }

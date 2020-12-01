@@ -18,8 +18,16 @@ namespace DIDA_GSTORE.commands{
         }
 
         public void Execute(GrpcService grpcService){
-            var response = grpcService.Read(_partitionId, _objectId, _serverId);
-            Console.WriteLine($"Read from partition {_partitionId} object {_objectId} returned {response}");
+            if (grpcService.UseBaseVersion)
+            {
+                var response = grpcService.Read(_partitionId, _objectId, _serverId);
+                Console.WriteLine($"Base Read  from partition {_partitionId} object {_objectId} returned {response}");
+            }
+            else
+            {
+                var response = grpcService.ReadAdvanced(_partitionId, _objectId, _serverId);
+                Console.WriteLine($"Advanced Read  from partition {_partitionId} object {_objectId} returned {response}");
+            }
         }
 
         public static ReadCommand ParseCommandLine(string[] arguments){

@@ -14,13 +14,13 @@ namespace Server.utils
 
         public string Read(string partitionId, string objKey);
 
-        public ObjectVal ReadAdvanced(string partitionId, string objKey,
-            string clientObjectValue, int clientTimestamp);
+        public ObjectVal ReadAdvanced(string partitionId, string objKey);
         // public bool IsPartitionMaster(string partitionId);
 
         public string GetMasterUrl(string partitionId);
 
         public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp);
+        public int WriteAdvancedMaster(string partitionId, string objKey, string objValue, int timestamp);
         public void WriteSlave(string partitionId, string objKey, string objValue, int timestamp);
 
         public List<PartitionMasters> GetPartitionMasters();

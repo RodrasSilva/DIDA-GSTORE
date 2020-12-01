@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Google.Protobuf.Collections;
+using Grpc.Core;
 using Grpc.Net.Client;
 using PuppetMasterClient;
 using PuppetMasterMain;
@@ -33,7 +34,16 @@ namespace DIDA_GSTORE.grpcService{
 
         public StatusResponse Status(){
             var request = new StatusRequest();
-            return client.status(request);
+            try
+            {
+                return client.status(request);
+            }
+            catch(RpcException e)
+            {
+                Console.WriteLine("Status Did not work");
+                Console.WriteLine(e.Message);
+                return new StatusResponse();
+            }
         }
 
         public CrashResponse Crash(){
@@ -41,8 +51,8 @@ namespace DIDA_GSTORE.grpcService{
             return client.crash(request);
         }
 
-        public FreezeResponse Freeze(){
-            var request = new FreezeRequest();
+        public FreezeResponse Freeze(bool discard){
+            var request = new FreezeRequest { Discard = discard};
             return client.freeze(request);
         }
 

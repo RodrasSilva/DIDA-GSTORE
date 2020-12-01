@@ -16,6 +16,7 @@ message WriteSlaveResponse {
 
 message HeartbeatRequest {
   string partitionId = 1;
+  string sending = 2;
 }
 
 message HeartbeatResponse {

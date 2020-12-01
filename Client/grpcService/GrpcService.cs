@@ -12,12 +12,13 @@ namespace DIDA_GSTORE.grpcService{
         private DIDAService.DIDAServiceClient _client;
         private ClientLogic _clientLogic;
         private string _usedUrl;
-
-        public GrpcService(string serverIp, int serverPort, ClientLogic clientLogic){
+        public bool UseBaseVersion { get; }
+        public GrpcService(string serverIp, int serverPort, ClientLogic clientLogic, bool baseVer){
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             _usedUrl = $"http://{serverIp}:{serverPort}";
             _client = BuildClientFromServerUrl(_usedUrl);
             _clientLogic = clientLogic;
+            UseBaseVersion = baseVer;
         }
 
         private void ConnectToNewServer(string partitionId)
@@ -142,22 +143,131 @@ namespace DIDA_GSTORE.grpcService{
 
             }
         }
+
+        public void WriteAdvanced(string partitionId, string objectId, string objectValue)
+        {
+            var request = new WriteAdvancedRequest { PartitionId = partitionId, ObjectId = objectId, ObjectValue = objectValue };
+            try
+            {
+                var response = _client.writeAdvanced(request);
+                //Console.WriteLine("Am i here?");
+                switch (response.ResponseCase)
+                {
+                    case WriteAdvancedResponse.ResponseOneofCase.Timestamp:
+                        Console.WriteLine("Advanced Write Successful");
+                        WriteToCache(partitionId, objectId, objectValue, response.Timestamp);
+                        break;
+                    case WriteAdvancedResponse.ResponseOneofCase.MasterServerUrl:
+                        Console.WriteLine($"Advanced  Write - Changing to server {response.MasterServerUrl.ServerUrl}");
+                        _usedUrl = response.MasterServerUrl.ServerUrl;
+                        _client = BuildClientFromServerUrl(response.MasterServerUrl.ServerUrl);
+                        WriteAdvanced(partitionId, objectId, objectValue);
+                        break;
+                    case WriteAdvancedResponse.ResponseOneofCase.None:
+                        Console.WriteLine("TO DO CASE");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (RpcException e)
+            {
+                ConnectToNewServer(partitionId);
+                Write(partitionId, objectId, objectValue);
+                return;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error Writing");
+
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+
+            }
+        }
+
+        private struct PartitionObject {
+            public string partitionId;
+            public string objectId;
+
+            public PartitionObject(string partitionId ,string objectId){
+                this.partitionId = partitionId;
+                this.objectId = objectId;
+            }
+
+            public bool Equals(PartitionObject other)
+            {
+                return partitionId.Equals(partitionId) && objectId.Equals(other.objectId);
+            }
+        }
+
+        private Dictionary<PartitionObject, ReadAdvancedResponse> _previousValues = new Dictionary<PartitionObject,ReadAdvancedResponse>();
+
+        public void WriteToCache(string partitionId, string objectId, string objectValue, int timestamp)  {
+            ReadAdvancedResponse req = null;
+            ReadAdvancedResponse r = new ReadAdvancedResponse { ObjectValue = objectValue, Timestamp = timestamp };
+            PartitionObject obj = new PartitionObject(partitionId, objectId);
+            if (!_previousValues.TryGetValue(obj, out req))
+            {
+                _previousValues.Add(obj, r);
+            }
+            else
+            {
+                _previousValues[obj] = r;
+            
+            }
+        }
+
+        public string GetAndUpdate(string partitionId, string objectId, ReadAdvancedResponse response = null) {
+            Console.WriteLine("Get and update");
+
+            ReadAdvancedResponse req = null;
+            PartitionObject obj = new PartitionObject(partitionId,objectId);
+            if(_previousValues.TryGetValue(obj, out req)) {
+                if (response == null) return req.ObjectValue;
+
+                if(req.Timestamp <= response.Timestamp) {
+                    _previousValues[obj] = response;
+                    return response.ObjectValue;
+                }
+                return req.ObjectValue;
+            }else{
+                if (response == null) return ObjectNotPresent;
+
+                _previousValues.Add(obj, response);
+                return response.ObjectValue;
+            }
+        }
+            
+         
+
         public string ReadAdvanced(string partitionId, string objectId, string serverId)
         {
-            var request = new ReadAdvancedRequest { PartitionId = partitionId, ObjectId = objectId,
-                CurObjectValue = "NA(CLIENT)", CurTimestamp = -1 };
+            var request = new ReadAdvancedRequest { PartitionId = partitionId, ObjectId = objectId, };
             try
             {
                 var readResponse = _client.readAdvanced(request);
-                if (!readResponse.ObjectValue.Equals(ObjectNotPresent))
-                    return readResponse.ObjectValue;
-                if (serverId.Equals("-1")) return ObjectNotPresent;
+                if (!readResponse.ObjectValue.Equals(ObjectNotPresent)) {
+                    return GetAndUpdate(partitionId,objectId,readResponse);
+                    //return readResponse.ObjectValue;
+                }
+                if (serverId.Equals("-1"))
+                {
+                    return GetAndUpdate(partitionId, objectId);
+                }
                 var serverUrl = MapServerIdToUrl(serverId);
                 _client = BuildClientFromServerUrl(serverUrl);
                 var secondReadResponse = _client.readAdvanced(request);
-                return secondReadResponse.ObjectValue.Equals(ObjectNotPresent)
-                    ? ObjectNotPresent
-                    : secondReadResponse.ObjectValue;
+                if (secondReadResponse.ObjectValue.Equals(ObjectNotPresent))
+                {
+                    return GetAndUpdate(partitionId, objectId);
+                }
+                else
+                {
+                    return GetAndUpdate(partitionId, objectId, readResponse);
+                    //return secondReadResponse.ObjectValue; 
+                }
             }
             catch (RpcException e)
             {
@@ -174,13 +284,7 @@ namespace DIDA_GSTORE.grpcService{
             }
         }
 
-        public string Read(string partitionId, string objectId, string serverId) {
-            var advanced = true;
-            if(advanced)
-            {
-                return ReadAdvanced(partitionId, objectId, serverId);
-            }
-            
+        public string Read(string partitionId, string objectId, string serverId) {            
             var request = new ReadRequest{PartitionId = partitionId, ObjectId = objectId};
             try{
                 var readResponse = _client.read(request);

@@ -12,7 +12,7 @@ namespace PuppetMasterMain{
     public struct PartitionInfo {
         public string partitionId;
         public string masterUrl;
-        public string[] serverIds;
+        public List<string> serverIds;
     }
 
 
@@ -63,6 +63,8 @@ namespace PuppetMasterMain{
             ServerServices.Remove(serverId);
             foreach(var partitionInfo in Partitions)
             {
+                partitionInfo.serverIds.Remove(serverId);
+                /*
                 List<string> serverIdsButCool = partitionInfo.serverIds.ToList();
 
                 foreach (var thing in serverIdsButCool)
@@ -78,7 +80,7 @@ namespace PuppetMasterMain{
                 {
                     Console.WriteLine(thing.ToString());
                 }
-                for (int m = 0; m < partitionInfo.serverIds.Length; m++)
+                for (int m = 0; m < partitionInfo.serverIds.Count; m++)
                 {
                     if(serverIdsButCool.Count <= m)
                     {
@@ -94,6 +96,7 @@ namespace PuppetMasterMain{
                 {
                     Console.WriteLine(thing.ToString());
                 }
+                */
             }
         }
 
@@ -269,7 +272,6 @@ namespace PuppetMasterMain{
                 var serverUrls = new List<string>();
                 foreach(var serverId in partition.serverIds)
                 {
-                    if (serverId.Equals("-1")) continue;
                     serverUrls.Add(ServerServices[serverId].Url);
                 }
                 Console.WriteLine(partition.masterUrl);

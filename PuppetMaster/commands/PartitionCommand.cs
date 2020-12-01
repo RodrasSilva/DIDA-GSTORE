@@ -10,12 +10,12 @@ namespace DIDA_GSTORE.commands{
 
         private readonly int _numberOfReplicas;
         private readonly string _partitionName;
-        private readonly string[] _servers;
+        private readonly List<string> _servers;
 
         private PartitionCommand(int numberOfReplicas, string partitionName, string[] servers){
             _numberOfReplicas = numberOfReplicas;
             _partitionName = partitionName;
-            _servers = servers;
+            _servers = new List<string>(servers);
         }
 
         public bool IsAsync => true;
@@ -33,6 +33,10 @@ namespace DIDA_GSTORE.commands{
                 partitionId = _partitionName,
                 serverIds = _servers
             };
+            foreach (var thing in _servers)
+            {
+                Console.WriteLine(thing);
+            }
             /*
             foreach (var serverId in _servers){
                 if (!puppetMaster.partitionsPerServer.ContainsKey(serverId)){

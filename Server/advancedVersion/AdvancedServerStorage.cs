@@ -134,11 +134,9 @@ namespace ServerDomain{
         }
 
 
-        public ObjectVal ReadAdvanced(string partitionId, string objKey,
-            string clientObjectValue, int clientTimestamp)
+        public ObjectVal ReadAdvanced(string partitionId, string objKey)
         {
-            return Partitions[partitionId].ReadAdvanced(objKey,
-                clientObjectValue, clientTimestamp);
+            return Partitions[partitionId].Read(objKey);
         }
 
         public string Read(string partitionId, string objKey)
@@ -189,8 +187,8 @@ namespace ServerDomain{
             return new ListServerResponse { Objects = { objects } };
         }
 
-        public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp){
-            Partitions[partitionId].WriteMaster(objKey, objValue);
+        public int WriteAdvancedMaster(string partitionId, string objKey, string objValue, int timestamp){
+            return Partitions[partitionId].WriteMaster(objKey, objValue);
         }
 
         public void WriteSlave(string partitionId, string objKey, string objValue, int timestamp){
@@ -254,6 +252,11 @@ namespace ServerDomain{
             string newMasterUrl, List<ObjectInfo> objectInfos)
         {
             return Partitions[partitionId].InformLeaderPartition(newMasterUrl, objectInfos);
+        }
+
+        public void WriteMaster(string partitionId, string objKey, string objValue, int timestamp)
+        {
+            throw new NotImplementedException();
         }
     }
 }

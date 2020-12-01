@@ -48,7 +48,14 @@ namespace DIDA_GSTORE.ServerService{
         public override Task<FreezeResponse> freeze(FreezeRequest request, ServerCallContext context){
             
             Console.WriteLine("Freezing server");
-            freezeUtilities.Freeze();
+            if (request.Discard)
+            {
+                freezeUtilities.Discard();
+            }
+            else
+            {
+                freezeUtilities.Freeze();
+            }
             return Task.FromResult(new FreezeResponse());
         }
 

@@ -13,7 +13,7 @@ using Server.utils;
 namespace ServerDomain{
     public class Server
     {
-        private const bool UseBaseVersion = false;
+        private const bool UseBaseVersion = true;
 
         public static void Main(string[] args)
         {

@@ -1,0 +1,11 @@
+write p1 o1 "1"
+write p1 o2 "2"
+write p1 o3 "3"
+wait 10000
+read p1 o1
+read p1 o2
+read p1 o3
+read p1 o4
+read p1 o5
+read p1 o6
+listGlobal

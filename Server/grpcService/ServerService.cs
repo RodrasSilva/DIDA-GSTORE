@@ -99,11 +99,9 @@ namespace DIDA_GSTORE.ServerService{
             {
                 var partitionId = request.PartitionId;
                 var objectId = request.ObjectId;
-                var curobjectValue = request.CurObjectValue;
-                var objectTimestamp = request.CurTimestamp;
 
                 var partition = _storage.GetPartitionOrThrowException(partitionId);
-                var objectValue = _storage.ReadAdvanced(partitionId, objectId, curobjectValue, objectTimestamp);
+                var objectValue = _storage.ReadAdvanced(partitionId, objectId);
 
                 var response = new ReadAdvancedResponse
                 {
@@ -120,9 +118,51 @@ namespace DIDA_GSTORE.ServerService{
             }
         }
 
-        public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context){
+        public override Task<WriteAdvancedResponse> writeAdvanced(WriteAdvancedRequest request, ServerCallContext context)
+        {
             _freezeUtilities.WaitForUnfreeze();
             delayFunction();
+            return Task.FromResult(WriteAdvanced(request));
+        }
+
+        public WriteAdvancedResponse WriteAdvanced(WriteAdvancedRequest request)
+        {
+            Console.WriteLine("Received Write request. Id - " +
+                            request.ObjectId + ". Value" + request.ObjectValue);
+            try
+            {
+                var partitionId = request.PartitionId;
+                var objectId = request.ObjectId;
+                var objectValue = request.ObjectValue;
+
+                var partition = _storage.GetPartitionOrThrowException(partitionId);
+                if (partition.IsMaster)
+                {
+                    Console.WriteLine("I'm the master of this partition");
+                    int timestamp = _storage.WriteAdvancedMaster(partitionId, objectId, objectValue, -1);
+                    return new WriteAdvancedResponse { Timestamp = timestamp };
+                }
+                Console.WriteLine("I'm not the master of this partition");
+
+                var url = _storage.GetMasterUrl(request.PartitionId);
+                return new WriteAdvancedResponse { MasterServerUrl = new ServerUrlResponse { ServerUrl = url } };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("I don't have the partition");
+
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+
+                Console.WriteLine("End of exception");
+                return new WriteAdvancedResponse();
+            }
+        }
+
+        public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context){
+            //_freezeUtilities.WaitForUnfreeze();
+            delayFunction();
+
             Console.WriteLine("Received List Server Request: " + request.ToString());
             return Task.FromResult(_storage.ListServer());
         }

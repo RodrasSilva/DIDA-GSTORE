@@ -17,8 +17,17 @@ namespace DIDA_GSTORE.commands{
         }
 
         public void Execute(GrpcService grpcService){
-            Console.WriteLine($"Client executing write command with {_partitionId} {_objectId} {_objectValue}");
-            grpcService.Write(_partitionId, _objectId, _objectValue);
+
+            if (grpcService.UseBaseVersion)
+            {
+                Console.WriteLine($"Client executing write command with {_partitionId} {_objectId} {_objectValue}");
+                grpcService.Write(_partitionId, _objectId, _objectValue);
+            }
+            else
+            {
+                Console.WriteLine($"Client executing write command with {_partitionId} {_objectId} {_objectValue}");
+                grpcService.WriteAdvanced(_partitionId, _objectId, _objectValue);
+            }
         }
 
         public static WriteCommand ParseCommandLine(string[] arguments){

@@ -21,7 +21,7 @@ message CrashResponse {
 }
 
 message FreezeRequest {
-	//nothing
+	bool discard = 1;
 }
 message FreezeResponse {
 	//nothing

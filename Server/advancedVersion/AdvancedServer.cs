@@ -47,7 +47,7 @@ namespace Server.advancedVersion
                     DIDAService.BindService(serverService),
                     NodeControlService.BindService(nodeService),
                     RegisterSlaveToMasterService.BindService(registerSlavesService),
-                    AdvancedSlaveService.BindService( new AdvancedSlaveServerService(_storage))
+                    AdvancedSlaveService.BindService( new AdvancedSlaveServerService(_storage, freezeUtilities))
                 },
                 Ports = {
                     new ServerPort(serverParameters.Hostname,
@@ -134,7 +134,6 @@ namespace Server.advancedVersion
 
         private void DelayMessage()
         {
-
             Thread.Sleep(
                 Convert.ToInt32((new Random().NextDouble() *
                     (_maxDelay - _minDelay) + _minDelay))

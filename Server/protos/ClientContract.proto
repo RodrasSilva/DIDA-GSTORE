@@ -16,8 +16,6 @@ message ReadResponse{
 message ReadAdvancedRequest {
   string partitionId = 1;
   string objectId = 2;
-  string curObjectValue = 3;
-  int32 curTimestamp= 4;
 }
 
 message ReadAdvancedResponse {
@@ -31,10 +29,22 @@ message WriteRequest{
   string objectValue = 3;
 }
 
-
 message WriteResponse{
   oneof response {
     string responseMessage = 1;
+    ServerUrlResponse masterServerUrl = 2;
+  }
+}
+
+message WriteAdvancedRequest {
+  string partitionId = 1;
+  string objectId = 2;
+  string objectValue = 3;
+}
+
+message WriteAdvancedResponse {
+  oneof response {
+    int32 timestamp = 1;
     ServerUrlResponse masterServerUrl = 2;
   }
 }
@@ -85,7 +95,8 @@ message ServerUrlResponse{
 service DIDAService{
   rpc write(WriteRequest) returns (WriteResponse);
   rpc read(ReadRequest) returns (ReadResponse);
-  
+
+  rpc writeAdvanced(WriteAdvancedRequest) returns (WriteAdvancedResponse);  
   rpc readAdvanced(ReadAdvancedRequest) returns (ReadAdvancedResponse);
 
   rpc listServer(ListServerRequest) returns (ListServerResponse);

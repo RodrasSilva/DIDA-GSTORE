@@ -10,7 +10,8 @@ namespace ServerDomain{
         public string partitionId;
         public string masterUrl;
     }
-    public class BaseServerStorage : IStorage{
+    public class BaseServerStorage : IStorage
+    {
 
         public Dictionary<string, BaseServerPartition> Partitions { get; }
         public Dictionary<string, string> Servers { get; }
@@ -134,6 +135,16 @@ namespace ServerDomain{
         }
 
         public ObjectVal ReadAdvanced(string partitionId, string objKey, string clientObjectValue, int clientTimestamp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ObjectVal ReadAdvanced(string partitionId, string objKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int WriteAdvancedMaster(string partitionId, string objKey, string objValue, int timestamp)
         {
             throw new NotImplementedException();
         }

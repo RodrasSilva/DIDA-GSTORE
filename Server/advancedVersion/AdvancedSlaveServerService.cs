@@ -2,21 +2,34 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Server.utils;
 
 namespace ServerDomain{
     public class AdvancedSlaveServerService : AdvancedSlaveService.AdvancedSlaveServiceBase{
         private readonly AdvancedServerStorage _storage;
+        private readonly FreezeUtilities _freezeUtilities;
 
-        public AdvancedSlaveServerService(AdvancedServerStorage storage){
+        public AdvancedSlaveServerService(AdvancedServerStorage storage, FreezeUtilities freeze){
             _storage = storage;
+            _freezeUtilities = freeze;
         }
 
 
         public override Task<WriteSlaveResponse> WriteSlave(WriteSlaveRequest request, ServerCallContext context){
+            if(_freezeUtilities.IsToDiscard()) return Task.FromResult(new WriteSlaveResponse());
+
+            _freezeUtilities.WaitForUnfreeze();
+
             var partitionId = request.PartitionId;
             var objectId = request.ObjectId;
             var objectValue = request.ObjectValue;
             var timestamp = request.Timestamp;
+
+            Console.WriteLine("Write slave was called.");
+            Console.WriteLine("partitionId: " + partitionId);
+            Console.WriteLine("objectId: " + objectId);
+            Console.WriteLine("objectValue: " + objectValue);
+            Console.WriteLine("timestamp: " + timestamp);
             //AdvancedServerPartition partition = _storage.GetPartitionOrThrowException(partitionId);
             //partition.WriteSlave(objectId, objectValue, timestamp);
 
@@ -24,11 +37,12 @@ namespace ServerDomain{
 
             //if exception occurs its because:
             //Partition doesn't exist O.o - Ignore ? Should never occur because master server called this...
+
             return Task.FromResult(new WriteSlaveResponse());
         }
 
         public override Task<HeartbeatResponse> Heartbeat(HeartbeatRequest request, ServerCallContext context) {
-            Console.WriteLine("[RECEIVED] Heartbeat. Heartbeat for Partition: " + request.PartitionId);
+            Console.WriteLine("[RECEIVED] Heartbeat. Heartbeat for Partition: " + request.PartitionId + "- From server+ " + request.Sending);
             _storage.ResetTimeout(request.PartitionId);
             return Task.FromResult(new HeartbeatResponse());
         }

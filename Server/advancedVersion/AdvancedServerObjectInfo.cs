@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 public class AdvancedServerObjectInfo {
     public struct ObjectVal
@@ -8,46 +9,42 @@ public class AdvancedServerObjectInfo {
 
     }
 
-    public ManualResetEvent _lock;
     private ObjectVal _objectVal;
     //private string _objectValue;
     //private int _timestampCounter;
 
     public AdvancedServerObjectInfo(string value)
     {
-        _lock = new ManualResetEvent(false);
         _objectVal = new ObjectVal() 
-            { value = value, timestampCounter = 0 };
+            { value = value, timestampCounter = -1 };
     }
 
     public ObjectVal Read()
     {
-        return _objectVal;
-    }
-
-    public ObjectVal Read(string clientObjectValue, int clientTimestamp) {
-        if(clientTimestamp > _objectVal.timestampCounter)
+        lock (this)
         {
-            _objectVal.value = clientObjectValue;
-            _objectVal.timestampCounter = clientTimestamp;
+            return _objectVal;
         }
-        return _objectVal;
-
-        /* 
-            client will need a cache if this _timestampcounter is lower than the
-            timestamp counter of the client. To be considered later
-        */
     }
 
     public void Write(string newValue, int timestampCounter) {
+        Console.WriteLine("Before timestamp");
+        Console.WriteLine("timestamps: " + timestampCounter + "; " + _objectVal.timestampCounter);
 
-        if (timestampCounter <= _objectVal.timestampCounter) return;
-        _objectVal.value = newValue;
-        _objectVal.timestampCounter = timestampCounter;
+        lock (this)
+        {
+            if (timestampCounter <= _objectVal.timestampCounter) return;
+            _objectVal.value = newValue;
+            _objectVal.timestampCounter = timestampCounter;
+        }
     }
 
-    public int WriteNext(string newValue) {
-        _objectVal.value = newValue;
-        return ++_objectVal.timestampCounter;
+    public int WriteNext(string newValue)
+    {
+        lock (this)
+        {
+            _objectVal.value = newValue;
+            return ++_objectVal.timestampCounter;
+        }
     }
 }
