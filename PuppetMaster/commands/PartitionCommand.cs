@@ -37,20 +37,8 @@ namespace DIDA_GSTORE.commands{
             {
                 Console.WriteLine(thing);
             }
-            /*
-            foreach (var serverId in _servers){
-                if (!puppetMaster.partitionsPerServer.ContainsKey(serverId)){
-                    Console.WriteLine(serverId);
-                    puppetMaster.partitionsPerServer.Add(serverId, new List<PartitionInfo>());
-                }
-
-                var partitions = puppetMaster.partitionsPerServer[serverId];
-
-                partitions.Add(new PartitionInfo{partitionId = _partitionName, masterUrl = masterUrl});
-            }*/
 
             puppetMaster.Partitions.Add(partition);
-            //throw new System.NotImplementedException();
         }
 
         public static ICommand ParseCommandLine(string[] arguments){

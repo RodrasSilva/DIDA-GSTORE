@@ -29,9 +29,7 @@ namespace DIDA_GSTORE.commands{
             var response = puppetMaster.GetProcessService().StartServer(
                 _serverId, _url, _minDelay, _maxDelay);
 
-            //if response is cool
             puppetMaster.AddServer(_serverId, _url);
-            //throw new System.NotImplementedException();
         }
 
         public static ICommand ParseCommandLine(string[] arguments){

@@ -12,10 +12,13 @@ namespace Server.grpcService{
         }
 
         public override Task<RegisterResponse> registerAsSlave(RegisterRequest request, ServerCallContext context){
+            
             Console.WriteLine("Received Slave Registration Request: " + request.ToString());
+            
             var partitionId = request.PartitionId;
             var slaveServerId = request.ServerId;
             var slaveServerUrl = request.Url;
+            
             _storage.RegisterPartitionSlave(partitionId, slaveServerId, slaveServerUrl);
             return Task.FromResult(new RegisterResponse{Ack = true});
         }

@@ -11,12 +11,8 @@ namespace DIDA_GSTORE.grpcService{
     public class GrpcProcessService{
         private readonly GrpcChannel channel;
         private readonly ProcessCreationService.ProcessCreationServiceClient client;
-        private string ServerIp;
-        private int ServerPort;
 
         public GrpcProcessService(string serverIp, int serverPort){
-            ServerIp = serverIp;
-            ServerPort = serverPort;
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             channel = GrpcChannel.ForAddress(BuildServerAdress(serverIp, serverPort));
             client = new ProcessCreationService.ProcessCreationServiceClient(channel);
@@ -35,8 +31,7 @@ namespace DIDA_GSTORE.grpcService{
                 MinDelay = minDelay,
                 MaxDelay = maxDelay,
             };
-            return client.startServer(request); // TODO :  Add Logic
-            //start server async <= probably not
+            return client.startServer(request);
         }
 
         public StartClientResponse StartClient(string username,
@@ -47,7 +42,7 @@ namespace DIDA_GSTORE.grpcService{
                 DefaultServerUrl = defaultServerUrl,
                 Partitions = { partitions }
             };
-            return client.startClient(request); // TODO :  Add Logic
+            return client.startClient(request);
         }
     }
 }

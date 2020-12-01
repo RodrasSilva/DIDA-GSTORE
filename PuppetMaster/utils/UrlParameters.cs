@@ -20,6 +20,7 @@ namespace Client.utils{
 
             var hostname = parsedUrl[HostnamePosition];
             hostname = hostname.Substring(2);
+
             var server = int.Parse(parsedUrl[PortPosition]);
             return new UrlParameters(hostname, server);
         }

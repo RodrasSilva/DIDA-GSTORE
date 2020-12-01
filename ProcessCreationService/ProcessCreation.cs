@@ -8,10 +8,6 @@ using Grpc.Core;
 namespace ProcessCreationDomain{
     internal class ProcessCreation{
         private const int Port = 5001;
-        //private static string _serverFileUrl = "../Server/Server.cs";
-        //private static string _serverFileUrl ="D:\\RandomnessD\\MEIC_4ANO_1SEMESTRE\\DAD\\DIDA-GSTORE\\Server\\Server.csproj";
-
-        //private static string _clientFileUrl = "../Client/Client.cs";
 
         private static readonly ServerService _serverService = new ServerService();
 
@@ -20,7 +16,7 @@ namespace ProcessCreationDomain{
                 Services = {ProcessCreationService.BindService(_serverService)},
                 Ports = {new ServerPort("localhost", Port, ServerCredentials.Insecure)}
             };
-            //StartServer("localhost:8000", 0f, 0f, new List<Partition>());
+
             server.Start();
             Console.WriteLine("Process Creation Server listening on port " + Port);
             ReadCommands();
@@ -47,7 +43,7 @@ namespace ProcessCreationDomain{
             psi.Arguments = $"{id} {url} {minDelay} {maxDelay} {partitionString}";
             psi.UseShellExecute = true;
 
-            //Process.Start(path, $"{id} {url} {minDelay} {maxDelay} {partitionString}");
+
             Process.Start(psi);
             Console.WriteLine("Finished creating server ");
             Console.WriteLine("----------------------------------------------------\n");
@@ -67,6 +63,7 @@ namespace ProcessCreationDomain{
                     partitionInfo += " " + serverUrl;
                 }
             }
+
             var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @$"..\..\..\..\\Client\\bin\\Debug\\netcoreapp3.1\\Client.exe"));
             var psi = new ProcessStartInfo(path);
             psi.Arguments = $"{username} {url} {requestFile} {defaultServerUrl} {partitionInfo}";

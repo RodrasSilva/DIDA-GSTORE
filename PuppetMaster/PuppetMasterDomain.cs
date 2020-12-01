@@ -64,39 +64,6 @@ namespace PuppetMasterMain{
             foreach(var partitionInfo in Partitions)
             {
                 partitionInfo.serverIds.Remove(serverId);
-                /*
-                List<string> serverIdsButCool = partitionInfo.serverIds.ToList();
-
-                foreach (var thing in serverIdsButCool)
-                {
-                    Console.WriteLine(thing.ToString());
-                }
-                serverIdsButCool.Remove(serverId);
-                foreach (var thing in serverIdsButCool)
-                {
-                    Console.WriteLine(thing.ToString());
-                }
-                foreach (var thing in partitionInfo.serverIds)
-                {
-                    Console.WriteLine(thing.ToString());
-                }
-                for (int m = 0; m < partitionInfo.serverIds.Count; m++)
-                {
-                    if(serverIdsButCool.Count <= m)
-                    {
-                        partitionInfo.serverIds[m] = "-1";
-                        continue;
-                    }
-                    partitionInfo.serverIds[m] = serverIdsButCool[m];
-                    //Console.WriteLine(thing.ToString());
-                }
-                //serverIdsButCool.CopyTo(partitionInfo.serverIds);
-
-                foreach (var thing in partitionInfo.serverIds)
-                {
-                    Console.WriteLine(thing.ToString());
-                }
-                */
             }
         }
 
@@ -118,25 +85,18 @@ namespace PuppetMasterMain{
         public string GetDefaultServerUrl(){
             foreach (var grpcNodeService in ServerServices.Values) return grpcNodeService.Url;
             throw new Exception("No servers");
-            //return ServerServices[ServerServices.Keys[new Random().Next(0, ServerServices.Keys.Count)].Url;
         }
 
         public void Start(string[] args,
             GrpcProcessService grpcProcessService){
             PCSs.Add(grpcProcessService);
-
-            //test
-            //var grpcNodeService = new GrpcNodeService("localhost", 5001);
-            //ServerServices.Add("1", grpcNodeService);
-            //GrpcNodeService = grpcNodeService;
-
-            /* FIXME according to usage PROBABLY THE SYSTEM CONFIGURATION FILE */
-            if (args.Length == 0){
-                SetupOperation();
+            
+            if (args.Length == 0)
+            {
                 ExecuteCommands();
             }
-            else if (args.Length == 1){
-                SetupOperation();
+            else if (args.Length == 1) 
+            {
                 var  operationsFilePath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, @$"..\..\..\scripts\{args[0]}"));
                 if (!File.Exists(operationsFilePath)){
                     Console.WriteLine("The given path: " + operationsFilePath +
@@ -152,12 +112,13 @@ namespace PuppetMasterMain{
                 Console.WriteLine("Usage: PuppetMaster <operations-file>");
             }
         }
-
-        private void ExecuteCommands(){
+        
+        private void ExecuteCommands() {
             var allThreads = new List<Thread>();
             string commandLine;
             Console.Write(">>> ");
-            while ((commandLine = Console.ReadLine()) != null){
+
+            while ((commandLine = Console.ReadLine()) != null) {
                 CommandExecution(commandLine, allThreads);
                 Console.Write("\n>>> ");
             }
@@ -165,7 +126,7 @@ namespace PuppetMasterMain{
             foreach (var t in allThreads) t.Join();
         }
 
-        private void ExecuteCommands(string operationsFilePath){
+        private void ExecuteCommands(string operationsFilePath) {
             var results = new List<ICommand>();
             string commandLine;
             using var operationsFileReader = new StreamReader(operationsFilePath);
@@ -174,11 +135,14 @@ namespace PuppetMasterMain{
             ICommand firstNonSetupCommand = null;
 
             while ((commandLine = operationsFileReader.ReadLine()) != null)
-                if (ParseSetupCommand(commandLine, setupCommands) == false){
+            {
+                if (ParseSetupCommand(commandLine, setupCommands) == false)
+                {
                     firstNonSetupCommand = setupCommands[setupCommands.Count - 1];
                     setupCommands.RemoveAt(setupCommands.Count - 1);
                     break;
                 }
+            }
 
             ExecuteSetup(setupCommands);
 
@@ -196,8 +160,6 @@ namespace PuppetMasterMain{
 
                 t.Start();
                 allThreads.Add(t);
-                //we might have to sleep
-                //Thread.Sleep(0);
             }
             else{
                 command.Execute(this);
@@ -274,6 +236,7 @@ namespace PuppetMasterMain{
                 {
                     serverUrls.Add(ServerServices[serverId].Url);
                 }
+
                 Console.WriteLine(partition.masterUrl);
                 partitionInfoDTOs.Add(new PartitionClientMessage()
                 {
@@ -285,36 +248,23 @@ namespace PuppetMasterMain{
 
         }
 
-        private void ExecuteSetup(List<ICommand> commands){
-            try{
+        private void ExecuteSetup(List<ICommand> commands) {
+            try {
                 var setupThreads = new List<Thread>();
                 foreach (var command in commands)
-                    //all setup commands will be linear
+                {
                     command.Execute(this);
-                //foreach (var t in setupThreads) t.Join();
+                }
+
                 List<ServerInfoMessage> serverInfosDtos = GetServerInfoMessages();
 
                 foreach (var serverId in ServerServices.Keys) 
                 {
                     List<PartitionInfoMessage> partitionInfoDTOs = GetPartitionInfo(serverId);
 
-                    // Send partition info to server as <partitionId1> <partitionMasterServerURLN1> ... <partitionIdN> <partitionMasterServerURLN>
-
                     var serverPartitions = new List<string>();
                     var serverNode = ServerServices[serverId];
-                    
-                    /*
-                    var serverPartitionsInfo = partitionsPerServer[serverId];
 
-                    Console.WriteLine("Puppet Master - Completing setup for server " + serverId);
-                    serverPartitionsInfo.ForEach(p => {
-                        Console.WriteLine("Puppet Master - Completing setup for server " + serverId +
-                                          " - Adding partition " + p.partitionId + " with master " +
-                                          ServersUrls[p.masterUrl]);
-                        serverPartitions.Add(p.partitionId);
-                        serverPartitions.Add(ServersUrls[p.masterUrl]);
-                    });
-                    */
                     serverNode.CompleteSetup(serverInfosDtos, partitionInfoDTOs);
                 }
             }
@@ -330,12 +280,6 @@ namespace PuppetMasterMain{
             Console.WriteLine("----------------------------------------------------");
             Console.WriteLine("Finished servers setup");
             Console.WriteLine("----------------------------------------------------");
-        }
-
-        private void SetupOperation(){
-            //starts all relevant processes
-            //PuppetMaster will request the PCS to create processes
-            //information about the entire set of available PCSs via command line or config file
         }
     }
 }

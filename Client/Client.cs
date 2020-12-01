@@ -3,7 +3,9 @@ using System.Threading;
 using Client.utils;
 
 namespace Client{
-    public static class Client{
+    public static class Client {
+        private const bool UseBaseVersion = false;
+
         public static void Main(string[] args){
             if (args.Length < 4){
                 Console.WriteLine("Given: " + string.Join(" ", args) +
@@ -21,6 +23,7 @@ namespace Client{
             {
                 partitions[i - 4] = args[i];
             }
+
             foreach (var item in args)
             {
                 Console.WriteLine(item.ToString());
@@ -39,7 +42,8 @@ namespace Client{
                 serverParameters.Port,
                 clientParameters.Hostname,
                 clientParameters.Port,
-                partitions
+                partitions,
+                UseBaseVersion
             );
             client.Execute();
         }

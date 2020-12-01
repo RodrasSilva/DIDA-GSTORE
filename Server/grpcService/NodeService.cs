@@ -25,16 +25,14 @@ namespace DIDA_GSTORE.ServerService{
             delayFunction();
             Console.WriteLine("Status called");
             return Task.FromResult(new StatusResponse{Status = " ok "});
-            //return base.status(request, context);
         }
 
         public override Task<CrashResponse> crash(CrashRequest request, ServerCallContext context){
             delayFunction();
 
-            //return base.crash(request, context);
             var t = new Thread(() => CrashMechanism());
             t.Start();
-            //new CrashResponse();
+
             return Task.FromResult(new CrashResponse());
         }
 
@@ -67,7 +65,7 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<CompleteSetupResponse> completeSetup(CompleteSetupRequest request,
-            ServerCallContext context){
+                    ServerCallContext context){
             Console.WriteLine("Server - here");
 
 

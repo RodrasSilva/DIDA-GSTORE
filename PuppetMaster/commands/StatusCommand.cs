@@ -12,9 +12,6 @@ namespace DIDA_GSTORE.commands{
         }
 
         public static ICommand ParseCommandLine(string[] arguments){
-            //if (arguments.Length != 0) {
-            //    throw new Exception("Invalid Status Command ");
-            //}
             return new StatusCommand();
         }
     }

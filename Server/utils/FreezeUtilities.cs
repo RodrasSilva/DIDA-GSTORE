@@ -10,7 +10,7 @@ namespace Server.utils
         private static ManualResetEvent mre = new ManualResetEvent(true);
         private static bool discard = false;
 
-        public void WaitForUnfreeze(){
+        public void WaitForUnfreeze() {
             mre.WaitOne();
         }
 
@@ -19,17 +19,15 @@ namespace Server.utils
             mre.Set();
         }
 
-        public void Freeze(){
+        public void Freeze() {
             mre.Reset();
         }
 
-        public void Discard()
-        {
+        public void Discard() {
             discard = true;
         }
 
-        public bool IsToDiscard()
-        {
+        public bool IsToDiscard() {
             return discard;
         }
     }

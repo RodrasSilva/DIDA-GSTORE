@@ -27,7 +27,7 @@ namespace DIDA_GSTORE.ServerService{
             return Task.FromResult(Write(request));
         }
 
-        public WriteResponse Write(WriteRequest request){
+        private WriteResponse Write(WriteRequest request){
             Console.WriteLine("Received Write request. Id - " +
                 request.ObjectId + ". Value" + request.ObjectValue);
             try
@@ -65,6 +65,7 @@ namespace DIDA_GSTORE.ServerService{
             delayFunction();
             return Task.FromResult(Read(request));
         }
+
         public override Task<ReadAdvancedResponse> readAdvanced(ReadAdvancedRequest request, ServerCallContext context)
         {
             _freezeUtilities.WaitForUnfreeze();
@@ -73,7 +74,7 @@ namespace DIDA_GSTORE.ServerService{
         }
 
 
-        public ReadResponse Read(ReadRequest request)
+        private ReadResponse Read(ReadRequest request)
         {
             Console.WriteLine("Received Read Request: " + request.ToString());
             try
@@ -92,7 +93,7 @@ namespace DIDA_GSTORE.ServerService{
             }
         }
 
-        public ReadAdvancedResponse ReadAdvanced(ReadAdvancedRequest request)
+        private ReadAdvancedResponse ReadAdvanced(ReadAdvancedRequest request)
         {
             Console.WriteLine("Received Read Request: " + request.ToString());
             try
@@ -125,7 +126,7 @@ namespace DIDA_GSTORE.ServerService{
             return Task.FromResult(WriteAdvanced(request));
         }
 
-        public WriteAdvancedResponse WriteAdvanced(WriteAdvancedRequest request)
+        private WriteAdvancedResponse WriteAdvanced(WriteAdvancedRequest request)
         {
             Console.WriteLine("Received Write request. Id - " +
                             request.ObjectId + ". Value" + request.ObjectValue);
@@ -160,51 +161,11 @@ namespace DIDA_GSTORE.ServerService{
         }
 
         public override Task<ListServerResponse> listServer(ListServerRequest request, ServerCallContext context){
-            //_freezeUtilities.WaitForUnfreeze();
+            //Not frozen
             delayFunction();
 
             Console.WriteLine("Received List Server Request: " + request.ToString());
             return Task.FromResult(_storage.ListServer());
-        }
-
-        public override Task<ListGlobalResponse> listGlobal(ListGlobalRequest request, ServerCallContext context){
-            _freezeUtilities.WaitForUnfreeze();
-            delayFunction();
-            Console.WriteLine("Received List Global Request ");
-
-            List<ListGlobalResponseEntity> listGlobalResponseEntities = new List<ListGlobalResponseEntity>();
-            foreach(var partitionMaster in _storage.GetPartitionMasters())
-            {
-                if(partitionMaster.masterUrl.Equals(_myUrl))
-                {
-                    var response2 = _storage.ListPartition(partitionMaster.partitionId);
-                    listGlobalResponseEntities.Add(new ListGlobalResponseEntity
-                    {
-                        ObjectIds = { response2.ObjectIds.ToList() },
-                        PartitionId = partitionMaster.partitionId,
-                    });
-                    continue;
-                }
-                try { 
-                //Console.WriteLine(partitionMaster.ToString());
-                //result += "{ partition: " + partitionMaster.partitionId + ", [ ";
-                //FIXME
-                ClientService grpcService = new ClientService(partitionMaster.masterUrl);
-                var response = grpcService.ListPartitionGlobal(partitionMaster.partitionId);
-
-                listGlobalResponseEntities.Add(new ListGlobalResponseEntity
-                {
-                    ObjectIds = { response.ObjectIds.ToList() }, 
-                    PartitionId = partitionMaster.partitionId,
-                });
-                    //result += " ]}, ";
-                } catch(Exception)
-                {
-                    Console.WriteLine($"Failed to fetch partition {partitionMaster.partitionId} from partition master {partitionMaster.masterUrl}");
-                }
-            }
-            //Console.WriteLine(listGlobalResponseEntities.Count);
-            return Task.FromResult(new ListGlobalResponse { Objects = { listGlobalResponseEntities } });
         }
 
         public override Task<ListPartitionGlobalResponse> listPartitionGlobal(ListPartitionGlobalRequest request, ServerCallContext context)

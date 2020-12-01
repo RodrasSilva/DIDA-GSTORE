@@ -11,20 +11,20 @@ namespace Client{
         private readonly GrpcService _grpcService;
         private readonly ClientNodeServer _nodeServer;
         private readonly string _operationsFilePath;
-        private readonly bool _useBaseVersion = true;
 
         public Dictionary<string, List<string>> ServerList = new Dictionary<string, List<string>>();
 
         public ClientLogic(string operationsFilePath, string username, string serverHost, int serverPort,
-            string clientHost, int clientPort, string[] partitions) {
+            string clientHost, int clientPort, string[] partitions, bool useAdvanced) {
             _operationsFilePath = operationsFilePath;
-            //TODO : Check what to do with username
-            _grpcService = new GrpcService(serverHost, serverPort, this, _useBaseVersion);
+
+            _grpcService = new GrpcService(serverHost, serverPort, this, useAdvanced);
             _nodeServer = new ClientNodeServer(clientHost, clientPort, username, ServerCredentials.Insecure);
-            parsePartitions(new List<string>(partitions));
+
+            ParsePartitions(new List<string>(partitions));
         }
 
-        public void parsePartitions(List<string> partitions)
+        public void ParsePartitions(List<string> partitions)
         {
             Console.WriteLine(partitions);
             try {
@@ -33,8 +33,10 @@ namespace Client{
                     //partitions[0];
                     var partitionId = partitions[0];
                     int serverCount = int.Parse(partitions[1]);
+
                     partitions.RemoveAt(0);
                     partitions.RemoveAt(0);
+
                     List<string> serverUrls = new List<string>();
                     for (int i = 0; i < serverCount; i++)
                     {
@@ -55,8 +57,10 @@ namespace Client{
             ExecuteCommands();
             Console.WriteLine("Operations executed");
             _nodeServer.Start();
+
             Console.WriteLine("Listening to Status Commands");
             Console.ReadKey();
+
             _nodeServer.ShutdownAsync();
             Console.WriteLine("Client shutting down...");
         }

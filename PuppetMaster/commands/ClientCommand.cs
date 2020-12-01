@@ -2,7 +2,7 @@ using System;
 using PuppetMasterMain;
 
 namespace DIDA_GSTORE.commands{
-    public class ClientCommand : ICommand{
+    public class ClientCommand : ICommand {
         private const int UserNamePosition = 0;
         private const int ClientUrlPosition = 1;
         private const int ScriptFilePosition = 2;

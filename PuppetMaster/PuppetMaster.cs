@@ -6,7 +6,6 @@ namespace PuppetMasterMain{
         private static GrpcProcessService grpcProcessService;
 
         public static void Main(string[] args){
-            //grpcProcessService = new GrpcProcessService("localhost", 5001);
             grpcProcessService = urlToProcessService("http://localhost:5001");
             var puppetMasterDomain = new PuppetMasterDomain();
             puppetMasterDomain.Start(args, grpcProcessService);

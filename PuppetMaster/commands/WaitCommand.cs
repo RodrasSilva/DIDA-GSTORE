@@ -15,9 +15,9 @@ namespace DIDA_GSTORE.commands{
         public bool IsSetup => false;
 
         public void Execute(PuppetMasterDomain puppetMaster){
-            Console.WriteLine("teste1");
+            Console.WriteLine("Waiting");
             Thread.Sleep(_waitTime);
-            Console.WriteLine("teste2");
+            Console.WriteLine("Stopped waiting");
         }
 
         public static WaitCommand ParseCommandLine(string[] arguments){

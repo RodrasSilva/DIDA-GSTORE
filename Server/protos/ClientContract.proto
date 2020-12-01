@@ -71,19 +71,6 @@ message ListPartitionGlobalResponse {
     repeated string objectIds = 1;
 }
 
-message ListGlobalResponseEntity{
-  string partitionId = 1;
-  repeated string objectIds = 2;
-}
-
-message ListGlobalRequest{
-  /*nothing*/
-}
-
-message ListGlobalResponse{
-  repeated ListGlobalResponseEntity  objects = 1;
-}
-
 message ServerUrlRequest{
   string serverId = 1;
 }
@@ -100,7 +87,6 @@ service DIDAService{
   rpc readAdvanced(ReadAdvancedRequest) returns (ReadAdvancedResponse);
 
   rpc listServer(ListServerRequest) returns (ListServerResponse);
-  rpc listGlobal(ListGlobalRequest) returns (ListGlobalResponse);
   rpc getServerUrl(ServerUrlRequest) returns (ServerUrlResponse);
 
   //
