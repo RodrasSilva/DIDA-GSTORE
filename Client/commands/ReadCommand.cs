@@ -1,8 +1,8 @@
 using System;
 using DIDA_GSTORE.grpcService;
 
-namespace DIDA_GSTORE.commands{
-    public class ReadCommand : ICommand{
+namespace DIDA_GSTORE.commands {
+    public class ReadCommand : ICommand {
         private const int PartitionIdPosition = 0;
         private const int ObjectIdPosition = 1;
         private const int ServerIdPosition = 2;
@@ -11,7 +11,7 @@ namespace DIDA_GSTORE.commands{
         private readonly string _partitionId;
         private readonly string _serverId;
 
-        private ReadCommand(string partitionId, string objectId, string serverId){
+        private ReadCommand(string partitionId, string objectId, string serverId) {
             _partitionId = partitionId;
             _objectId = objectId;
             _serverId = serverId;

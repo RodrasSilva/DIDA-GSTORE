@@ -2,15 +2,15 @@ using System;
 using System.Linq;
 using DIDA_GSTORE.grpcService;
 
-namespace DIDA_GSTORE.commands{
-    public class WriteCommand : ICommand{
+namespace DIDA_GSTORE.commands {
+    public class WriteCommand : ICommand {
         private const int PartitionIdPosition = 0;
         private const int ObjectIdPosition = 1;
         private readonly string _objectId;
         private readonly string _objectValue;
         private readonly string _partitionId;
 
-        private WriteCommand(string partitionId, string objectId, string objectValue){
+        private WriteCommand(string partitionId, string objectId, string objectValue) {
             _partitionId = partitionId;
             _objectId = objectId;
             _objectValue = objectValue;

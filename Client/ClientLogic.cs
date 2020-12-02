@@ -6,8 +6,8 @@ using DIDA_GSTORE.commands;
 using DIDA_GSTORE.grpcService;
 using Grpc.Core;
 
-namespace Client{
-    public class ClientLogic{
+namespace Client {
+    public class ClientLogic {
         private readonly GrpcService _grpcService;
         private readonly ClientNodeServer _nodeServer;
         private readonly string _operationsFilePath;
@@ -24,36 +24,33 @@ namespace Client{
             ParsePartitions(new List<string>(partitions));
         }
 
-        public void ParsePartitions(List<string> partitions)
-        {
+        public void ParsePartitions(List<string> partitions) {
             Console.WriteLine(partitions);
             try {
-                while (partitions.Count > 0)
-                {
+                while (partitions.Count > 0) {
                     //partitions[0];
                     var partitionId = partitions[0];
-                    int serverCount = int.Parse(partitions[1]);
+                    var serverCount = int.Parse(partitions[1]);
 
                     partitions.RemoveAt(0);
                     partitions.RemoveAt(0);
 
-                    List<string> serverUrls = new List<string>();
-                    for (int i = 0; i < serverCount; i++)
-                    {
+                    var serverUrls = new List<string>();
+                    for (var i = 0; i < serverCount; i++) {
                         serverUrls.Add(partitions[0]);
                         partitions.RemoveAt(0);
                     }
+
                     ServerList.Add(partitionId, serverUrls);
                 }
-            } 
-            catch(ArgumentOutOfRangeException e)
-            {
+            }
+            catch (ArgumentOutOfRangeException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("eUrl parameters are not correct");
             }
         }
 
-        public void Execute(){
+        public void Execute() {
             ExecuteCommands();
             Console.WriteLine("Operations executed");
             _nodeServer.Start();
@@ -66,32 +63,24 @@ namespace Client{
         }
 
 
-        private void ExecuteCommands(){
-            var operationsFilePath = Path.GetFullPath(Path.Combine(System.AppContext.BaseDirectory, @$"..\..\..\scripts\{_operationsFilePath}"));
-            Console.WriteLine("Client reading file : " + operationsFilePath + " \n " );
+        private void ExecuteCommands() {
+            var operationsFilePath =
+                Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @$"..\..\..\scripts\{_operationsFilePath}"));
+            Console.WriteLine("Client reading file : " + operationsFilePath + " \n ");
             if (!File.Exists(operationsFilePath))
                 throw new Exception("The given path to the operations file is not valid, file: " + operationsFilePath);
 
             var commands = ClientCommands.GetCommands(operationsFilePath);
-            commands.ForEach(command => { 
-                command.Execute(_grpcService);
-            });
+            commands.ForEach(command => { command.Execute(_grpcService); });
         }
 
-        public List<string> GetServerUrlList()
-        {
-            List<string> serverUrls = new List<string>();
+        public List<string> GetServerUrlList() {
+            var serverUrls = new List<string>();
 
             foreach (var server in ServerList)
-            {
-                foreach (var serverUrl in server.Value)
-                {
-                    if (!serverUrls.Contains(serverUrl))
-                    {
-                        serverUrls.Add(serverUrl);
-                    }
-                }
-            }
+            foreach (var serverUrl in server.Value)
+                if (!serverUrls.Contains(serverUrl))
+                    serverUrls.Add(serverUrl);
 
             return serverUrls;
         }
