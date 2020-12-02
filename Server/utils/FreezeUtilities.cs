@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace Server.utils
-{
+namespace Server.utils {
     public class FreezeUtilities {
-
         private static ManualResetEvent mre = new ManualResetEvent(true);
         private static bool discard = false;
 

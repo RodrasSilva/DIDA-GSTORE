@@ -4,10 +4,8 @@ using System.Text;
 using ServerDomain;
 using static AdvancedServerObjectInfo;
 
-namespace Server.utils
-{
-    public interface IStorage
-    {
+namespace Server.utils {
+    public interface IStorage {
         public IPartition GetPartitionOrThrowException(string partitionId);
 
         public string GetServerOrThrowException(string serverId);

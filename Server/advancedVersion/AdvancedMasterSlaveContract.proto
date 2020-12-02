@@ -20,15 +20,15 @@ message HeartbeatRequest {
 }
 
 message HeartbeatResponse {
-	//empty
+  //empty
 }
 
 message VoteRequest {
-	string partitionId = 1;
+  string partitionId = 1;
 }
 
 message VoteResponse{
-	bool res = 1;
+  bool res = 1;
 }
 
 message ObjectInfo {
@@ -38,18 +38,18 @@ message ObjectInfo {
 }
 
 message InformLeaderPartitionRequest {
-	string newMasterUrl = 1;
-	string partitionId = 2;
-	repeated ObjectInfo objectInfo = 3;
+  string newMasterUrl = 1;
+  string partitionId = 2;
+  repeated ObjectInfo objectInfo = 3;
 }
 
 message InformLeaderPartitionResponse {
-	repeated ObjectInfo objectInfo = 1;
+  repeated ObjectInfo objectInfo = 1;
 }
 
 message FinishLeaderTransitionRequest {
-	repeated ObjectInfo objectInfo = 1;
-	string partitionId = 2;
+  repeated ObjectInfo objectInfo = 1;
+  string partitionId = 2;
 }
 
 message FinishLeaderTransitionResponse {
@@ -58,18 +58,18 @@ message FinishLeaderTransitionResponse {
 
 
 message InformLeaderRequest {
-	string partitionId = 1;
-	string masterUrl = 2;
+  string partitionId = 1;
+  string masterUrl = 2;
 }
 
 message InformLeaderResponse {
 }
 
 service AdvancedSlaveService {
-	rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
-	rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
-	rpc AskVote(VoteRequest) returns (VoteResponse);
-	rpc InformLeaderPartition(InformLeaderPartitionRequest) returns (InformLeaderPartitionResponse);
-	rpc InformLeader(InformLeaderRequest) returns (InformLeaderResponse);
-	rpc FinishLeaderTransition(FinishLeaderTransitionRequest) returns (FinishLeaderTransitionResponse);
+  rpc WriteSlave(WriteSlaveRequest) returns (WriteSlaveResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc AskVote(VoteRequest) returns (VoteResponse);
+  rpc InformLeaderPartition(InformLeaderPartitionRequest) returns (InformLeaderPartitionResponse);
+  rpc InformLeader(InformLeaderRequest) returns (InformLeaderResponse);
+  rpc FinishLeaderTransition(FinishLeaderTransitionRequest) returns (FinishLeaderTransitionResponse);
 }

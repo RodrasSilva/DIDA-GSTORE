@@ -7,7 +7,7 @@ using System.Threading;
 using static AdvancedServerObjectInfo;
 using static ServerDomain.AdvancedServerStorage;
 
-public class AdvancedServerPartition : IPartition{
+public class AdvancedServerPartition : IPartition {
     private string _masterUrl;
     private string _id;
     private readonly int _masterTimeout = 200;
@@ -20,13 +20,12 @@ public class AdvancedServerPartition : IPartition{
     public Dictionary<string, AdvancedServerObjectInfo> Objects { get; }
 
     private bool _isMaster;
-    public bool IsMaster
-    {
-        get { return _isMaster; }
-        set 
-        { 
-            _isMaster = value; 
-            if(_isMaster) SetMasterTimeout(); 
+
+    public bool IsMaster {
+        get => _isMaster;
+        set {
+            _isMaster = value;
+            if (_isMaster) SetMasterTimeout();
         }
     }
 
@@ -34,10 +33,8 @@ public class AdvancedServerPartition : IPartition{
     private bool _hasVote = true;
 
 
-
     public AdvancedServerPartition(string id, string masterUrl,
-        AdvancedServerStorage advancedServerStorage)
-    {
+        AdvancedServerStorage advancedServerStorage) {
         _id = id;
         _masterUrl = masterUrl;
         Objects = new Dictionary<string, AdvancedServerObjectInfo>();
@@ -46,205 +43,141 @@ public class AdvancedServerPartition : IPartition{
         _storage = advancedServerStorage;
     }
 
-    private void SetMasterTimeout()
-    {
-        Console.WriteLine("set master timeout");
-        Thread t = new Thread( () => Heartbeat());
+    private void SetMasterTimeout() {
+        Console.WriteLine("Setting master timeout");
+        var t = new Thread(() => Heartbeat());
         t.Start();
     }
 
-    public void SetSlaveTimeout()
-    {
-        Console.WriteLine("set slave timeout");
-        Thread t = new Thread(() => SlaveTimeout());
+    public void SetSlaveTimeout() {
+        Console.WriteLine("Setting slave timeout");
+        var t = new Thread(() => SlaveTimeout());
         t.Start();
     }
 
-    public void ResetTimeout()
-    {
+    public void ResetTimeout() {
         _timeoutReset = true;
     }
 
-    public int GetRandomSlaveTimeout()
-    {
-        Random r = new Random();
+    public int GetRandomSlaveTimeout() {
+        var r = new Random();
         //return r.Next(_slaveMinTimeout, _slaveMaxTimeout);
         var val = r.Next(_slaveMinTimeout, _slaveMaxTimeout);
-        Console.WriteLine("TIMEOUT FOR: " + val);
         return val;
     }
-    public void SlaveTimeout()
-    {
-        Console.WriteLine("Slave timeout");
-        while (!IsMaster)
-        {
-            Console.WriteLine("Before timeout");
-            Thread.Sleep(GetRandomSlaveTimeout());
-            Console.WriteLine("After timeout");
-            Console.WriteLine("Checking if my timeout has reset for partition: " + _id);
 
-            if (!_timeoutReset)
-            {
-                break;
-            }
+    public void SlaveTimeout() {
+        while (!IsMaster) {
+            Thread.Sleep(GetRandomSlaveTimeout());
+
+            if (!_timeoutReset) break;
+
             _timeoutReset = false;
         }
-        Console.WriteLine("out of the loop");
+
         //_advancedServerStorage.IsMasterInAnyPartition();
         //becomes candidate
-        if (_hasVote)
-        {
+        if (_hasVote) {
             BecomeCandidate();
         }
-        else
-        {
+        else {
             _hasVote = true;
-            Console.WriteLine("Repeating slave timeout");
             SlaveTimeout();
         }
     }
 
-    public void BecomeCandidate()
-    {
+    public void BecomeCandidate() {
         Console.WriteLine("I am now a candidate of partition: " + _id);
 
         _hasVote = false;
         Console.WriteLine("My vote is NOT AVAILABLE!");
-        int votes = 1;
-        List<ServerInfo> toRemove = new List<ServerInfo>();
+        var votes = 1;
+        var toRemove = new List<ServerInfo>();
 
         foreach (var server in Servers)
-        {
-            try
-            {
+            try {
                 Console.WriteLine("Asking vote from: " + server.ServerId);
-                VoteResponse response = server.ServerChannel.AskVote(new VoteRequest { PartitionId = _id });
-                Console.WriteLine("I can still write");
+                var response = server.ServerChannel.AskVote(new VoteRequest {PartitionId = _id});
+    
                 if (response.Res) votes++;
-                if (votes >= (Math.Ceiling(Servers.Count / 2f) + 1))
-                {
+                if (votes >= Math.Ceiling(Servers.Count / 2f) + 1) {
                     BecomeMaster();
                     return;
                 }
-                Console.WriteLine("I can still write");
+
             }
-            catch (RpcException e)
-            {
+            catch (RpcException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
-                    ") OFFICIALLY DIED");
+                                  ") OFFICIALLY CRASHED");
                 toRemove.Add(server);
-                Console.WriteLine("Removed ToRemoved: " + server.ServerId);
+                Console.WriteLine("Removed : " + server.ServerId);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-        }
-        Console.WriteLine("after for each");
 
-        foreach (var server in toRemove)
-        {
+
+        foreach (var server in toRemove) {
             Servers.Remove(server);
-            Console.WriteLine("Removed RealList: " + server.ServerId);
         }
 
-        if (votes >= (Math.Ceiling(Servers.Count / 2f) + 1))
-        {
+        if (votes >= Math.Ceiling(Servers.Count / 2f) + 1) {
             BecomeMaster();
             return;
         }
+
         _hasVote = true;
         Console.WriteLine("My vote is AVAILABLE!");
 
         _timeoutReset = false;
         Thread.Sleep(GetRandomSlaveTimeout());
-        Console.WriteLine("Got out of thread sleep");
-        Console.WriteLine("My slave timeout is: " + _timeoutReset);
-        if (_timeoutReset)
-        {
-            SetSlaveTimeout();
-            // Someone turned to master
-        }
-        else
-        {
-            //_hasVote = true;
+        if (_timeoutReset) SetSlaveTimeout();
+        // Someone turned to master
+        else //_hasVote = true;
             BecomeCandidate();
-        }
     }
 
-    public void BecomeMaster()
-    {
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
-        Console.WriteLine("I am now the master of partition: " + _id);
+    public void BecomeMaster() {
         Console.WriteLine("I am now the master of partition: " + _id);
 
         _masterUrl = _storage.ServerUrl;
 
-        List<ServerExtraInfo> toRemove = new List<ServerExtraInfo>();
+        var toRemove = new List<ServerExtraInfo>();
 
         foreach (var server in _storage.GetServersNotFromPartition(_id))
-        {
-            try
-            {
-                server.ServerChannel.InformLeader(new InformLeaderRequest { PartitionId = _id, MasterUrl = _masterUrl });
-            }  
-            catch (RpcException e)
-            {
+            try {
+                server.ServerChannel.InformLeader(new InformLeaderRequest {PartitionId = _id, MasterUrl = _masterUrl});
+            }
+            catch (RpcException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
-                    ") OFFICIALLY DIED");
+                                  ") OFFICIALLY CRASHED");
                 toRemove.Add(server);
             }
-                catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-        }
 
-        foreach (var server in toRemove)
-        {
+        foreach (var server in toRemove) {
             _storage.Servers.Remove(server);
-            for (int i = 0; i < Servers.Count; i++)
-            {
-                if (Servers[i].ServerId.Equals(server.ServerId))
-                {
+            for (var i = 0; i < Servers.Count; i++)
+                if (Servers[i].ServerId.Equals(server.ServerId)) {
                     Servers.RemoveAt(i);
                     i--;
                 }
-            }
         }
 
-        List<ObjectInfo> objectInfo = new List<ObjectInfo>();
+        var objectInfo = new List<ObjectInfo>();
 
-        foreach(var obj in Objects) {
+        foreach (var obj in Objects) {
             var objInfo = obj.Value.Read();
-            objectInfo.Add(new ObjectInfo{
-                ObjectId = obj.Key, 
-                ObjectValue = objInfo.value, 
-                Timestamp = objInfo.timestampCounter 
+            objectInfo.Add(new ObjectInfo {
+                ObjectId = obj.Key,
+                ObjectValue = objInfo.value,
+                Timestamp = objInfo.timestampCounter
             });
         }
 
@@ -252,144 +185,110 @@ public class AdvancedServerPartition : IPartition{
             PartitionId = _id,
             NewMasterUrl = _masterUrl,
             //ServerId = _storage.ServerId,
-            ObjectInfo = { objectInfo }
+            ObjectInfo = {objectInfo}
         };
 
-        List<ObjectInfo> objectInfos = new List<ObjectInfo>();
-        List<ServerInfo> toRemovePart = new List<ServerInfo>();
+        var objectInfos = new List<ObjectInfo>();
+        var toRemovePart = new List<ServerInfo>();
 
-        foreach (var server in Servers) {
-            try
-            {
+        foreach (var server in Servers)
+            try {
                 var response = server.ServerChannel.InformLeaderPartition(request);
                 objectInfos.AddRange(response.ObjectInfo);
             }
-            catch (RpcException e)
-            {
+            catch (RpcException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
-                    ") OFFICIALLY DIED");
+                                  ") OFFICIALLY CRASHED");
                 toRemovePart.Add(server);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-        }
 
-        foreach(var objInfo in objectInfos)
-        {
-            Objects[objInfo.ObjectId].Write(objInfo.ObjectValue, objInfo.Timestamp);
-        }
+        foreach (var objInfo in objectInfos) Objects[objInfo.ObjectId].Write(objInfo.ObjectValue, objInfo.Timestamp);
 
-        var finishRequest = new FinishLeaderTransitionRequest{ ObjectInfo = { objectInfos } };
+        var finishRequest = new FinishLeaderTransitionRequest {ObjectInfo = {objectInfos}};
         foreach (var server in Servers)
-        {
-            foreach (var objInfo in objectInfos)
-            {
-                try
-                {
-                    server.ServerChannel.FinishLeaderTransition(finishRequest);
-                }
-                catch (RpcException e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
-                        ") OFFICIALLY DIED");
-                    toRemovePart.Add(server);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                }
-                //Objects[objInfo.ObjectId].Write(objInfo.ObjectValue, objInfo.Timestamp);
+        foreach (var objInfo in objectInfos)
+            try {
+                server.ServerChannel.FinishLeaderTransition(finishRequest);
             }
-        }
+            catch (RpcException e) {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
+                                  ") OFFICIALLY DIED");
+                toRemovePart.Add(server);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
 
-
-        foreach (var server in toRemovePart)
-        {
+        foreach (var server in toRemovePart) {
             Servers.Remove(server);
-            Console.WriteLine("Removed RealList: " + server.ServerId);
         }
 
         IsMaster = true;
     }
 
-    public void Heartbeat()
-    {
-        while (_isMaster)
-        {
+    public void Heartbeat() {
+        while (_isMaster) {
             Thread.Sleep(_masterTimeout);
 
-            List<ServerInfo> toRemove = new List<ServerInfo>();
+            var toRemove = new List<ServerInfo>();
             foreach (var server in Servers)
-            {
-                try
-                {
+                try {
                     Console.WriteLine("[SENDING] Heartbeat. Heartbeat for Server:" + server.ServerId);
                     //heartbeat should be async
-                    server.ServerChannel.HeartbeatAsync(new HeartbeatRequest { PartitionId = _id, Sending = _masterUrl} );
+                    server.ServerChannel.HeartbeatAsync(new HeartbeatRequest {PartitionId = _id, Sending = _masterUrl});
                 }
-                catch (RpcException e)
-                {
+                catch (RpcException e) {
                     Console.WriteLine(e.Message);
                     Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + server.ServerId +
-                        ") OFFICIALLY DIED");
+                                      ") OFFICIALLY CRASHED");
                     toRemove.Add(server);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
                 }
-            }
 
-            foreach (var server in toRemove)
-            {
-                Servers.Remove(server);
-            }
+            foreach (var server in toRemove) Servers.Remove(server);
         }
     }
 
-    public string GetMasterUrl(){
+    public string GetMasterUrl() {
         return _masterUrl;
     }
 
-    public void SetMasterUrl(string url)
-    {
+    public void SetMasterUrl(string url) {
         _masterUrl = url;
     }
 
-    public ObjectVal Read(string objKey)
-    {
+    public ObjectVal Read(string objKey) {
         var objectInfo = Objects[objKey];
         return objectInfo.Read();
     }
 
-    public void Write(string objKey, string objValue, int timestamp = -1){
-        Console.WriteLine("Write decision, Master: " + IsMaster);
-        if (IsMaster)
-        {
+    public void Write(string objKey, string objValue, int timestamp = -1) {
+        if (IsMaster) {
             WriteMaster(objKey, objValue);
             return;
         }
+
         WriteSlave(objKey, objValue, timestamp);
     }
 
-    public int WriteMaster(string objKey, string objValue)
-    {
+    public int WriteMaster(string objKey, string objValue) {
         AdvancedServerObjectInfo objectInfo;
 
-        lock (Objects)
-        {
+        lock (Objects) {
             if (!Objects.TryGetValue(objKey, out objectInfo))
-            {
                 Objects.Add(objKey, objectInfo = new AdvancedServerObjectInfo("NA"));
-            }
         }
+
         var timeStamp = Objects[objKey].WriteNext(objValue);
         var request = new WriteSlaveRequest {
             PartitionId = _id,
@@ -398,63 +297,43 @@ public class AdvancedServerPartition : IPartition{
             Timestamp = timeStamp
         };
 
-        List<ServerInfo> toRemove = new List<ServerInfo>();
+        var toRemove = new List<ServerInfo>();
         foreach (var slave in Servers)
-        {
-            try
-            {
+            try {
                 slave.ServerChannel.WriteSlaveAsync(request);
             }
-            catch (RpcException e)
-            {
+            catch (RpcException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("ONE OF THE SERVERS I WAS TALKING TO (" + slave.ServerId +
-                    ") OFFICIALLY DIED");
+                                  ") OFFICIALLY DIED");
                 toRemove.Add(slave);
             }
-            catch(Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
-        }
 
-        foreach(var slave in toRemove)
-        {
-            Servers.Remove(slave);
-        }
+        foreach (var slave in toRemove) Servers.Remove(slave);
 
         return timeStamp;
     }
 
-    public void WriteSlave(string objKey, string objValue, int timestamp){
-        Console.WriteLine("Hello?");
+    public void WriteSlave(string objKey, string objValue, int timestamp) {
         AdvancedServerObjectInfo objectInfo = null;
-        lock (Objects)
-        {
-            Console.WriteLine("Hello2?");
-            if (Objects.ContainsKey(objKey))
-            {
-                Console.Write("I have the object key");
-                //Objects[objKey].Write(objValue, timestamp);
+        lock (Objects) {
+            if (Objects.ContainsKey(objKey)) {
                 objectInfo = Objects[objKey];
             }
-            else
-            {
-                Console.Write("I DONT have the object key");
+            else {
                 Objects.Add(objKey, objectInfo = new AdvancedServerObjectInfo("NA"));
-                //Objects[objKey].Write(objValue, timestamp);
             }
         }
-        objectInfo.Write(objValue, timestamp);
-        Console.WriteLine("Hello3?");
+        objectInfo.Write(objValue, timestamp); // we can do it this way because objects are never removedpeç
     }
 
-    public bool AskVote()
-    {
-        Console.WriteLine("I've been asked to vote for my country");
-        if (_hasVote)
-        {
+    public bool AskVote() {
+        Console.WriteLine("I've been asked to vote");
+        if (_hasVote) {
             Console.WriteLine("Does it have any votes? " + _hasVote + "for Partition with id: " + _id);
             _hasVote = false;
             return true;
@@ -463,55 +342,42 @@ public class AdvancedServerPartition : IPartition{
         return false;
     }
 
-    public List<ObjectInfo> InformLeaderPartition(string newMasterUrl, List<ObjectInfo> objectInfos)
-    {
+    public List<ObjectInfo> InformLeaderPartition(string newMasterUrl, List<ObjectInfo> objectInfos) {
         _timeoutReset = true;
         _masterUrl = newMasterUrl;
         IsMaster = false;
-        List<ObjectInfo> result = new List<ObjectInfo>();
+        var result = new List<ObjectInfo>();
         AdvancedServerObjectInfo objectInfo = null;
 
-        foreach (var objInfo in objectInfos)
-        {
-
+        foreach (var objInfo in objectInfos) {
             if (!Objects.ContainsKey(objInfo.ObjectId)) {
                 Console.Write("InformLeaderPartition: I DONT have the object key");
                 Objects.Add(objInfo.ObjectId, objectInfo = new AdvancedServerObjectInfo("NA"));
             }
 
-            ObjectVal objVal =  Objects[objInfo.ObjectId].Read();
+            var objVal = Objects[objInfo.ObjectId].Read();
             if (objVal.timestampCounter == objInfo.Timestamp) continue;
             if (objVal.timestampCounter > objInfo.Timestamp)
-            {
-                result.Add(new ObjectInfo
-                {
+                result.Add(new ObjectInfo {
                     ObjectId = objInfo.ObjectId,
                     ObjectValue = objVal.value,
                     Timestamp = objVal.timestampCounter
                 });
-            }
             else
-            {
                 Objects[objInfo.ObjectId].Write(objInfo.ObjectValue, objInfo.Timestamp);
-            }
         }
 
-        foreach (var myObj in Objects) 
-        {
+        foreach (var myObj in Objects) {
             var newLeaderHasThisObj = false;
-            foreach(var objInfo in objectInfos)
-            {
-                if(objInfo.ObjectId.Equals(myObj.Key))
-                {
+            foreach (var objInfo in objectInfos)
+                if (objInfo.ObjectId.Equals(myObj.Key)) {
                     newLeaderHasThisObj = true;
                     break;
                 }
-            }
 
-            if(newLeaderHasThisObj) { continue; }
-            
-            result.Add(new ObjectInfo
-            {
+            if (newLeaderHasThisObj) continue;
+
+            result.Add(new ObjectInfo {
                 ObjectId = myObj.Key,
                 ObjectValue = myObj.Value.Read().value,
                 Timestamp = myObj.Value.Read().timestampCounter
@@ -522,10 +388,8 @@ public class AdvancedServerPartition : IPartition{
     }
 
 
-    public class ServerInfo
-    {
-        public ServerInfo(string serverId, AdvancedSlaveService.AdvancedSlaveServiceClient serverChannel)
-        {
+    public class ServerInfo {
+        public ServerInfo(string serverId, AdvancedSlaveService.AdvancedSlaveServiceClient serverChannel) {
             ServerId = serverId;
             ServerChannel = serverChannel;
         }
