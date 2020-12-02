@@ -8,8 +8,8 @@ using PuppetMasterMain;
 
 //using Client;
 
-namespace DIDA_GSTORE.grpcService{
-    public class GrpcNodeService{
+namespace DIDA_GSTORE.grpcService {
+    public class GrpcNodeService {
         private readonly GrpcChannel channel;
         private readonly NodeControlService.NodeControlServiceClient client;
         private readonly string ServerIp;
@@ -17,7 +17,7 @@ namespace DIDA_GSTORE.grpcService{
         private int ServerPort;
 
         //inves de ip, url
-        public GrpcNodeService(string serverIp, int serverPort){
+        public GrpcNodeService(string serverIp, int serverPort) {
             ServerIp = serverIp;
             ServerPort = serverPort;
             Url = ServerIp + ":" + serverPort;
@@ -26,48 +26,45 @@ namespace DIDA_GSTORE.grpcService{
             client = new NodeControlService.NodeControlServiceClient(channel);
         }
 
-        public string Url{ get; set; }
+        public string Url { get; set; }
 
-        private string BuildServerAdress(string serverIp, int serverPort){
+        private string BuildServerAdress(string serverIp, int serverPort) {
             return string.Format("http://{0}:{1}", serverIp, serverPort);
         }
 
-        public StatusResponse Status(){
+        public StatusResponse Status() {
             var request = new StatusRequest();
-            try
-            {
+            try {
                 return client.status(request);
             }
-            catch(RpcException e)
-            {
+            catch (RpcException e) {
                 Console.WriteLine("Status Did not work");
                 Console.WriteLine(e.Message);
                 return new StatusResponse();
             }
         }
 
-        public CrashResponse Crash(){
+        public CrashResponse Crash() {
             var request = new CrashRequest();
             return client.crash(request);
         }
 
-        public FreezeResponse Freeze(bool discard){
-            var request = new FreezeRequest { Discard = discard};
+        public FreezeResponse Freeze(bool discard) {
+            var request = new FreezeRequest {Discard = discard};
             return client.freeze(request);
         }
 
-        public UnfreezeResponse Unfreeze(){
+        public UnfreezeResponse Unfreeze() {
             var request = new UnfreezeRequest();
             return client.unfreeze(request);
         }
 
         public CompleteSetupResponse CompleteSetup(
-            List<ServerInfoMessage> serverInfoMessages, 
-            List<PartitionInfoMessage> partitionInfoMessages)
-        {
-            var request = new CompleteSetupRequest{
-                ServerInfo = { serverInfoMessages },
-                Partitions = { partitionInfoMessages },
+            List<ServerInfoMessage> serverInfoMessages,
+            List<PartitionInfoMessage> partitionInfoMessages) {
+            var request = new CompleteSetupRequest {
+                ServerInfo = {serverInfoMessages},
+                Partitions = {partitionInfoMessages}
             };
 
             Console.Write(request.ToString());

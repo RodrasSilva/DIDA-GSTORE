@@ -1,7 +1,7 @@
 using System;
 using PuppetMasterMain;
 
-namespace DIDA_GSTORE.commands{
+namespace DIDA_GSTORE.commands {
     public class ClientCommand : ICommand {
         private const int UserNamePosition = 0;
         private const int ClientUrlPosition = 1;
@@ -11,7 +11,7 @@ namespace DIDA_GSTORE.commands{
 
         private readonly string _username;
 
-        private ClientCommand(string username, string clientUrl, string scriptFile){
+        private ClientCommand(string username, string clientUrl, string scriptFile) {
             _username = username;
             _clientUrl = clientUrl;
             _scriptFile = scriptFile;
@@ -21,7 +21,7 @@ namespace DIDA_GSTORE.commands{
         public bool IsSetup => false;
 
 
-        public void Execute(PuppetMasterDomain puppetMaster){
+        public void Execute(PuppetMasterDomain puppetMaster) {
             var response = puppetMaster.GetProcessService().StartClient(
                 _username, _clientUrl, _scriptFile, puppetMaster.GetDefaultServerUrl(),
                 puppetMaster.GetPartitionClientInfo());
@@ -30,7 +30,7 @@ namespace DIDA_GSTORE.commands{
             puppetMaster.AddClient(_clientUrl);
         }
 
-        public static ICommand ParseCommandLine(string[] arguments){
+        public static ICommand ParseCommandLine(string[] arguments) {
             if (arguments.Length != 3) throw new Exception("Invalid Client Command ");
 
             var username = arguments[UserNamePosition];
