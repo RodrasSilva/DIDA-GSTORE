@@ -26,7 +26,10 @@ namespace Server.baseVersion {
             _storage = new BaseServerStorage();
         }
 
-        public void Run() {
+        public void Run()
+        {
+            Console.Title = "Server: " + _serverId;
+            Console.WriteLine("Running base version");
             var freezeUtilities = new FreezeUtilities();
             var serverParameters = UrlParameters.From(_serverUrl);
             var serverService = new ServerService(_storage, freezeUtilities, _serverUrl, DelayMessage);

@@ -1,0 +1,19 @@
+ReplicationFactor 5
+Partition 5 p1 s1 s2 s3 s4 s5
+Server s1 http://localhost:3000 0 100
+Server s2 http://localhost:3001 100 300
+Server s3 http://localhost:3002 0 100
+Server s4 http://localhost:3003 100 300
+Server s5 http://localhost:3004 100 300
+Client mary http://localhost:6000 performance_client_script1
+Client mary http://localhost:6001 performance_client_script1
+Client mary http://localhost:6002 performance_client_script1
+Client mary http://localhost:6003 performance_client_script2
+Client mary http://localhost:6004 performance_client_script2
+Client mary http://localhost:6005 performance_client_script2
+Client mary http://localhost:6006 performance_client_script1
+Client mary http://localhost:6007 performance_client_script1
+Client mary http://localhost:6008 performance_client_script1
+Client mary http://localhost:6009 performance_client_script2
+Client mary http://localhost:6010 performance_client_script2
+Client mary http://localhost:6011 performance_client_script2

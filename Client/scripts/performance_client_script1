@@ -1,0 +1,4 @@
+begin-repeat 100
+write p1 obj-$i "value-$i"
+end-repeat
+listGlobal

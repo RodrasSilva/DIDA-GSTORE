@@ -13,6 +13,7 @@ using Server.utils;
 namespace ServerDomain {
     public class Server {
         private const bool UseBaseVersion = false;
+        private static DateTime initialTime;
 
         public static void Main(string[] args) {
             if (args.Length != 4) {
@@ -25,7 +26,9 @@ namespace ServerDomain {
             var _serverUrl = args[1];
             var _minDelay = float.Parse(args[2]);
             var _maxDelay = float.Parse(args[3]);
-
+            initialTime = DateTime.Now;
+            Thread t = new Thread(() => WriteTime());
+            t.Start();
             if (UseBaseVersion) {
 #pragma warning disable CS0162 // Unreachable code detected
                 new BaseServer(_minDelay, _maxDelay, _serverId, _serverUrl).Run();
@@ -35,6 +38,15 @@ namespace ServerDomain {
 #pragma warning disable CS0162 // Unreachable code detected
                 new AdvancedServer(_minDelay, _maxDelay, _serverId, _serverUrl).Run();
 #pragma warning restore CS0162 // Unreachable code detected
+            }
+        }
+
+        public static void WriteTime()
+        {
+            while (true)
+            {
+                Console.WriteLine("Time: " + (DateTime.Now - initialTime).ToString());
+                Thread.Sleep(1000);
             }
         }
     }
